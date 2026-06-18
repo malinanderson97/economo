@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell(extract-text \"Questions_for_Frank.docx\")"
-    ]
-  }
-}
