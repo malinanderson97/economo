@@ -10,3 +10,9 @@ node_modules/
 # OS junk
 Thumbs.db
 desktop.ini
+
+# Scratch / debug dumps
+eval_dump.js
+
+# Local tool config (machine-specific)
+.claude/
