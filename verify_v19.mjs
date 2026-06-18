@@ -200,6 +200,86 @@ console.log('Verifying islm_pc_model_v19 (open economy) …\n');
         `eps0=${eq0.eps.toFixed(3)}, eps100=${eq1.eps.toFixed(3)}`);
 }
 
+// 14. Static coverage for interactive drag handlers (HANDLES.*)
+{
+  function getCandidateIdentifiers(codeStr) {
+    const candidateSet = new Set(['eq', 'eqNow']);
+    for (const match of codeStr.matchAll(/(?:const|let|var)\s+([a-zA-Z0-9_]+)\s*=\s*solve\(/g)) {
+      candidateSet.add(match[1]);
+    }
+    return Array.from(candidateSet);
+  }
+
+  function checkHandlers(codeStr, isSelfTest = false) {
+    let handlers = [];
+    const re = /HANDLES\.([a-zA-Z0-9_]+)\s*=\s*\([^)]*\)\s*=>\s*\{/g;
+    let match;
+    while ((match = re.exec(codeStr)) !== null) {
+      const name = match[1];
+      const start = match.index + match[0].length - 1;
+      let depth = 0;
+      let end = -1;
+      for (let i = start; i < codeStr.length; i++) {
+        if (codeStr[i] === '{') depth++;
+        else if (codeStr[i] === '}') {
+          depth--;
+          if (depth === 0) { end = i + 1; break; }
+        }
+      }
+      if (end !== -1) {
+        handlers.push({ name, body: codeStr.substring(match.index, end) });
+      }
+    }
+
+    if (!isSelfTest) {
+      check('14 handler sanity count', handlers.length >= 4, `found ${handlers.length} handlers`);
+    }
+
+    const candidates = getCandidateIdentifiers(codeStr);
+    let anyHandlerFailed = false;
+
+    for (const { name, body } of handlers) {
+      const cleanBody = body.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '');
+      let usedAny = false;
+      let handlerPassed = true;
+
+      for (const id of candidates) {
+        const uses = [...cleanBody.matchAll(new RegExp(`\\b${id}\\b`, 'g'))].map(m => m.index);
+        if (uses.length === 0) continue;
+        
+        usedAny = true;
+        const decl = cleanBody.search(new RegExp(`(?:const|let|var)\\s+${id}\\b`));
+        if (decl === -1) {
+          if (!isSelfTest) check(`14 HANDLES.${name} declares ${id} locally`, false, `offending identifier: ${id}`);
+          handlerPassed = false;
+        } else if (uses[0] < decl) {
+          if (!isSelfTest) check(`14 HANDLES.${name} declares ${id} locally`, false, `used before declaration: ${id}`);
+          handlerPassed = false;
+        } else {
+          if (!isSelfTest) check(`14 HANDLES.${name} declares ${id} locally`, true);
+        }
+      }
+      
+      if (!usedAny && !isSelfTest) {
+        check(`14 HANDLES.${name} uses no solve-result identifier`, true);
+      }
+      if (!handlerPassed) anyHandlerFailed = true;
+    }
+    return !anyHandlerFailed;
+  }
+
+  // Self-test
+  const goodFixture = `HANDLES.x = (a,b)=>{ const eq = solve(s); return eq.Y_n; }`;
+  const badFixture = `HANDLES.y = (a,b)=>{ return eq.Y_n; }`;
+  const goodPass = checkHandlers(goodFixture, true);
+  const badPass = checkHandlers(badFixture, true);
+  check('14 SELF-TEST analyzer GOOD fixture passes', goodPass === true);
+  check('14 SELF-TEST analyzer BAD fixture fails', badPass === false);
+
+  // Actual analysis on html
+  checkHandlers(html, false);
+}
+
 // ---- Summary ---------------------------------------------------------------
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);

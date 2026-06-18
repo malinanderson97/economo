@@ -23,9 +23,7 @@ convergence behavior) are NOT something to reconstruct from memory — they are
 fixed by the model's structural parameters and must be checked numerically after
 every engine change.
 
-Note: the README references `verify_v16.mjs` and `verify_v19.mjs`, but those files
-are not present in this workspace. Do not assume they exist or fabricate a run of
-them. Use the harness shipped alongside this skill instead (see below).
+Note: The correct harnesses to use are `verify_v16.mjs` and `verify_v19.mjs` located at the repository root. You must run both of them.
 
 ## What to do — every time you touch the engine
 
@@ -34,19 +32,18 @@ them. Use the harness shipped alongside this skill instead (see below).
    credibility mechanism, or the open-economy UIP channel. Re-read the matching
    section of the project README so you know the invariant the change must preserve.
 
-2. **After editing**, run the verification harness from the project directory
-   (the directory containing the two model HTML files):
+2. **After editing**, run BOTH verification harnesses from the project directory
+   (the repository root containing `verify_v16.mjs` and `verify_v19.mjs`):
 
+   ```bash
+   node verify_v16.mjs
+   node verify_v19.mjs
    ```
-   node /path/to/verify_invariants.mjs
-   ```
 
-   Copy `verify_invariants.mjs` (shipped in this skill folder) into a writable
-   location and point it at the project directory if needed. It extracts the pure
-   engine (everything before the first DOM-dependent function) from each HTML file
-   and runs the documented invariants directly — no browser or DOM stubbing needed.
+   **Resolve the path robustly:** Do not assume your current working directory is the repo root.
+   The root verifiers are located 3 levels up from this skill folder (`../../../`). If you are not in the repo root, you must search upward or use relative paths to locate `verify_v16.mjs` and `verify_v19.mjs`. If the verifiers cannot be found, you MUST fail loudly with the message "root verifiers not found" and never silently pass.
 
-3. **Require ALL GREEN.** If any invariant fails, the change is economically wrong
+3. **Require ALL GREEN from BOTH verifiers.** A non-zero exit code, any `FAIL` line, or a crash in either means the skill reports failure. Do not report success unless both runs are fully green. If any invariant fails, the change is economically wrong
    (or an invariant genuinely needs updating — see below). Do not present the work
    as complete with a failing or unrun check.
 
@@ -78,7 +75,7 @@ this list is the human-readable spec so you can reason about *why* a failure hap
 Sometimes a change is *meant* to alter an invariant (e.g. retuning a baseline
 coefficient). In that case:
 - Update the invariant in BOTH the in-browser self-test block (search the HTML for
-  `SELF-TESTS`) AND in `verify_invariants.mjs`, with a comment explaining why.
+  `SELF-TESTS`) AND in the corresponding root verifier (`verify_v16.mjs` or `verify_v19.mjs`), with a comment explaining why.
 - Re-derive the new expected number from the structural parameters by hand; never
   just paste in whatever the new code happens to output (that defeats the test).
 - Confirm the README's "What the model is" section still matches.

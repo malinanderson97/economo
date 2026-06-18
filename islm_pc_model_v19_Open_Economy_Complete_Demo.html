@@ -1004,6 +1004,7 @@ function drawPC() {
 
 HANDLES.pc = (sx, sy) => {
   const o = opts_pc; if (!o) return;
+  const eq = solve(state);
   const newY = xInverse(sx, o);
   const newPi = yInverse(sy, o);
   const z_eff = state.z + state.z_pulse;
