@@ -1175,40 +1175,22 @@ function drawReadout() {
 }
 
 function fitCharts() {
-  if (!document.querySelector) return;
-  if (document.querySelectorAll('.eq-box.open').length > 0) return;
-  const rightCol = document.getElementById('right-col');
-  if (!rightCol) return;
+  if (typeof document === 'undefined' || !document.querySelector) return;
+  if (document.querySelector('.eq-box.open')) return;
+  const col = document.getElementById('right-col');
+  if (!col) return;
   
-  const rows = window.innerWidth <= 850 ? 4 : 2;
-  const readout = document.getElementById('readout');
-  const readoutH = readout ? readout.offsetHeight + 10 : 0;
+  let h = 260; // optimistic upper bound
+  document.documentElement.style.setProperty('--chart-h', h + 'px');
   
-  // To measure available height properly, Temporarily hide the charts
-  // to get the pure clientHeight of rightCol governed by .layout
-  const chartsEl = document.querySelector('.charts');
-  chartsEl.style.display = 'none';
-  const availableH = rightCol.clientHeight - readoutH - 10;
-  chartsEl.style.display = 'grid';
-
-  const box = document.querySelector('.chart-box');
-  let nonSvgH = 0;
-  if (box) {
-    const svg = box.querySelector('svg');
-    nonSvgH = box.offsetHeight - (svg ? svg.offsetHeight : 0);
+  let guard = 0;
+  while (col.scrollHeight > col.clientHeight && h > 120 && guard < 60) {
+    h -= 4; guard++;
+    document.documentElement.style.setProperty('--chart-h', h + 'px');
   }
-  if (nonSvgH <= 0) nonSvgH = 100;
-
-  const gapTotal = (rows - 1) * 10;
-  const chartAvailable = availableH - gapTotal;
-  const perChartBox = chartAvailable / rows;
-  const computedSvgH = perChartBox - nonSvgH - 8; // small buffer
-  
-  const finalH = Math.max(140, computedSvgH);
-  document.documentElement.style.setProperty('--chart-h', finalH + 'px');
 }
 
-window.addEventListener('resize', fitCharts);
+window.addEventListener('resize', () => requestAnimationFrame(fitCharts));
 
 function toggleEq(boxId) {
   const box = document.getElementById(boxId);
@@ -1795,7 +1777,11 @@ buildControls();
 initDragManager();
 buildScenarioDropdown();
 render();
-fitCharts();
+if (typeof requestAnimationFrame !== 'undefined') {
+  requestAnimationFrame(fitCharts);
+} else {
+  fitCharts();
+}
 
 
 // ═══════════════════ SELF-TESTS (run on load) ═══════════════════
