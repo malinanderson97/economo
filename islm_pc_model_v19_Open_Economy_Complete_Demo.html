@@ -148,7 +148,8 @@
   }
   .shock-indicator.active { color: #993c1d; background: #fff4ec; }
   .run-controls { display: flex; gap: 6px; flex-wrap: wrap; }
-  .readout { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; flex: 0 0 auto; }
+  .readout { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; flex: 0 0 auto; }
+  #right-col.eq-open .charts { flex: 0 0 auto; height: auto; }
   .stat {
     flex: 1 1 0; min-width: 88px;
     background: #f6f5f0; padding: 7px 9px; border-radius: 5px;
@@ -369,6 +370,7 @@
   </div>
 
   <div id="right-col">
+    <div class="readout" id="readout"></div>
     <div class="panel charts">
 
       <div class="chart-box" id="chart-box-ismp">
@@ -429,8 +431,6 @@
       </div>
 
     </div>
-
-    <div class="readout" id="readout"></div>
   </div>
 
 </div>
@@ -1174,6 +1174,9 @@ function drawReadout() {
 function toggleEq(boxId) {
   const box = document.getElementById(boxId);
   if (box) box.classList.toggle('open');
+  
+  const anyOpen = document.querySelectorAll('.eq-box.open').length > 0;
+  document.getElementById('right-col').classList.toggle('eq-open', anyOpen);
 }
 
 function drawISChips(eq) {

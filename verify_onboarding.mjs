@@ -264,5 +264,10 @@ check('UIP Orientation: E on x-axis, i on y-axis', !!uipLabelMatch, 'opts_uip sh
 const uipEqMatch = html.match(/el\('circle',\s*\{\s*cx:\s*xScale\(eq\.E,\s*o\),\s*cy:\s*yScale\(eq\.i,\s*o\)/);
 check('UIP Orientation: eq-point uses E for cx and i for cy', !!uipEqMatch, 'eq-point rendering must map eq.E to cx and eq.i to cy');
 
+// NEW: Layout Assertion
+const readoutIdx = html.indexOf('id="readout"');
+const chartsIdx = html.indexOf('class="panel charts"');
+check('Layout: #readout precedes .panel charts in DOM', readoutIdx !== -1 && chartsIdx !== -1 && readoutIdx < chartsIdx, 'readout must be above charts');
+
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);
