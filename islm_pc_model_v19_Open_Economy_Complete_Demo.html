@@ -33,17 +33,19 @@
   #right-col {
     align-self: stretch;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     min-height: 0;
   }
   .panel h3, #left-panel h3 {
     margin: 0 0 10px; font-size: 12px; font-weight: 500; color: #555;
     text-transform: uppercase; letter-spacing: 0.4px;
   }
-  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .chart-box { padding: 10px 10px 4px; }
+  .charts { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; flex: 1 1 auto; min-height: 0; }
+  .chart-box { padding: 10px 10px 4px; display: flex; flex-direction: column; min-height: 0; }
   .chart-box h3 { margin: 0 0 4px; color: #333; text-transform: none; letter-spacing: 0; font-size: 12px; }
   .chart-box .sub { font-size: 10.5px; color: #888; margin-bottom: 4px; }
-  .chart-wrap { position: relative; }
+  .chart-wrap { position: relative; flex: 1 1 auto; min-height: 0; }
   .chart-chips {
     position: absolute; top: 6%; right: 5%; display: flex; gap: 5px; z-index: 5;
   }
@@ -146,22 +148,23 @@
   }
   .shock-indicator.active { color: #993c1d; background: #fff4ec; }
   .run-controls { display: flex; gap: 6px; flex-wrap: wrap; }
-  .readout { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .readout { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; flex: 0 0 auto; }
   .stat {
     flex: 1 1 0; min-width: 88px;
     background: #f6f5f0; padding: 7px 9px; border-radius: 5px;
     border: 1px solid #ebe9e2;
+    white-space: nowrap;
   }
   .stat .label { color: #888; font-size: 10.5px; display: block; margin-bottom: 1px; }
   .stat .value { font-weight: 500; font-size: 13px; font-variant-numeric: tabular-nums; }
   .stat .delta { font-size: 10.5px; color: #666; margin-left: 4px; }
   .stat .delta.pos { color: #0f6e56; }
   .stat .delta.neg { color: #993c1d; }
-  svg { display: block; width: 100%; height: 200px; touch-action: none; }
+  svg { display: block; width: 100%; height: 100%; touch-action: none; }
   .axis-line { stroke: #888; stroke-width: 0.8; fill: none; }
   .axis-label { fill: #555; font-size: 10px; font-family: inherit; }
   .grid-line { stroke: #ebe9e2; stroke-width: 0.5; }
-  .curve { fill: none; stroke-width: 2.2; }
+  .curve { fill: none; stroke-width: 2.2; pointer-events: none; }
   .curve-is { stroke: #d85a30; }
   .curve-mp { stroke: #185fa5; }
   .curve-real { stroke: #185fa5; stroke-dasharray: 5 3; stroke-width: 1.4; opacity: 0.7; }
@@ -256,10 +259,16 @@
   }
   .theta-meter .tm-row { display: flex; justify-content: space-between; }
   .theta-meter .tm-warn { color: #c0392b; font-weight: 600; }
-  .tier-badge {
-    display: inline-block; background: #534ab7; color: white;
-    font-size: 10px; font-weight: 500; padding: 2px 8px;
-    border-radius: 10px; margin-left: 8px; vertical-align: middle;
+  .locked {
+    opacity: 0.25;
+    pointer-events: none;
+    filter: grayscale(100%);
+  }
+  @media (max-width: 850px) {
+    body { overflow-y: auto; }
+    .layout { display: flex; flex-direction: column; overflow-y: visible; }
+    #left-panel, #right-col { overflow-y: visible; height: auto; }
+    .charts { grid-template-columns: 1fr; grid-template-rows: none; height: auto; }
   }
 </style>
 </head>
@@ -268,6 +277,7 @@
 <div class="header">
   <h1>IS-MP-UIP-PC interactive model<span class="tier-badge">paid tier · open economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
   <div class="run-controls">
+    <button onclick="advanceTutorial()" id="btn-advance" class="primary">Unlock Next Block</button>
     <button onclick="reset()">↺ Reset</button>
     <button class="reverse" id="reverse-btn" onclick="reverseStep()" disabled>← Reverse</button>
     <button onclick="stepPeriod()">→ Step one period</button>
@@ -361,7 +371,7 @@
   <div id="right-col">
     <div class="panel charts">
 
-      <div class="chart-box">
+      <div class="chart-box" id="chart-box-ismp">
         <h3>IS-MP (goods market &amp; policy rate)</h3>
         <div class="sub">Solid blue = nominal MP. Dashed blue = real r = i − πᵉ. Drag IS for fiscal, MP for monetary.</div>
         <div class="chart-wrap">
@@ -377,7 +387,7 @@
         <div class="eq-box" id="box-eq-ismp"><div class="eq-toggle" onclick="toggleEq('box-eq-ismp')"><span class="eq-arrow">▶</span><span>Show the equations behind this chart</span></div><div class="eq-body" id="eq-ismp"></div></div>
       </div>
 
-      <div class="chart-box">
+      <div class="chart-box" id="chart-box-uip">
         <h3>UIP (interest rate &amp; exchange rate)</h3>
         <div class="sub">Solid green = UIP (nominal E). Gold dashed = real ε = E·P/P*. They diverge as home prices move relative to foreign.</div>
         <svg id="uip" viewBox="0 0 360 220"></svg>
@@ -389,7 +399,7 @@
         <div class="eq-box" id="box-eq-uip"><div class="eq-toggle" onclick="toggleEq('box-eq-uip')"><span class="eq-arrow">▶</span><span>Show the equations behind this chart</span></div><div class="eq-body" id="eq-uip"></div></div>
       </div>
 
-      <div class="chart-box">
+      <div class="chart-box" id="chart-box-pc">
         <h3>Phillips curve</h3>
         <div class="sub">Drag PC vertically to change πᵉ. Cost-push z lifts the whole curve.</div>
         <div class="chart-wrap">
@@ -405,7 +415,7 @@
 
       <div class="chart-box">
         <h3>Dynamics over time</h3>
-        <div class="sub">Y, i, π, P, ε, B/Y across periods. Watch ε (real exchange rate) appreciate after a shock, then revert as prices and the nominal rate adjust.</div>
+        <div class="sub">Y, i, π, P, ε, B/Y across periods.</div>
         <svg id="ts" viewBox="0 0 360 220"></svg>
         <div class="legend-row">
           <span><span class="legend-swatch" style="background:#1a1a1a"></span>Y</span>
@@ -426,6 +436,30 @@
 </div>
 
 <script>
+// -------------------------------------------------------------------------
+// Tutorial State & Machine
+// -------------------------------------------------------------------------
+const TUTORIAL_BLOCKS = ['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'];
+let tutorialState = {
+  unlocked: new Set(['GOODS'])
+};
+let renderTutorial = () => {}; // Replaced later with DOM-dependent function
+
+function unlockBlock(block) {
+  tutorialState.unlocked.add(block);
+  renderTutorial();
+}
+
+function setUnlocked(blocks) {
+  tutorialState.unlocked = new Set(blocks);
+  renderTutorial();
+}
+
+function resetTutorial() {
+  tutorialState.unlocked = new Set(['GOODS']);
+  renderTutorial();
+}
+
 // -------------------------------------------------------------------------
 // Constants
 // -------------------------------------------------------------------------
@@ -492,33 +526,33 @@ function isRateForOutput(Y, G, T, eps, pi_e) {
 // Parameter definitions
 // -------------------------------------------------------------------------
 const paramDefs = [
-  { key: 'G',        label: 'Govt spending G',         min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
-  { key: 'T',        label: 'Taxes T',                 min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
-  { key: 'i_target', label: 'Policy rate i (target)',  min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
-  { key: 'i_star',   label: 'Foreign rate i*',         min: 0,     max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
-  { key: 'E_e',      label: 'Expected ex. rate Eᵉ',    min: 0.7,   max: 1.3,  step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'pi_e',     label: 'Expected inflation πᵉ',   min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
-  { key: 'alpha',    label: 'PC slope α',              min: 0.05, max: 0.5,  step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'c1',       label: 'MPC (c₁)',                min: 0.30, max: 0.80, step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'm1',       label: 'Import prop. (m₁)',       min: 0.05, max: 0.60, step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'Ystar',    label: 'Foreign output Y*',       min: 80,   max: 120,  step: 1,      fmt: v => v.toFixed(0) },
-  { key: 'm_struct', label: 'Markup m', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Price-setting markup (shifts natural rate)' },
-  { key: 'z_struct', label: 'Wage push z', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Structural wage-push (shifts natural rate)' }
+  { key: 'G',        block: 'GOODS', label: 'Govt spending G',         min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
+  { key: 'T',        block: 'GOODS', label: 'Taxes T',                 min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
+  { key: 'i_target', block: 'ISLM',  label: 'Policy rate i (target)',  min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
+  { key: 'i_star',   block: 'UIP',   label: 'Foreign rate i*',         min: 0,     max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
+  { key: 'E_e',      block: 'UIP',   label: 'Expected ex. rate Eᵉ',    min: 0.7,   max: 1.3,  step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'pi_e',     block: 'ISLM',  label: 'Expected inflation πᵉ',   min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
+  { key: 'alpha',    block: 'PC',    label: 'PC slope α',              min: 0.05, max: 0.5,  step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'c1',       block: 'GOODS', label: 'MPC (c₁)',                min: 0.30, max: 0.80, step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'm1',       block: 'UIP',   label: 'Import prop. (m₁)',       min: 0.05, max: 0.60, step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'Ystar',    block: 'UIP',   label: 'Foreign output Y*',       min: 80,   max: 120,  step: 1,      fmt: v => v.toFixed(0) },
+  { key: 'm_struct', block: 'PC',    label: 'Markup m', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Price-setting markup (shifts natural rate)' },
+  { key: 'z_struct', block: 'PC',    label: 'Wage push z', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Structural wage-push (shifts natural rate)' }
 ];
 
 const shockDefs = [
-  { key: 'z',        label: 'Cost-push z (PC shift)',  min: -0.03, max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%' }
+  { key: 'z',        block: 'PC',    label: 'Cost-push z (PC shift)',  min: -0.03, max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%' }
 ];
 
 const dynamicsDefs = [
-  { key: 'theta',    label: 'Max anchoring θ (ceiling)',  min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2) },
-  { key: 'cred',     label: 'Current credibility',        min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2), meter: 'cred' },
-  { key: 'phi',      label: 'Taylor φ (response to π)',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
+  { key: 'theta',    block: 'PC', label: 'Max anchoring θ (ceiling)',  min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2) },
+  { key: 'cred',     block: 'PC', label: 'Current credibility',        min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2), meter: 'cred' },
+  { key: 'phi',      block: 'PC', label: 'Taylor φ (response to π)',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
 ];
 
 const debtDefs = [
-  { key: 'B', label: 'Initial govt debt d = B/Y (% of Y)', min: 0, max: 150, step: 1, fmt: v => v.toFixed(0) },
-  { key: 'g', label: 'Trend growth g (debt accounting)', min: -0.02, max: 0.06, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' }
+  { key: 'B', block: 'DEBT', label: 'Initial govt debt d = B/Y (% of Y)', min: 0, max: 150, step: 1, fmt: v => v.toFixed(0) },
+  { key: 'g', block: 'DEBT', label: 'Trend growth g (debt accounting)', min: -0.02, max: 0.06, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' }
 ];
 
 const initialState = {
@@ -533,7 +567,7 @@ const initialState = {
   Ystar: 100,
   m_struct: 0.05,
   z_struct: 0.10,
-  z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: []
+  z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, history: []
 };
 
 let state = clone(initialState);
@@ -627,6 +661,7 @@ function buildSliders(root, defs) {
   defs.forEach(p => {
     const wrap = document.createElement('div');
     wrap.className = 'control';
+    if (p.block) wrap.setAttribute('data-block', p.block);
     const editFmt = p.editFmt || (v => p.fmt(v).replace(/[^0-9.\-]/g, ''));
     const parse = p.parse || (v => v);
     const suffix = p.suffix ? `<span class="val-suffix">${p.suffix}</span>` : '';
@@ -887,6 +922,37 @@ HANDLES.is = (sx, sy) => {
 
 HANDLES.mp = (sx, sy) => {
   const o = opts_ismp; if (!o) return;
+
+  if (state.taylor_on) {
+    let msg = document.getElementById('taylor-drag-msg');
+    if (!msg) {
+      msg = document.createElement('div');
+      msg.id = 'taylor-drag-msg';
+      msg.style.position = 'absolute';
+      msg.style.top = '10px';
+      msg.style.left = '50%';
+      msg.style.transform = 'translateX(-50%)';
+      msg.style.background = '#1a1a1a';
+      msg.style.color = '#fff';
+      msg.style.padding = '6px 10px';
+      msg.style.borderRadius = '4px';
+      msg.style.fontSize = '11px';
+      msg.style.pointerEvents = 'none';
+      msg.style.zIndex = '100';
+      msg.style.whiteSpace = 'nowrap';
+      msg.textContent = 'Taylor rule is ON — rate is set by the rule. Turn it off to set manually.';
+      document.getElementById('chart-box-ismp').appendChild(msg);
+    }
+    msg.style.opacity = '1';
+    msg.style.transition = 'none';
+    if (window.taylorMsgTimeout) clearTimeout(window.taylorMsgTimeout);
+    window.taylorMsgTimeout = setTimeout(() => {
+      msg.style.transition = 'opacity 0.5s ease';
+      msg.style.opacity = '0';
+    }, 2000);
+    return;
+  }
+
   const new_i = clamp(yInverse(sy, o), -0.02, 0.30);
   state.i_target = Math.max(ZLB, new_i);
   if (!state.taylor_on) state.i = Math.max(ZLB, new_i);
@@ -903,48 +969,49 @@ function drawUIP() {
   const W = 360, H = 220, P = { l: 38, r: 16, t: 14, b: 28 };
   const o = opts_uip = {
     W, H, P,
-    xMin: -0.02, xMax: 0.15, yMin: 0.70, yMax: 1.30,
-    xLabel: 'interest rate i', yLabel: 'exchange rate E',
-    xTicks: [-0.02, 0, 0.03, 0.06, 0.09, 0.12, 0.15],
-    yTicks: [0.70, 0.85, 1.00, 1.15, 1.30],
-    xFmt: v => (v * 100).toFixed(0) + '%', yFmt: v => v.toFixed(2)
+    xMin: 0.70, xMax: 1.30, yMin: -0.02, yMax: 0.15,
+    xLabel: 'exchange rate E', yLabel: 'interest rate i',
+    xTicks: [0.70, 0.85, 1.00, 1.15, 1.30],
+    yTicks: [-0.02, 0, 0.03, 0.06, 0.09, 0.12, 0.15],
+    xFmt: v => v.toFixed(2), yFmt: v => (v * 100).toFixed(0) + '%'
   };
   drawAxes(svg, o);
   const eq = solve(state);
 
-  const ee_x = xScale(state.i_star, o);
-  el('line', { x1: ee_x, x2: ee_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-  el('text', { x: ee_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).textContent = 'i*';
+  const ee_y = yScale(state.i_star, o);
+  el('line', { x1: P.l, x2: W - P.r, y1: ee_y, y2: ee_y, class: 'curve-natural' }, svg);
+  el('text', { x: W - P.r - 10, y: ee_y - 4, class: 'axis-label', fill: '#666' }, svg).textContent = 'i*';
 
   const uipPts = [];
-  for (let i = o.xMin; i <= o.xMax; i += 0.005) {
-    uipPts.push([i, state.E_e * (1 + i) / (1 + state.i_star)]);
+  for (let i = o.yMin; i <= o.yMax; i += 0.005) {
+    uipPts.push([state.E_e * (1 + i) / (1 + state.i_star), i]);
   }
   drawLine(svg, uipPts, o, 'curve-uip');
 
   const epsPts = [];
-  for (let i = o.xMin; i <= o.xMax; i += 0.005) {
-    epsPts.push([i, state.P / (state.P_star || 1) * state.E_e * (1 + i) / (1 + state.i_star)]);
+  for (let i = o.yMin; i <= o.yMax; i += 0.005) {
+    epsPts.push([state.P / (state.P_star || 1) * state.E_e * (1 + i) / (1 + state.i_star), i]);
   }
   drawLine(svg, epsPts, o, 'curve-eps');
 
-  const uipEndE = state.E_e * (1 + o.xMax) / (1 + state.i_star);
-  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(uipEndE, o) - 5, o), class: 'curve-label label-uip' }, svg).textContent = 'UIP';
+  const uipEndE = state.E_e * (1 + o.yMax) / (1 + state.i_star);
+  el('text', { x: xScale(uipEndE, o) + 4, y: labelY(yScale(o.yMax, o) + 12, o), class: 'curve-label label-uip' }, svg).textContent = 'UIP';
 
-  el('circle', { cx: xScale(eq.i, o), cy: yScale(eq.E, o), r: 4.5, class: 'eq-point' }, svg);
+  el('circle', { cx: xScale(eq.E, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
 
-  const uipHandleE = state.E_e * 1.06 / (1 + state.i_star);
+  const handle_i = 0.06;
+  const uipHandleE = state.E_e * (1 + handle_i) / (1 + state.i_star);
   el('circle', {
-    cx: xScale(0.06, o),
-    cy: yScale(clamp(uipHandleE, o.yMin, o.yMax), o),
+    cx: xScale(clamp(uipHandleE, o.xMin, o.xMax), o),
+    cy: yScale(handle_i, o),
     class: 'handle', stroke: '#0f6e56', 'data-handle': 'uip'
   }, svg);
 }
 
 HANDLES.uip = (sx, sy) => {
   const o = opts_uip; if (!o) return;
-  const new_i = xInverse(sx, o);
-  const new_E = yInverse(sy, o);
+  const new_E = xInverse(sx, o);
+  const new_i = yInverse(sy, o);
   const new_E_e = new_E * (1 + state.i_star) / (1 + new_i);
   state.E_e = clamp(new_E_e, 0.7, 1.3);
   syncControls();
@@ -1081,10 +1148,10 @@ function drawReadout() {
   const gap = ((eq.Y - eq.Y_n) / eq.Y_n) * 100;
   const pb = state.T - state.G;
   const debt_ratio = (state.B / eq.Y_n) * 100;
-  const taylorStatus = state.taylor_on ? `Taylor ON φ=${state.phi.toFixed(1)}` : 'Taylor OFF';
   const stats = [
     { label: 'Output Y',     value: eq.Y.toFixed(2),                    delta: `gap ${gap >= 0 ? '+' : ''}${gap.toFixed(2)}%`, cls: Math.abs(gap) < 0.5 ? '' : (gap > 0 ? 'pos' : 'neg') },
-    { label: 'Nominal i',    value: (eq.i * 100).toFixed(2) + '%',      delta: eq.zlb_active ? 'ZLB binds' : taylorStatus, cls: '' },
+    { label: 'Nominal i',    value: (eq.i * 100).toFixed(2) + '%',      delta: eq.zlb_active ? 'ZLB binds' : 'i*', cls: '' },
+    { label: 'Policy rule',  value: state.taylor_on ? 'Taylor ON' : 'Taylor OFF', delta: state.taylor_on ? `φ=${state.phi.toFixed(1)}` : '', cls: '' },
     { label: 'Real r',       value: (eq.r * 100).toFixed(2) + '%',      delta: 'i−πᵉ',       cls: eq.r < 0 ? 'neg' : '' },
     { label: 'Inflation π',  value: (eq.pi * 100).toFixed(2) + '%',     delta: `πᵉ=${(state.pi_e * 100).toFixed(1)}%`, cls: '' },
     { label: 'Nominal E',    value: eq.E.toFixed(3),                    delta: `Eᵉ=${state.E_e.toFixed(2)}`, cls: '' },
@@ -1373,6 +1440,7 @@ function render() {
   updateShockIndicator();
   updateReverseButton();
   updateCredMeter(eq);
+  renderTutorial();
 }
 
 function updateReverseButton() {
@@ -1425,6 +1493,61 @@ function jumpLongRun() {
   }
   syncControls(); render();
 }
+
+function advanceTutorial() {
+  for (const b of TUTORIAL_BLOCKS) {
+    if (!tutorialState.unlocked.has(b)) {
+      unlockBlock(b);
+      break;
+    }
+  }
+}
+
+renderTutorial = function() {
+  const isUnlocked = b => tutorialState.unlocked.has(b);
+  
+  const setLocked = (selector, condition) => {
+    document.querySelectorAll(selector).forEach(el => {
+      if (condition) el.classList.remove('locked');
+      else el.classList.add('locked');
+    });
+  };
+
+  // UI button state
+  const btnAdv = document.getElementById('btn-advance');
+  if (btnAdv) {
+    if (tutorialState.unlocked.size >= TUTORIAL_BLOCKS.length) {
+      btnAdv.disabled = true;
+      btnAdv.textContent = 'All Blocks Unlocked';
+    } else {
+      btnAdv.disabled = false;
+      btnAdv.textContent = 'Unlock Next Block';
+    }
+  }
+
+  // Visual lock/grey/colour-in for each block
+  const goodsOn = isUnlocked('GOODS');
+  setLocked('.control[data-block="GOODS"]', goodsOn);
+  setLocked('.curve-is, .label-is, .handle[data-handle="is"]', goodsOn);
+
+  const islmOn = isUnlocked('ISLM');
+  setLocked('.control[data-block="ISLM"]', islmOn);
+  setLocked('.curve-mp, .curve-real, .label-mp, .handle[data-handle="mp"]', islmOn);
+
+  const uipOn = isUnlocked('UIP');
+  setLocked('.control[data-block="UIP"]', uipOn);
+  setLocked('#chart-box-uip', uipOn);
+
+  const pcOn = isUnlocked('PC');
+  setLocked('.control[data-block="PC"]', pcOn);
+  setLocked('#chart-box-pc', pcOn);
+  setLocked('#sec-dynamics .side-body', pcOn);
+  setLocked('#sec-shocks .side-body', pcOn);
+
+  const debtOn = isUnlocked('DEBT');
+  setLocked('.control[data-block="DEBT"]', debtOn);
+  setLocked('.debt-cue, #ts path[stroke="#0f6e56"], #ts circle[fill="#0f6e56"]', debtOn);
+};
 
 function reverseStep() {
   if (undoStack.length === 0) return;
