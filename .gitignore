@@ -16,3 +16,5 @@ eval_dump.js
 
 # Local tool config (machine-specific)
 .claude/
+
+eval_dump.js
