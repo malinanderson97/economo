@@ -1375,18 +1375,18 @@ function drawEquations(eq) {
       + `<span class="eq-sym">Y = C + I + G + NX</span></span>`
       + `<span class="eq-line"><span class="eq-lbl" style="color:${cC}">C</span>`
       + `<span class="eq-sym">c₀ + c₁(Y−T)</span> = `
-      + `<span class="eq-num">18 + 0.5(${f(eq.Y,1)}−${f(s.T,0)})</span> `
+      + `<span class="eq-num">${c0} + ${f(s.c1,2)}(${f(eq.Y,1)}−${f(s.T,0)})</span> `
       + `= <span class="eq-res" style="color:${cC}">${Cd}</span></span>`
       + `<span class="eq-line"><span class="eq-lbl" style="color:${cI}">I</span>`
-      + `<span class="eq-sym">b₀ − b₁·r</span> = `
-      + `<span class="eq-num">19 − 200(${f(r,4)})</span> `
+      + `<span class="eq-sym">d₀ + d₁·Y − d₁ᵣ·r</span> = `
+      + `<span class="eq-num">${d0} + ${f(d1,2)}(${f(eq.Y,1)}) − ${d1r}(${f(r,4)})</span> `
       + `= <span class="eq-res" style="color:${cI}">${Id}</span></span>`
       + `<span class="eq-line"><span class="eq-lbl" style="color:${cG}">G</span>`
       + `<span class="eq-sym">government spending</span> `
       + `= <span class="eq-res" style="color:${cG}">${Gd}</span></span>`
       + `<span class="eq-line"><span class="eq-lbl" style="color:${cNX}">NX</span>`
-      + `<span class="eq-sym">x₀ − x₁·ε</span> = `
-      + `<span class="eq-num">55 − 50(${f(eq.eps,3)})</span> `
+      + `<span class="eq-sym">x₁·Y* − m₁·Y − n₁·(ε−1)</span> = `
+      + `<span class="eq-num">${f(x1,2)}(${f(s.Ystar,0)}) − ${f(s.m1,2)}(${f(eq.Y,1)}) − ${n1}(${f(eq.eps,3)}−1)</span> `
       + `= <span class="eq-res" style="color:${cNX}">${NXd}</span></span>`
       + `<span class="eq-line eq-total"><span class="eq-lbl">Y</span>`
       + `<span class="eq-num">${Cd} + ${Id} + ${Gd} + ${NXd}</span> `
@@ -1405,7 +1405,7 @@ function drawEquations(eq) {
       + `= <span class="eq-res" style="color:${EQ_COL.UIP}">${f(eq.E,3)}</span></span>`
       + `<span class="eq-line"><span class="eq-lbl">ε</span>`
       + `<span class="eq-sym">E·P/P*</span> = `
-      + `${eqColor(f(eq.E,3),EQ_COL.UIP)}·${eqColor(f(s.P,3),EQ_COL.P)}/${f(s.P_star || 1,3)} `
+      + `<span class="eq-num">${eqColor(f(eq.E,3),EQ_COL.UIP)}·${eqColor(f(s.P,3),EQ_COL.P)}/${f(s.P_star || 1,3)}</span> `
       + `= <span class="eq-res" style="color:${EQ_COL.eps}">${f(eq.eps,3)}</span></span>`;
   }
 
@@ -1431,18 +1431,19 @@ function drawEquations(eq) {
     tsEl.innerHTML =
       `<span class="eq-line"><span class="eq-lbl">Fisher</span>`
       + `<span class="eq-sym">r = i − πᵉ</span> = `
-      + `${eqColor(fpc(eq.i,2),EQ_COL.i)} − ${eqColor(fpc(s.pi_e,1),EQ_COL.pi)} `
+      + `<span class="eq-num">${eqColor(fpc(eq.i,2),EQ_COL.i)} − ${eqColor(fpc(s.pi_e,1),EQ_COL.pi)}</span> `
       + `= <span class="eq-res">${fpc(r,2)}</span></span>`
       + `<span class="eq-line"><span class="eq-lbl">P′</span>`
       + `<span class="eq-sym">P(1 + π·speed)</span> = `
-      + `${eqColor(f(s.P,3),EQ_COL.P)}(1 + ${eqColor(fpc(eq.pi,1),EQ_COL.pi)}·${f(s.speed,2)}) `
+      + `<span class="eq-num">${eqColor(f(s.P,3),EQ_COL.P)}(1 + ${eqColor(fpc(eq.pi,1),EQ_COL.pi)}·${f(s.speed,2)})</span> `
       + `= <span class="eq-res" style="color:${EQ_COL.P}">${f(s.P*(1+eq.pi*s.speed),3)}</span></span>`
       + `<span class="eq-line"><span class="eq-lbl">P*′</span>`
       + `<span class="eq-sym">P*(1 + π*·speed)</span> = `
-      + `${f(s.P_star || 1,3)}(1 + ${fpc(PI_TARGET,1)}·${f(s.speed,2)}) `
+      + `<span class="eq-num">${f(s.P_star || 1,3)}(1 + ${fpc(PI_TARGET,1)}·${f(s.speed,2)})</span> `
       + `= <span class="eq-res">${f((s.P_star || 1)*(1+PI_TARGET*s.speed),3)}</span> (foreign)</span>`
       + `<span class="eq-line"><span class="eq-lbl">Eᵉ′</span>`
-      + `<span class="eq-sym">(1−0.4·sp)Eᵉ + 0.4·sp·E</span> `
+      + `<span class="eq-sym">(1−0.4·sp)Eᵉ + 0.4·sp·E</span> = `
+      + `<span class="eq-num">(1−0.4·${f(s.speed,2)})(${f(s.E_e,3)}) + 0.4·${f(s.speed,2)}(${f(eq.E,3)})</span> `
       + `= <span class="eq-res" style="color:${EQ_COL.UIP}">${f(E_e_next,3)}</span> (adaptive)</span>`;
   }
 }

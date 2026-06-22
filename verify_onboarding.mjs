@@ -178,11 +178,15 @@ try {
 // Inject special mock elements for chips
 const specialEls = {
   'ismp-chips': fakeEl(),
-  'pc-chips': fakeEl()
+  'pc-chips': fakeEl(),
+  'eq-ismp': fakeEl(),
+  'eq-uip': fakeEl(),
+  'eq-pc': fakeEl(),
+  'eq-ts': fakeEl()
 };
 const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, state, specialEls };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, specialEls };')(mockElements, specialEls);
 
 testRender.setUnlocked(['GOODS', 'ISLM']);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -309,6 +313,98 @@ check('Chip gating: expectations chips and ZLB render when blocks unlocked',
   testRender.specialEls['pc-chips'].innerHTML.includes('exp') &&
   testRender.specialEls['pc-chips'].innerHTML.includes('target')
 );
+
+// NEW: Equation Reconciliation Checks
+function testReconciliation(stateOverrides, desc) {
+  const cleanState = { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 };
+  Object.assign(testRender.state, cleanState, stateOverrides);
+  const eq = testRender.solve(testRender.state);
+  testRender.drawEquations(eq);
+  
+  let ok = true;
+  const boxes = ['eq-ismp', 'eq-uip', 'eq-pc', 'eq-ts'];
+  const numRegex = /<span class="eq-num">(.*?)<\/span>\s*=\s*<span class="eq-res"[^>]*>(.*?)<\/span>/g;
+  const lblRegex = /<span class="eq-lbl"[^>]*>(.*?)<\/span>.*?<span class="eq-res"[^>]*>(.*?)<\/span>/g;
+  
+  boxes.forEach(boxId => {
+    const html = testRender.specialEls[boxId].innerHTML;
+    if (!html) return;
+    
+    // 1. Evaluate arithmetic expressions
+    let match;
+    while ((match = numRegex.exec(html)) !== null) {
+      const numStr = match[1];
+      const resStr = match[2];
+      
+      let s = numStr.replace(/<[^>]+>/g, '').replace(/−/g, '-').replace(/·/g, '*');
+      s = s.replace(/(-?\d+\.?\d*)%/g, '($1/100)');
+      s = s.replace(/(\d)\(/g, '$1*(').replace(/\)([\d\.\-])/g, ')*$1').replace(/\)\(/g, ')*(');
+      
+      let val = NaN;
+      try { val = eval(s); } catch(e) {}
+      
+      let resVal = parseFloat(resStr.replace(/−/g, '-').replace(/%/, ''));
+      if (resStr.includes('%')) resVal /= 100;
+
+      if (Math.abs(val - resVal) > 0.05) {
+        console.log(`  FAIL [${desc}] ${boxId}: ${numStr} -> ${s} evaluates to ${val}, but result shows ${resVal}`);
+        ok = false;
+      }
+    }
+    
+    // 2. Engine term matching
+    while ((match = lblRegex.exec(html)) !== null) {
+      const lbl = match[1].replace(/<[^>]+>/g, '').trim();
+      const resStr = match[2].replace(/<[^>]+>/g, '').replace(/−/g, '-').trim();
+      let resVal = parseFloat(resStr.replace(/%/, ''));
+      if (resStr.includes('%')) resVal /= 100;
+      
+      let engineVal = null;
+      if (lbl === 'C') engineVal = 20 + testRender.state.c1 * (eq.Y - testRender.state.T);
+      else if (lbl === 'I') engineVal = 12 + 0.10 * eq.Y - 200 * eq.r;
+      else if (lbl === 'G') engineVal = testRender.state.G;
+      else if (lbl === 'NX') engineVal = 0.30 * testRender.state.Ystar - testRender.state.m1 * eq.Y - 70 * (eq.eps - 1);
+      else if (lbl === 'Y') engineVal = (20 + testRender.state.c1 * (eq.Y - testRender.state.T)) + (12 + 0.10 * eq.Y - 200 * eq.r) + testRender.state.G + (0.30 * testRender.state.Ystar - testRender.state.m1 * eq.Y - 70 * (eq.eps - 1));
+      
+      if (engineVal !== null && Math.abs(engineVal - resVal) > 0.015) {
+         console.log(`  FAIL [${desc}] ${lbl} engine value ${engineVal} != displayed ${resVal}`);
+         ok = false;
+      }
+    }
+  });
+  return ok;
+}
+
+check('Eq Reconciliation: Baseline', testReconciliation({ G: 20, c1: 0.5, m1: 0.3, i: 0.03, taylor_on: true }, 'baseline'));
+check('Eq Reconciliation: +ΔG (Taylor off)', testReconciliation({ G: 22, taylor_on: false }, '+ΔG'));
+check('Eq Reconciliation: changed c1', testReconciliation({ c1: 0.6 }, 'c1=0.6'));
+check('Eq Reconciliation: changed m1', testReconciliation({ m1: 0.4 }, 'm1=0.4'));
+check('Eq Reconciliation: changed i', testReconciliation({ i: 0.05 }, 'i=0.05'));
+
+// BAD-fixture: hardcoded coefficient
+testRender.state = Object.assign({ G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 }, { c1: 0.8 });
+const badEq = testRender.solve(testRender.state);
+testRender.specialEls['eq-ismp'].innerHTML = '<span class="eq-line"><span class="eq-lbl">C</span><span class="eq-sym">c₀ + c₁(Y−T)</span> = <span class="eq-num">20 + 0.5(100−20)</span> = <span class="eq-res">60</span></span>';
+
+// Extract the logic to check HTML directly
+let badOk = true;
+const badHtml = testRender.specialEls['eq-ismp'].innerHTML;
+const badLblRegex = /<span class="eq-lbl"[^>]*>(.*?)<\/span>.*?<span class="eq-res"[^>]*>(.*?)<\/span>/g;
+let badMatch;
+while ((badMatch = badLblRegex.exec(badHtml)) !== null) {
+  const lbl = badMatch[1].replace(/<[^>]+>/g, '').trim();
+  const resStr = badMatch[2].replace(/<[^>]+>/g, '').replace(/−/g, '-').trim();
+  let resVal = parseFloat(resStr.replace(/%/, ''));
+  if (resStr.includes('%')) resVal /= 100;
+  
+  let engineVal = null;
+  if (lbl === 'C') engineVal = 20 + testRender.state.c1 * (badEq.Y - testRender.state.T);
+  
+  if (engineVal !== null && Math.abs(engineVal - resVal) > 0.05) {
+     badOk = false;
+  }
+}
+check('BAD-fixture: hardcoded coefficient caught', !badOk);
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);
