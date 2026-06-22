@@ -59,11 +59,22 @@ these get their own checks *and* your eyes.
 
 13. `cd` to the repo first (PowerShell opens in system32). Chain with `;` not `&&`. Use
     `Copy-Item -Force` (not `copy /y`) and `fc.exe` (not `fc`). **Never `Set-Content` the
-    model HTML** (mirrors `CLAUDE.md` rule 3 — it destroys the Unicode). `git add -A ; git
-    commit` after each green step; `git restore .` to undo bad uncommitted changes.
+    model HTML** (mirrors `CLAUDE.md` rule 3 — it destroys the Unicode). See rule 15 for git.
 
 ## Specs
 
 14. Implement to the **mechanism the spec prescribes**, not just its described behaviour —
     behavioural-only specs got misimplemented (the layout saga). If a spec is only
     behavioural and the mechanism is unclear, ask rather than guess.
+
+## Git — the human commits, never the agent
+
+15. **Run NO git commands. Ever.** No `commit`, no `add`, no `restore`, no `reset`
+    (especially not `reset --hard`), no `checkout`, no `stash`, no `clean` — nothing that
+    stages, commits, or rewrites history or the working tree. Make file edits only. After a
+    change, report what changed and paste the verifier output, then STOP. The human runs the
+    verifiers and commits. This is deliberate: verifier-green is the gate, and the commit is
+    the human's act of confirming the gate passed — not the agent asserting its own work is
+    good. An agent committing or restoring its own changes bypasses the gate. If you think a
+    commit is warranted, suggest the message; do not run it. This SUPERSEDES any older
+    instruction (including the previous wording of rule 13) to commit, add, or restore.
