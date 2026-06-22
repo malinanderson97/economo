@@ -398,6 +398,24 @@ check('Eq Reconciliation: changed c1', testReconciliation({ c1: 0.6 }, 'c1=0.6')
 check('Eq Reconciliation: changed m1', testReconciliation({ m1: 0.4 }, 'm1=0.4'));
 check('Eq Reconciliation: changed i', testReconciliation({ i: 0.05 }, 'i=0.05'));
 
+function testReconciliationPCLocked(stateOverrides, desc) {
+  testRender.setUnlocked(['GOODS', 'ISLM', 'UIP']);
+  const ok1 = testReconciliation(stateOverrides, desc);
+  const eq = testRender.solve(testRender.state);
+  let ok2 = true;
+  if (Math.abs(eq.r - testRender.state.i) > 1e-9) {
+    console.log(`  FAIL [${desc}] r (${eq.r}) !== i (${testRender.state.i})`);
+    ok2 = false;
+  }
+  testRender.setUnlocked(['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT']);
+  return ok1 && ok2;
+}
+
+// PC locked: components must still reconcile to engine Y, with r = i (not i − πᵉ).
+// (Run with the onboarding tutorialState set so PC is locked.)
+check('Eq Reconciliation: PC-locked nominal rate',
+      testReconciliationPCLocked({ i: 0.04, pi_e: 0.10 }, 'PC-locked, big πᵉ'));
+
 // BAD-fixture: hardcoded coefficient
 testRender.state = Object.assign({ G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 }, { c1: 0.8 });
 const badEq = testRender.solve(testRender.state);

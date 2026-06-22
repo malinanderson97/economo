@@ -33,12 +33,12 @@ let api;
 try {
 fs.writeFileSync('eval_dump.js', stub + scripts);
   api = new Function(stub + scripts +
-    '\nreturn {solve,step,clone,initialState,effectiveTheta,nextCredibility,SCENARIOS,PI_TARGET,IS_R_BASE,isOutput,isRateForOutput};')();
+    '\nreturn {solve,step,clone,initialState,effectiveTheta,nextCredibility,SCENARIOS,PI_TARGET,IS_R_BASE,isOutput,isRateForOutput,effectivePiE,setUnlocked};')();
 } catch (e) {
   console.error('FAILED TO LOAD ENGINE:', e.stack);
   process.exit(1);
 }
-const { solve, step, clone, initialState, effectiveTheta, nextCredibility, SCENARIOS, PI_TARGET, IS_R_BASE, isOutput, isRateForOutput } = api;
+const { solve, step, clone, initialState, effectiveTheta, nextCredibility, SCENARIOS, PI_TARGET, IS_R_BASE, isOutput, isRateForOutput, effectivePiE, setUnlocked } = api;
 
 // ---- Tiny test harness -----------------------------------------------------
 let passed = 0, failed = 0;
@@ -61,6 +61,7 @@ function preset(id) {
 }
 
 console.log('Verifying islm_pc_model_v19 (open economy) …\n');
+setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
 
 // 1. Baseline equilibrium: at i = I_NEUTRAL with πᵉ on target, Y must equal 100.
 {
@@ -299,7 +300,40 @@ console.log('Verifying islm_pc_model_v19 (open economy) …\n');
   const staleYm = staleIsOutput(20, 20, 0.01, 1, 0.5, 0.40, 100);
   check('15 SELF-TEST analyzer BAD fixture fails', !(staleYm < staleY0 - 0.01));
 }
+// ---- 16. πᵉ gating -----------------------------------------------------------
+{
+  // PC LOCKED: r = i, so moving πᵉ must not move Y.
+  setUnlocked(['GOODS','ISLM','UIP']);            // PC NOT in the set
+  const sA = clone(initialState); sA.pi_e = 0.02;
+  const sB = clone(initialState); sB.pi_e = 0.10; // large πᵉ change
+  const Ya = solve(sA).Y, Yb = solve(sB).Y;
+  check('16 PC-locked: Y invariant to πᵉ', approx(Ya, Yb, 1e-9),
+        `Y(πᵉ=2%)=${Ya.toFixed(4)} Y(πᵉ=10%)=${Yb.toFixed(4)}`);
+  check('16 PC-locked: r = i (no Fisher)', approx(solve(sB).r, sB.i, 1e-9),
+        `r=${solve(sB).r.toFixed(4)} i=${sB.i.toFixed(4)}`);
 
+  // PC UNLOCKED: r = i − πᵉ, so a higher πᵉ lowers r, raising Y.
+  setUnlocked(['GOODS','ISLM','UIP','PC']);
+  const Yc = solve(sB).Y;                          // same sB, now PC unlocked
+  check('16 PC-unlocked: higher πᵉ raises Y (real-rate channel live)', Yc > Ya + 0.5,
+        `Y(πᵉ=10%, PC on)=${Yc.toFixed(4)} vs locked baseline ${Ya.toFixed(4)}`);
+  check('16 PC-unlocked: r = i − πᵉ', approx(solve(sB).r, sB.i - sB.pi_e, 1e-9),
+        `r=${solve(sB).r.toFixed(4)}`);
+
+  // SELF-TEST: check it fails against un-gated logic
+  const ungatedSolve = (s) => {
+    const i = Math.max(-0.005, s.i);
+    const r = i - s.pi_e;
+    const Y = isOutput(s.G, s.T, r, 1.0, s.c1, s.m1, s.Ystar);
+    return { Y, r };
+  };
+  const ya_ungated = ungatedSolve(sA).Y;
+  const yb_ungated = ungatedSolve(sB).Y;
+  check('16 SELF-TEST analyzer BAD fixture fails', !approx(ya_ungated, yb_ungated, 1e-9));
+
+  // restore default tutorial state for any later assertions
+  setUnlocked(['GOODS','ISLM','UIP','PC']);
+}
 // ---- Summary ---------------------------------------------------------------
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);

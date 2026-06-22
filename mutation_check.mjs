@@ -76,15 +76,10 @@ const MODELS = [
     name: 'v19 (open)',
     file: 'islm_pc_model_v19_Open_Economy_Complete_Demo.html',
     verifier: 'verify_v19.mjs',
-    // NOTE: v19's verifier is largely insensitive to the d1/d1r/c1/m1 parameter
-    // VALUES, because the baseline equilibrium is calibrated to Y=100 regardless
-    // of them — so a wrong multiplier slips past the baseline checks. The checks
-    // that ARE value-sensitive are the behavioural ones: the UIP identity (tol
-    // 0.001) and twin-deficits sign. We sabotage those. (See the comment block
-    // below "KNOWN GAP" — the parameter-value insensitivity is a real weakness in
-    // verify_v19.mjs worth closing on the engine side.)
-    // [UPDATE 22 Jun: verify_v19.mjs #15 now tests the multiplier directly,
-    //  so these mutations are caught.]
+    // NOTE: v19's verifier used to be insensitive to d1/d1r/c1/m1 parameters
+    // because the baseline equilibrium calibrated to Y=100 regardless. 
+    // [UPDATE 22 Jun: verify_v19.mjs #15 now tests the open multiplier directly,
+    //  so these mutations are caught. Gap closed.]
     mutations: [
       { label: 'break UIP relation (1+i → 1−i)',
         from: 'const E = s.E_e * (1 + i) / (1 + s.i_star);',
