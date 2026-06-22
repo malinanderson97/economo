@@ -891,7 +891,7 @@ function drawISMP() {
 
   const isPts = [];
   for (let Y = o.xMin; Y <= o.xMax; Y += 1) {
-    isPts.push([Y, isRateForOutput(Y, state.G, state.T, eq.eps, state.pi_e)]);
+    isPts.push([Y, isRateForOutput(Y, state.G, state.T, eq.eps, state.pi_e, state.c1, state.m1, state.Ystar)]);
   }
   drawLine(svg, isPts, o, 'curve-is');
 
@@ -900,7 +900,7 @@ function drawISMP() {
   el('line', { x1: P.l, x2: W - P.r, y1: yScale(mp_i, o), y2: yScale(mp_i, o), class: 'curve curve-mp' }, svg);
   el('line', { x1: P.l, x2: W - P.r, y1: yScale(real_i, o), y2: yScale(real_i, o), class: 'curve curve-real' }, svg);
 
-  const isEndVal = isRateForOutput(o.xMax, state.G, state.T, eq.eps, state.pi_e);
+  const isEndVal = isRateForOutput(o.xMax, state.G, state.T, eq.eps, state.pi_e, state.c1, state.m1, state.Ystar);
   el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(isEndVal, o) + 12, o), class: 'curve-label label-is' }, svg).textContent = 'IS';
 
   el('text', { x: P.l + 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp' }, svg).textContent = 'MP';
@@ -908,7 +908,7 @@ function drawISMP() {
   el('circle', { cx: xScale(eq.Y, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
 
   const isHandleY = 90;
-  const isHandle_i = isRateForOutput(isHandleY, state.G, state.T, eq.eps, state.pi_e);
+  const isHandle_i = isRateForOutput(isHandleY, state.G, state.T, eq.eps, state.pi_e, state.c1, state.m1, state.Ystar);
   el('circle', {
     cx: xScale(isHandleY, o),
     cy: yScale(clamp(isHandle_i, o.yMin, o.yMax), o),
