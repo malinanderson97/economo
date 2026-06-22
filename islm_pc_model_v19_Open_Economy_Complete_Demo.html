@@ -450,7 +450,7 @@ let renderTutorial = () => {}; // Replaced later with DOM-dependent function
 
 function unlockBlock(block) {
   tutorialState.unlocked.add(block);
-  renderTutorial();
+  render();
 }
 
 function setUnlocked(blocks) {
@@ -1372,7 +1372,22 @@ function drawEquations(eq) {
     const NX = x1 * s.Ystar - s.m1 * eq.Y - n1 * (eq.eps - 1);
     const cC = '#d85a30', cI = '#185fa5', cG = '#0f6e56', cNX = '#b88a45';
     const Cd = f(C,2), Id = f(I,2), Gd = f(G,2), NXd = f(NX,2);
-    const totalShown = (Number(Cd) + Number(Id) + Number(Gd) + Number(NXd)).toFixed(2);
+    
+    const hasUIP = tutorialState.unlocked.has('UIP');
+    const hasPC = tutorialState.unlocked.has('PC');
+    const rateSym = hasPC ? 'r' : 'i';
+    const totalShown = hasUIP 
+      ? (Number(Cd) + Number(Id) + Number(Gd) + Number(NXd)).toFixed(2)
+      : (Number(Cd) + Number(Id) + Number(Gd)).toFixed(2);
+    const anchorSym = hasUIP ? 'Y = C + I + G + NX' : 'Y = C + I + G';
+    const nxLine = hasUIP ?
+        `<span class="eq-line"><span class="eq-lbl" style="color:${cNX}">NX</span>`
+      + `<span class="eq-sym">x₁·Y* − m₁·Y − n₁·(ε−1)</span> = `
+      + `<span class="eq-num">${f(x1,2)}(${f(s.Ystar,0)}) − ${f(s.m1,2)}(${f(eq.Y,1)}) − ${n1}(${f(eq.eps,3)}−1)</span> `
+      + `= <span class="eq-res" style="color:${cNX}">${NXd}</span></span>`
+      : '';
+    const totalAddends = hasUIP ? `${Cd} + ${Id} + ${Gd} + ${NXd}` : `${Cd} + ${Id} + ${Gd}`;
+
     let mpLine;
     if (s.taylor_on) {
       const gap = (eq.Y - eq.Y_n) / eq.Y_n;
@@ -1391,24 +1406,21 @@ function drawEquations(eq) {
     }
     ismpEl.innerHTML =
       `<span class="eq-line eq-anchor"><span class="eq-lbl"></span>`
-      + `<span class="eq-sym">Y = C + I + G + NX</span></span>`
+      + `<span class="eq-sym">${anchorSym}</span></span>`
       + `<span class="eq-line"><span class="eq-lbl" style="color:${cC}">C</span>`
       + `<span class="eq-sym">c₀ + c₁(Y−T)</span> = `
       + `<span class="eq-num">${c0} + ${f(s.c1,2)}(${f(eq.Y,1)}−${f(s.T,0)})</span> `
       + `= <span class="eq-res" style="color:${cC}">${Cd}</span></span>`
       + `<span class="eq-line"><span class="eq-lbl" style="color:${cI}">I</span>`
-      + `<span class="eq-sym">d₀ + d₁·Y − d₁ᵣ·r</span> = `
+      + `<span class="eq-sym">d₀ + d₁·Y − d₁ᵣ·${rateSym}</span> = `
       + `<span class="eq-num">${d0} + ${f(d1,2)}(${f(eq.Y,1)}) − ${d1r}(${f(r,4)})</span> `
       + `= <span class="eq-res" style="color:${cI}">${Id}</span></span>`
       + `<span class="eq-line"><span class="eq-lbl" style="color:${cG}">G</span>`
       + `<span class="eq-sym">government spending</span> `
       + `= <span class="eq-res" style="color:${cG}">${Gd}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl" style="color:${cNX}">NX</span>`
-      + `<span class="eq-sym">x₁·Y* − m₁·Y − n₁·(ε−1)</span> = `
-      + `<span class="eq-num">${f(x1,2)}(${f(s.Ystar,0)}) − ${f(s.m1,2)}(${f(eq.Y,1)}) − ${n1}(${f(eq.eps,3)}−1)</span> `
-      + `= <span class="eq-res" style="color:${cNX}">${NXd}</span></span>`
+      + nxLine
       + `<span class="eq-line eq-total"><span class="eq-lbl">Y</span>`
-      + `<span class="eq-num">${Cd} + ${Id} + ${Gd} + ${NXd}</span> `
+      + `<span class="eq-num">${totalAddends}</span> `
       + `= <span class="eq-res">${totalShown}</span></span>`
       + mpLine;
   }
@@ -1829,11 +1841,18 @@ if (typeof requestAnimationFrame !== 'undefined') {
   const kC = 1/(1 - 0.5 - 0.1), kO = 1/(1 - 0.5 - 0.1 + 0.30);
   assert('k_o < k_closed for m1>0', kO < kC);
 
+  // Taylor convergence is a PC-regime (medium-run) property — the Taylor rule
+  // and time-controls are gated to PC in the UI, so test it in that regime.
+  const _savedUnlocked = tutorialState.unlocked;
+  tutorialState.unlocked = new Set(['GOODS','ISLM','UIP','PC']);
+
   let s = JSON.parse(JSON.stringify(initialState));
   s.taylor_on = true; s.G = 21;
   const Yn0 = computeYn(s);
   for (let t = 0; t < 60; t++) s = step(s);
   assert('Taylor convergence (60 periods)', Math.abs(solve(s).Y - Yn0) < 0.1);
+
+  tutorialState.unlocked = _savedUnlocked;
 
   const lo = computeYn({ m_struct: 0.05, z_struct: 0.10 });
   const hi = computeYn({ m_struct: 0.10, z_struct: 0.10 });

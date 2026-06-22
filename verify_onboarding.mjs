@@ -20,7 +20,7 @@ const headlessCode = scripts.slice(0, domStart);
 let api;
 try {
   // We use Function to evaluate the sliced script, which gives us access to the tutorial state machine.
-  api = new Function(headlessCode + '\nreturn { tutorialState, unlockBlock, setUnlocked, resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs };')();
+  api = new Function(headlessCode + '\nfunction render() {}\nreturn { tutorialState, unlockBlock, setUnlocked, resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs };')();
 } catch (e) {
   console.error('FAILED TO IMPORT HEADLESS:', e.message);
   process.exit(1);
