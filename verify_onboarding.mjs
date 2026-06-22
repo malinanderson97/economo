@@ -175,7 +175,14 @@ try {
 
 // Wait, the spec says: "Assert there is no block that is unlocked-but-greyed or locked-but-lit."
 // Let's test the \`renderTutorial\` directly using the DOM stub.
-const testRender = new Function('mockElements', stub + scripts + '\nreturn { setUnlocked, mockElements, renderTutorial };')(mockElements);
+// Inject special mock elements for chips
+const specialEls = {
+  'ismp-chips': fakeEl(),
+  'pc-chips': fakeEl()
+};
+const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
+
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, state, specialEls };')(mockElements, specialEls);
 
 testRender.setUnlocked(['GOODS', 'ISLM']);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -267,7 +274,41 @@ check('UIP Orientation: eq-point uses E for cx and i for cy', !!uipEqMatch, 'eq-
 // NEW: Layout Assertion
 const readoutIdx = html.indexOf('id="readout"');
 const chartsIdx = html.indexOf('class="panel charts"');
-check('Layout: #readout precedes .panel charts in DOM', readoutIdx !== -1 && chartsIdx !== -1 && readoutIdx < chartsIdx, 'readout must be above charts');
+check('Layout: #readout follows .panel charts in DOM', readoutIdx !== -1 && chartsIdx !== -1 && readoutIdx > chartsIdx, 'readout must be below charts');
+
+// NEW: Warn Chip Gating Assertions
+testRender.setUnlocked(['GOODS']); // ISLM locked
+testRender.drawISChips({ zlb_active: true, pi: 0.02, Y: 100, Y_n: 100 });
+check('Chip gating: ZLB chip does not render when ISLM is locked', !testRender.specialEls['ismp-chips'].innerHTML.includes('zlb'));
+
+testRender.setUnlocked(['GOODS', 'ISLM', 'UIP']); // PC locked
+testRender.state.taylor_on = false; testRender.state.theta = 0; // Wicksell
+testRender.state.deanchor_on = false; // anchor
+testRender.state.pi_e = 0.1; // exp
+testRender.state.z_pulse = 0; // target
+const eqDummy = { zlb_active: false, pi: 0.1, Y: 100, Y_n: 100 };
+testRender.drawISChips(eqDummy);
+check('Chip gating: wicksell does not render when PC is locked', !testRender.specialEls['ismp-chips'].innerHTML.includes('wicksell'));
+check('Chip gating: anchor does not render when PC is locked', !testRender.specialEls['ismp-chips'].innerHTML.includes('anchor'));
+
+testRender.drawPCChips(eqDummy);
+check('Chip gating: exp does not render when PC is locked', !testRender.specialEls['pc-chips'].innerHTML.includes('exp'));
+check('Chip gating: target does not render when PC is locked', !testRender.specialEls['pc-chips'].innerHTML.includes('target'));
+
+// BAD-fixture: expectations chip rendered while PC locked
+const badChipHtml = testRender.specialEls['pc-chips'].innerHTML + '<div class="warn-chip exp">⚠</div>';
+check('BAD-fixture: expectations chip rendered while PC locked caught', badChipHtml.includes('exp') === true);
+
+testRender.setUnlocked(['GOODS', 'ISLM', 'UIP', 'PC']);
+testRender.drawISChips({ zlb_active: true, pi: 0.1, Y: 100, Y_n: 100 });
+testRender.drawPCChips(eqDummy);
+check('Chip gating: expectations chips and ZLB render when blocks unlocked', 
+  testRender.specialEls['ismp-chips'].innerHTML.includes('zlb') &&
+  testRender.specialEls['ismp-chips'].innerHTML.includes('wicksell') &&
+  testRender.specialEls['ismp-chips'].innerHTML.includes('anchor') &&
+  testRender.specialEls['pc-chips'].innerHTML.includes('exp') &&
+  testRender.specialEls['pc-chips'].innerHTML.includes('target')
+);
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);

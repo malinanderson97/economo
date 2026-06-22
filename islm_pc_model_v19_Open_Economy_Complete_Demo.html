@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>IS-MP-UIP-PC Interactive Model (open economy)</title>
+<title>ISLM-UIP-PC Interactive Model (open economy)</title>
 <style>
   * { box-sizing: border-box; }
   html, body { height: 100%; }
@@ -279,7 +279,7 @@
 <body>
 
 <div class="header">
-  <h1>IS-MP-UIP-PC interactive model<span class="tier-badge">paid tier · open economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
+  <h1>ISLM-UIP-PC interactive model<span class="tier-badge">paid tier &middot; open economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
   <div class="run-controls">
     <button onclick="advanceTutorial()" id="btn-advance" class="primary">Unlock Next Block</button>
     <button onclick="reset()">↺ Reset</button>
@@ -373,19 +373,18 @@
   </div>
 
   <div id="right-col">
-    <div class="readout" id="readout"></div>
     <div class="panel charts">
 
       <div class="chart-box" id="chart-box-ismp">
-        <h3>IS-MP (goods market &amp; policy rate)</h3>
-        <div class="sub">Solid blue = nominal MP. Dashed blue = real r = i − πᵉ. Drag IS for fiscal, MP for monetary.</div>
+        <h3>ISLM (goods market &amp; policy rate)</h3>
+        <div class="sub">Solid blue = nominal LM. Dashed blue = real r = i − πᵉ. Drag IS for fiscal, LM for monetary.</div>
         <div class="chart-wrap">
           <svg id="ismp" viewBox="0 0 360 220"></svg>
           <div class="chart-chips" id="ismp-chips"></div>
         </div>
         <div class="legend-row">
           <span><span class="legend-swatch" style="background:#d85a30"></span>IS: Y = f(G,T,r,ε)</span>
-          <span><span class="legend-swatch" style="background:#185fa5"></span>MP: i (nominal)</span>
+          <span><span class="legend-swatch" style="background:#185fa5"></span>LM: i (nominal)</span>
           <span><span class="legend-swatch" style="background:transparent;border-top:1.5px dashed #185fa5;height:0"></span>real r</span>
           <span>Yₙ <span style="display:inline-block;width:18px;border-top:1px dashed #999;vertical-align:middle"></span></span>
         </div>
@@ -434,6 +433,7 @@
       </div>
 
     </div>
+    <div class="readout" id="readout"></div>
   </div>
 
 </div>
@@ -1211,7 +1211,7 @@ function drawISChips(eq) {
   if (!host) return;
   const chips = [];
 
-  if (eq.zlb_active) {
+  if (eq.zlb_active && tutorialState.unlocked.has('ISLM')) {
     chips.push({
       cls: 'zlb',
       msg: `Nominal interest rate is at the −0.5% floor (zero lower bound). `
@@ -1221,7 +1221,7 @@ function drawISChips(eq) {
 
   // Wicksellian instability: fixed nominal rate + weakly anchored adaptive
   // expectations is a repelling equilibrium.
-  if (!state.taylor_on && state.theta < 0.65) {
+  if (!state.taylor_on && state.theta < 0.65 && tutorialState.unlocked.has('PC')) {
     chips.push({
       cls: 'wicksell',
       msg: `Weak anchoring (θ = ${state.theta.toFixed(2)} &lt; 0.65) with the Taylor rule off: `
@@ -1233,7 +1233,7 @@ function drawISChips(eq) {
   // Anchor / credibility warning. Fires when inflation sits outside the tolerance
   // band. With de-anchoring on, intensity tracks the credibility stock.
   const piGap = Math.abs(eq.pi - PI_TARGET);
-  if (piGap > DEANCHOR_TOL) {
+  if (piGap > DEANCHOR_TOL && tutorialState.unlocked.has('PC')) {
     if (state.deanchor_on) {
       const lost = 1 - state.cred;
       const sev = clamp(lost, 0, 1);
@@ -1274,7 +1274,7 @@ function drawPCChips(eq) {
   const chips = [];
 
   // Expectations de-anchoring: πᵉ has drifted far from target.
-  if (Math.abs(state.pi_e - PI_TARGET) > 0.01) {
+  if (Math.abs(state.pi_e - PI_TARGET) > 0.01 && tutorialState.unlocked.has('PC')) {
     chips.push({
       cls: 'exp',
       msg: `Expected inflation (${(state.pi_e * 100).toFixed(1)}%) has drifted from the 2% `
@@ -1285,7 +1285,7 @@ function drawPCChips(eq) {
   // Inflation off-target resting point: settled (small gap, no live shock) but π ≠ target.
   const gapNow = Math.abs(eq.Y - eq.Y_n) / eq.Y_n;
   const settled = gapNow < 0.03 && Math.abs(state.z_pulse) < 0.001;
-  if (settled && Math.abs(eq.pi - PI_TARGET) > 0.01) {
+  if (settled && Math.abs(eq.pi - PI_TARGET) > 0.01 && tutorialState.unlocked.has('PC')) {
     chips.push({
       cls: 'target',
       msg: `Inflation has settled at ${(eq.pi * 100).toFixed(1)}%, away from the 2% target — `
@@ -1360,13 +1360,13 @@ function drawEquations(eq) {
       const neutral_r = isRateForOutput(eq.Y_n, s.G, s.T, eq.eps, PI_TARGET, s.c1, s.m1, s.Ystar) - PI_TARGET;
       const neutral_i = neutral_r + PI_TARGET;
       mpLine =
-        `<span class="eq-line"><span class="eq-lbl">MP</span>`
+        `<span class="eq-line"><span class="eq-lbl">LM</span>`
         + `<span class="eq-sym">i_N + φ(π−π*) + ψ·gap</span> = `
         + `<span class="eq-num">${fpc(neutral_i,1)} + ${f(s.phi,1)}(${fpc(eq.pi-PI_TARGET,1)}) + 0.25(${fpc(gap,1)})</span> `
         + `= <span class="eq-res" style="color:#185fa5">${fpc(eq.i,2)}</span></span>`;
     } else {
       mpLine =
-        `<span class="eq-line"><span class="eq-lbl">MP</span>`
+        `<span class="eq-line"><span class="eq-lbl">LM</span>`
         + `<span class="eq-sym">i = i_target (horizontal)</span> `
         + `= <span class="eq-res" style="color:#185fa5">${fpc(eq.i,2)}</span></span>`;
     }
@@ -1702,7 +1702,7 @@ function formatStateExport() {
   const pct = (v, d = 2) => (v * 100).toFixed(d) + '%';
   const L = [];
   L.push('═══════════════════════════════════════════════════════════════');
-  L.push('  IS-MP-UIP-PC Model · State export (v19, paid tier, open economy)');
+  L.push('  ISLM-UIP-PC Model · State export (v19, paid tier, open economy)');
   L.push(`  Period ${state.period} · Taylor ${state.taylor_on ? 'ON' : 'OFF'} · cred=${state.cred.toFixed(2)}`);
   L.push('═══════════════════════════════════════════════════════════════');
   L.push('');
