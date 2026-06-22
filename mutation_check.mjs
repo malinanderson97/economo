@@ -43,6 +43,8 @@
 // sabotages v19's UIP relation instead, which the current verifier does catch,
 // so it confirms what verify_v19.mjs can verify TODAY without papering over the
 // gap. When that check is added to v19, restore a d1/d1r mutation here too.
+// [UPDATE 22 Jun: verify_v19.mjs #15 now pins the open multiplier directly,
+//  so the d1/d1r/c1/m1 mutations are restored and caught! Gap closed.]
 
 import fs from 'fs';
 import path from 'path';
@@ -81,10 +83,16 @@ const MODELS = [
     // 0.001) and twin-deficits sign. We sabotage those. (See the comment block
     // below "KNOWN GAP" — the parameter-value insensitivity is a real weakness in
     // verify_v19.mjs worth closing on the engine side.)
+    // [UPDATE 22 Jun: verify_v19.mjs #15 now tests the multiplier directly,
+    //  so these mutations are caught.]
     mutations: [
       { label: 'break UIP relation (1+i → 1−i)',
         from: 'const E = s.E_e * (1 + i) / (1 + s.i_star);',
         to:   'const E = s.E_e * (1 - i) / (1 + s.i_star);' },
+      { label: 'break multiplier (d1 0.10 → 0.40)', from: 'd1  = 0.10', to: 'd1  = 0.40' },
+      { label: 'break interest response (d1r 200 → 20)', from: 'd1r = 200', to: 'd1r = 20' },
+      { label: 'break MPC (c1 0.5 → 0.8)', from: 'c1: 0.5,', to: 'c1: 0.8,' },
+      { label: 'break import leakage (m1 0.30 → 0.00)', from: 'm1: 0.30,', to: 'm1: 0.00,' },
     ],
   },
 ];

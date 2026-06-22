@@ -33,12 +33,12 @@ let api;
 try {
 fs.writeFileSync('eval_dump.js', stub + scripts);
   api = new Function(stub + scripts +
-    '\nreturn {solve,step,clone,initialState,effectiveTheta,nextCredibility,SCENARIOS,PI_TARGET,IS_R_BASE};')();
+    '\nreturn {solve,step,clone,initialState,effectiveTheta,nextCredibility,SCENARIOS,PI_TARGET,IS_R_BASE,isOutput,isRateForOutput};')();
 } catch (e) {
   console.error('FAILED TO LOAD ENGINE:', e.stack);
   process.exit(1);
 }
-const { solve, step, clone, initialState, effectiveTheta, nextCredibility, SCENARIOS, PI_TARGET, IS_R_BASE } = api;
+const { solve, step, clone, initialState, effectiveTheta, nextCredibility, SCENARIOS, PI_TARGET, IS_R_BASE, isOutput, isRateForOutput } = api;
 
 // ---- Tiny test harness -----------------------------------------------------
 let passed = 0, failed = 0;
@@ -278,6 +278,26 @@ console.log('Verifying islm_pc_model_v19 (open economy) …\n');
 
   // Actual analysis on html
   checkHandlers(html, false);
+}
+
+// ---- 15. Open Multiplier ---------------------------------------------------
+{
+  const Y0 = isOutput(20, 20, IS_R_BASE, 1, 0.5, 0.30, 100);
+  const Yg = isOutput(21, 20, IS_R_BASE, 1, 0.5, 0.30, 100);   // +1 G
+  const Yy = isOutput(20, 20, IS_R_BASE, 1, 0.5, 0.30, 101);   // +1 Y*
+  const Ym = isOutput(20, 20, IS_R_BASE, 1, 0.5, 0.40, 100);   // m1 0.30→0.40
+
+  check('15 baseline isOutput=100', approx(Y0, 100, 0.001), `Y0=${Y0.toFixed(4)}`);
+  check('15 dY/dG ≈ 1.43',  approx(Yg - Y0, 1.4286, 0.02), `ΔY/ΔG=${(Yg-Y0).toFixed(4)}`);
+  check('15 dY/dY* ≈ 0.43', approx(Yy - Y0, 0.4286, 0.02), `ΔY/ΔY*=${(Yy-Y0).toFixed(4)}`);
+  // import leakage: raising m1 must STRICTLY lower output at the same demand
+  check('15 higher m1 lowers Y (leakage)', Ym < Y0 - 0.01, `Y(m1=.40)=${Ym.toFixed(4)}`);
+  
+  // Self-test
+  const staleIsOutput = (G, T, r, eps) => 100 + 2*(G-20) - (T-20) - 400*(r-0.01) - 100*(eps-1);
+  const staleY0 = staleIsOutput(20, 20, 0.01, 1, 0.5, 0.30, 100);
+  const staleYm = staleIsOutput(20, 20, 0.01, 1, 0.5, 0.40, 100);
+  check('15 SELF-TEST analyzer BAD fixture fails', !(staleYm < staleY0 - 0.01));
 }
 
 // ---- Summary ---------------------------------------------------------------

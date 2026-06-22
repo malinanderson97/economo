@@ -372,11 +372,28 @@ function testReconciliation(stateOverrides, desc) {
       }
     }
   });
+
+  // 3. STRUCTURAL FIXED-POINT: components must reconcile to the engine's Y.
+  //    This is the gate that catches a wrong multiplier in isOutput.
+  {
+    const st = testRender.state;
+    const C  = 20 + st.c1 * (eq.Y - st.T);            // c0=20
+    const I  = 12 + 0.10 * eq.Y - 200 * eq.r;         // d0=12, d1=0.10, d1r=200
+    const G  = st.G;
+    const NX = 0.30 * st.Ystar - st.m1 * eq.Y - 70 * (eq.eps - 1); // x1=0.30, n1=70
+    const sum = C + I + G + NX;
+    if (Math.abs(sum - eq.Y) > 0.01) {
+      console.log(`  FAIL [${desc}] components ${sum.toFixed(4)} != engine Y ${eq.Y.toFixed(4)} (gap ${(sum-eq.Y).toFixed(4)})`);
+      ok = false;
+    }
+  }
+
   return ok;
 }
 
 check('Eq Reconciliation: Baseline', testReconciliation({ G: 20, c1: 0.5, m1: 0.3, i: 0.03, taylor_on: true }, 'baseline'));
 check('Eq Reconciliation: +ΔG (Taylor off)', testReconciliation({ G: 22, taylor_on: false }, '+ΔG'));
+check('Eq Reconciliation: +ΔG multiplier', testReconciliation({ G: 24, taylor_on: false }, '+2ΔG'));
 check('Eq Reconciliation: changed c1', testReconciliation({ c1: 0.6 }, 'c1=0.6'));
 check('Eq Reconciliation: changed m1', testReconciliation({ m1: 0.4 }, 'm1=0.4'));
 check('Eq Reconciliation: changed i', testReconciliation({ i: 0.05 }, 'i=0.05'));
