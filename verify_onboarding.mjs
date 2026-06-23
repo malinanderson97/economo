@@ -130,7 +130,10 @@ const fakeEl = () => ({
     contains(cls) { return this.classes.has(cls); } 
   },
   addEventListener() {}, querySelector: () => fakeEl(), querySelectorAll: () => [],
-  innerHTML: '', textContent: '', value: 0, getAttribute(k) { return this.attrs[k] || null; }
+  _innerHTML: '',
+  set innerHTML(val) { this._innerHTML = val; if (!val) this.children = []; },
+  get innerHTML() { return this._innerHTML; },
+  textContent: '', value: 0, getAttribute(k) { return this.attrs[k] || null; }
 });
 
 // Since renderTutorial queries DOM, we need a mock document to test visual invariants
@@ -201,11 +204,15 @@ const specialEls = {
   'drill-pc-next': fakeEl(),
   'drill-eq-wsps': fakeEl(),
   'drill-eq-okun': fakeEl(),
-  'drill-eq-phillips': fakeEl()
+  'drill-eq-phillips': fakeEl(),
+  'drill-is': fakeEl(),
+  'drill-mp': fakeEl(),
+  'drill-pc': fakeEl(),
+  'drill-uip': fakeEl()
 };
 const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o) };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, getPcDrillStep: () => typeof pcDrillStep !== "undefined" ? pcDrillStep : 0 };')(mockElements, specialEls);
 
 testRender.setUnlocked(['GOODS', 'ISLM']);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -682,6 +689,87 @@ check('BAD-fixture: Hardcoded u_n caught', caughtHardcodedUn);
 // INV-S3-D: no surface growth
 const headlessCurrentExportKeys = Object.keys(api).sort().join(',');
 check('INV-S3-D: No engine surface growth (headless exports identical)', headlessCurrentExportKeys === headlessBaselineExportKeys);
+
+// -------------------------------------------------------------------------
+// Slice 3b: Live re-render of open drill-down graphs (INV-3b)
+// -------------------------------------------------------------------------
+
+// INV-3b-1 live redraw
+testRender.specialEls['drill-pc'].classList.add('open');
+testRender.advanceDrillPC(-2); // pcDrillStep = 0
+testRender.advanceDrillPC(2);  // pcDrillStep = 2 (shows C)
+
+testRender.setState({ m_struct: 0.05, z_struct: 0.10 });
+testRender.redrawOpenDrills(); // manual draw
+const oC = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 85, xMax: 115 };
+let Yn_pre = testRender.computeYn(testRender.getState());
+const drawnYnCx_pre = findX1(testRender.specialEls['svg-drill-pc-c'], 'curve-natural');
+
+testRender.setState({ z_struct: 0.20 }); // change state
+testRender.render(); // this should trigger redrawOpenDrills since .open is present
+let Yn_post = testRender.computeYn(testRender.getState());
+const drawnYnCx_post = findX1(testRender.specialEls['svg-drill-pc-c'], 'curve-natural');
+const expectedYnCx_post = testRender.xScale(Yn_post, oC);
+
+check('INV-3b-1: Live redraw updates open PC graph',
+  drawnYnCx_pre !== drawnYnCx_post && Math.abs(drawnYnCx_post - expectedYnCx_post) < 1e-6
+);
+
+// BAD-fixture for INV-3b-1: A redrawOpenDrills that skips PC would leave drawnYnCx_post == drawnYnCx_pre
+testRender.specialEls['svg-drill-pc-c'].children = []; // clear
+const badRedraw1 = function() { testRender.drawDrillIS(); testRender.drawDrillMP(); }; // skip PC
+testRender.setState({ z_struct: 0.30 });
+badRedraw1(); // simulate bad render()
+const drawnYnCx_bad = findX1(testRender.specialEls['svg-drill-pc-c'], 'curve-natural');
+check('BAD-fixture: Live redraw skipping PC caught', drawnYnCx_bad === null);
+
+// INV-3b-2 closed not drawn
+testRender.specialEls['drill-is'].classList.remove('open');
+testRender.specialEls['svg-drill-is'].children = []; // clear
+testRender.setState({ G: 25 });
+testRender.render(); // should NOT draw IS
+check('INV-3b-2: Closed drills are not drawn', testRender.specialEls['svg-drill-is'].children.length === 0);
+
+// BAD-fixture for INV-3b-2: Redraw regardless of .open
+testRender.specialEls['drill-is'].classList.remove('open');
+testRender.specialEls['svg-drill-is'].children = []; // clear
+const badRedraw2 = function() { testRender.drawDrillIS(); }; // draw regardless
+badRedraw2(); // simulate bad render()
+check('BAD-fixture: Redrawing closed drill caught', testRender.specialEls['svg-drill-is'].children.length > 0);
+
+// INV-3b-3 step preserved
+testRender.advanceDrillPC(-2); // reset
+testRender.advanceDrillPC(1);  // step 1
+testRender.setState({ m_struct: 0.10 });
+testRender.render();
+const stepAfterRender = testRender.getPcDrillStep();
+const pcWsc1_b3 = testRender.specialEls['drill-eq-wsps'].style.color;
+const pcOkunc1_b3 = testRender.specialEls['drill-eq-okun'].style.color;
+check('INV-3b-3: Live redraw preserves PC step and highlights',
+  stepAfterRender === 1 && pcWsc1_b3 === '#1a1a1a' && pcOkunc1_b3 !== '#1a1a1a'
+);
+
+// BAD-fixture for INV-3b-3: Redraw resets step
+testRender.advanceDrillPC(-2); // reset
+testRender.advanceDrillPC(1);  // step 1
+const badRedraw3 = function() { testRender.advanceDrillPC(-2); testRender.drawDrillPCChain(); };
+badRedraw3(); // simulate bad render()
+const stepAfterBadRender = testRender.getPcDrillStep();
+check('BAD-fixture: Redraw resetting PC step caught', stepAfterBadRender === 0);
+
+// INV-3b-RO read-only via render
+// open all
+testRender.specialEls['drill-is'].classList.add('open');
+testRender.specialEls['drill-mp'].classList.add('open');
+testRender.specialEls['drill-pc'].classList.add('open');
+if(testRender.specialEls['drill-uip']) testRender.specialEls['drill-uip'].classList.add('open');
+
+const sBefore3b = JSON.stringify(testRender.getState());
+const eqBefore3b = JSON.stringify(testRender.solve(testRender.getState()));
+testRender.render();
+const sAfter3b = JSON.stringify(testRender.getState());
+const eqAfter3b = JSON.stringify(testRender.solve(testRender.getState()));
+check('INV-3b-RO: render() with open drills is read-only', sBefore3b === sAfter3b && eqBefore3b === eqAfter3b);
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);

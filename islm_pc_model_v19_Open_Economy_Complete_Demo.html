@@ -1817,6 +1817,14 @@ function render() {
   updateReverseButton();
   updateCredMeter(eq);
   renderTutorial();
+  redrawOpenDrills();
+}
+
+function redrawOpenDrills() {
+  if (document.getElementById('drill-is')?.classList.contains('open'))  drawDrillIS();
+  if (document.getElementById('drill-mp')?.classList.contains('open'))  drawDrillMP();
+  if (document.getElementById('drill-uip')?.classList.contains('open') && typeof drawDrillUIP === 'function') drawDrillUIP();
+  if (document.getElementById('drill-pc')?.classList.contains('open'))  drawDrillPCChain();
 }
 
 function updateReverseButton() {
