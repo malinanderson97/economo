@@ -16,7 +16,7 @@
 
 ## CURRENT STATUS
 
-**→ Slice 1 complete & committed (incl. all fix-ups, UIP transpose, responsive layout). Next action: carve the Slice 2 spec (equation scoping + full-model permanent per-curve colouring).**
+**→ Slice 1 complete & committed. Item A (πᵉ-gating engine change + equation-panel block gating + repaint-on-unlock) complete, verified, and committed (see Master Plan §9 Done; verify_v19 40/0, verify_onboarding 37/0, console self-tests 5/5). Next action: carve the Slice 2 spec (equation scoping + full-model permanent per-curve colouring) — note item A's finishers already did the equation-panel BLOCK gating, so Slice 2 builds the per-curve colouring on top, not the gating itself.**
 
 *(Update this line after each green+committed slice.)*
 
@@ -33,7 +33,7 @@
 - Time-controls (`Step`, `Reverse`, `Run-to-rebalance`) gate to `PC`; only `Reset` is always-on.
 
 **Deliberate decisions (with reasons):**
-- **πᵉ lives in ISLM, not PC** — the IS curve needs it for the real rate `r = i − πᵉ`. (Locking it until PC would leave the real rate undefined at step 2.) Its *role* differs by stage: a fixed dial at ISLM, dynamic/endogenous once PC unlocks.
+- **πᵉ unlocks with PC, not ISLM (REVERSED — see Master Plan §3 / §9 item A).** The earlier decision (πᵉ in ISLM) was overturned: the ISLM and UIP stages are Blanchard's Ch. 5 core short run using the nominal rate r = i, with no πᵉ, no Fisher line, no real-rate line. The nominal→real distinction (r = i − πᵉ), the Fisher line, the real-rate line, and the πᵉ control all switch on together at PC unlock. Implemented and committed (effectivePiE(s) gating; verify_v19 #16). Still to be confirmed with Frank as a design call, but built.
 - **Debt is a separate final block (DEBT), after PC** — it's growth-related (the `(r−g)` debt dynamics), not part of the IS-LM-PC core.
 - **Stepping requires a law of motion → time-controls gate to PC.** Before PC there is no inflation, so GOODS/ISLM/UIP are contemporaneous snapshots; `step()` only evolves PC/inflation-driven quantities. Showing Step earlier teaches the wrong lesson.
 - **Taylor rule defaults OFF.** Learner sets the rate manually first (discretionary), then turns the rule on as a deliberate step; dragging MP while the rule is on shows an explanatory message (the rate is set by the rule, not freely chosen).
