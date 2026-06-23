@@ -268,6 +268,28 @@
     pointer-events: none;
     filter: grayscale(100%);
   }
+  .drill-trigger {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; color: #888; cursor: pointer; user-select: none;
+    margin-left: 8px; text-transform: none; font-weight: normal; letter-spacing: 0;
+  }
+  .drill-trigger:hover { color: #555; }
+  .drill-container {
+    display: none; padding: 10px; background: #faf9f5; border: 1px solid #ebe9e2;
+    border-radius: 5px; margin-top: 8px;
+  }
+  .drill-container.open { display: block; }
+  .drill-eq {
+    font-size: 11.5px; font-weight: 500; color: #333; margin-bottom: 8px;
+    text-align: center; border-bottom: 1px solid #ebe9e2; padding-bottom: 6px;
+  }
+  .drill-eq .ref { font-weight: normal; color: #888; font-size: 10px; margin-left: 6px; }
+  .drill-graphs { display: flex; gap: 10px; flex-wrap: wrap; }
+  .drill-col { flex: 1; min-width: 140px; }
+  .drill-col .sub { text-align: center; font-size: 10px; color: #666; margin-bottom: 4px; }
+  .drill-svg-wrap { position: relative; width: 100%; height: 140px; }
+  .drill-svg-wrap svg { width: 100%; height: 100%; display: block; touch-action: none; }
+  .drill-btn-row { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
   @media (max-width: 850px) {
     body { overflow-y: auto; }
     .layout { display: flex; flex-direction: column; overflow-y: visible; }
@@ -383,10 +405,28 @@
           <div class="chart-chips" id="ismp-chips"></div>
         </div>
         <div class="legend-row">
-          <span><span class="legend-swatch" style="background:#d85a30"></span>IS: Y = f(G,T,r,ε)</span>
-          <span><span class="legend-swatch" style="background:#185fa5"></span>LM: i (nominal)</span>
+          <span><span class="legend-swatch" style="background:#d85a30"></span>IS: Y = f(G,T,r,ε) <span class="drill-trigger" data-block="ISLM" onclick="toggleDrill('drill-is')">derivation ▸</span></span>
+          <span><span class="legend-swatch" style="background:#185fa5"></span>LM: i (nominal) <span class="drill-trigger" data-block="ISLM" onclick="toggleDrill('drill-mp')">derivation ▸</span></span>
           <span><span class="legend-swatch" style="background:transparent;border-top:1.5px dashed #185fa5;height:0"></span>real r</span>
           <span>Yₙ <span style="display:inline-block;width:18px;border-top:1px dashed #999;vertical-align:middle"></span></span>
+        </div>
+        <div class="drill-container" id="drill-is">
+          <div class="drill-eq">Y = C(Y−T) + I(Y,r) + G + NX(Y,Y*,ε) <span class="ref">(Blanchard eq. 9.1)</span></div>
+          <div class="drill-graphs">
+            <div class="drill-col">
+              <div class="sub">Goods-market equilibrium traces IS</div>
+              <div class="drill-svg-wrap"><svg id="svg-drill-is" viewBox="0 0 320 140"></svg></div>
+            </div>
+          </div>
+        </div>
+        <div class="drill-container" id="drill-mp">
+          <div class="drill-eq">i = i_target <span class="ref">(Central bank sets nominal rate directly)</span></div>
+          <div class="drill-graphs">
+            <div class="drill-col">
+              <div class="sub">Policy rate</div>
+              <div class="drill-svg-wrap"><svg id="svg-drill-mp" viewBox="0 0 320 140"></svg></div>
+            </div>
+          </div>
         </div>
         <div class="eq-box" id="box-eq-ismp"><div class="eq-toggle" onclick="toggleEq('box-eq-ismp')"><span class="eq-arrow">▶</span><span>Show the equations behind this chart</span></div><div class="eq-body" id="eq-ismp"></div></div>
       </div>
@@ -396,9 +436,12 @@
         <div class="sub">Solid green = UIP (nominal E). Gold dashed = real ε = E·P/P*. They diverge as home prices move relative to foreign.</div>
         <svg id="uip" viewBox="0 0 360 220"></svg>
         <div class="legend-row">
-          <span><span class="legend-swatch" style="background:#0f6e56"></span>UIP: E = Eᵉ(1+i)/(1+i*)</span>
+          <span><span class="legend-swatch" style="background:#0f6e56"></span>UIP: E = Eᵉ(1+i)/(1+i*) <span class="drill-trigger" data-block="UIP" onclick="toggleDrill('drill-uip')">derivation ▸</span></span>
           <span><span class="legend-swatch" style="background:transparent;border-top:1.5px dashed #b88a45;height:0"></span>real ε</span>
           <span>i* = <span id="istar-readout">3.0%</span></span>
+        </div>
+        <div class="drill-container" id="drill-uip">
+          <div class="drill-eq">1 + i = (1 + i*)(E/Eᵉ) <span class="ref">(Blanchard eq. 19.5)</span></div>
         </div>
         <div class="eq-box" id="box-eq-uip"><div class="eq-toggle" onclick="toggleEq('box-eq-uip')"><span class="eq-arrow">▶</span><span>Show the equations behind this chart</span></div><div class="eq-body" id="eq-uip"></div></div>
       </div>
@@ -411,8 +454,31 @@
           <div class="chart-chips" id="pc-chips"></div>
         </div>
         <div class="legend-row">
-          <span><span class="legend-swatch" style="background:#534ab7"></span>π = πᵉ + α(Y−Yₙ)/Yₙ + z</span>
+          <span><span class="legend-swatch" style="background:#534ab7"></span>π = πᵉ + α(Y−Yₙ)/Yₙ + z <span class="drill-trigger" data-block="PC" onclick="toggleDrill('drill-pc')">derivation ▸</span></span>
           <span>πᵉ = <span id="pie-readout">2.0%</span></span>
+        </div>
+        <div class="drill-container" id="drill-pc">
+          <div class="drill-graphs">
+            <div class="drill-col" id="drill-pc-wsps">
+              <div class="drill-eq" id="drill-eq-wsps">uₙ = (m+z)/α_WS <span class="ref">(Blanchard eq. 8.4)</span></div>
+              <div class="sub">Labour market (WS-PS)</div>
+              <div class="drill-svg-wrap"><svg id="svg-drill-pc-a" viewBox="0 0 160 140"></svg></div>
+            </div>
+            <div class="drill-col" id="drill-pc-okun" style="display:none">
+              <div class="drill-eq" id="drill-eq-okun">Yₙ = L(1−uₙ) <span class="ref">(Blanchard eq. 8.4)</span></div>
+              <div class="sub">Okun's bridge</div>
+              <div class="drill-svg-wrap"><svg id="svg-drill-pc-b" viewBox="0 0 160 140"></svg></div>
+            </div>
+            <div class="drill-col" id="drill-pc-phillips" style="display:none">
+              <div class="drill-eq" id="drill-eq-phillips">π = πᵉ + (α/Yₙ)(Y−Yₙ) + z <span class="ref">(Blanchard eq. 9.3)</span></div>
+              <div class="sub">Phillips curve</div>
+              <div class="drill-svg-wrap"><svg id="svg-drill-pc-c" viewBox="0 0 160 140"></svg></div>
+            </div>
+          </div>
+          <div class="drill-btn-row">
+            <button onclick="advanceDrillPC(-1)" id="drill-pc-prev" disabled>← Previous</button>
+            <button onclick="advanceDrillPC(1)" id="drill-pc-next">Next step →</button>
+          </div>
         </div>
         <div class="eq-box" id="box-eq-pc"><div class="eq-toggle" onclick="toggleEq('box-eq-pc')"><span class="eq-arrow">▶</span><span>Show the equations behind this chart</span></div><div class="eq-body" id="eq-pc"></div></div>
       </div>
@@ -1104,6 +1170,197 @@ HANDLES.pc = (sx, sy) => {
 };
 
 // -------------------------------------------------------------------------
+// Drill-downs
+// -------------------------------------------------------------------------
+let pcDrillStep = 0;
+
+function toggleDrill(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isOpening = !el.classList.contains('open');
+  el.classList.toggle('open');
+  if (isOpening) {
+    if (id === 'drill-is') drawDrillIS();
+    if (id === 'drill-mp') drawDrillMP();
+    if (id === 'drill-pc') {
+      pcDrillStep = 0;
+      updateDrillPCVis();
+      drawDrillPCChain();
+    }
+  }
+  fitCharts();
+}
+
+function advanceDrillPC(dir) {
+  pcDrillStep = clamp(pcDrillStep + dir, 0, 2);
+  updateDrillPCVis();
+  drawDrillPCChain();
+}
+
+function updateDrillPCVis() {
+  document.getElementById('drill-pc-wsps').style.display = 'block';
+  document.getElementById('drill-pc-okun').style.display = pcDrillStep >= 1 ? 'block' : 'none';
+  document.getElementById('drill-pc-phillips').style.display = pcDrillStep >= 2 ? 'block' : 'none';
+  const prev = document.getElementById('drill-pc-prev');
+  const next = document.getElementById('drill-pc-next');
+  if (prev) prev.disabled = (pcDrillStep === 0);
+  if (next) next.disabled = (pcDrillStep === 2);
+}
+
+function drawDrillIS() {
+  const eq = solve(state);
+  const svg = document.getElementById('svg-drill-is');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const W = 320, H = 140, P = { l: 38, r: 16, t: 14, b: 28 };
+  const o = {
+    W, H, P, clipId: 'clip-drill-is',
+    xMin: 70, xMax: 130, yMin: -0.02, yMax: 0.15,
+    xLabel: 'output Y', yLabel: 'real rate r',
+    xTicks: [70, 85, 100, 115, 130],
+    yTicks: [-0.02, 0, 0.05, 0.10, 0.15],
+    xFmt: v => v.toFixed(0), yFmt: v => (v * 100).toFixed(0) + '%'
+  };
+  drawAxes(svg, o);
+
+  const isPts = [];
+  for (let r = o.yMin; r <= o.yMax; r += 0.005) {
+    const Y = isOutput(state.G, state.T, r, eq.eps, state.c1, state.m1, state.Ystar);
+    isPts.push([Y, r]);
+  }
+  drawLine(svg, isPts, o, 'curve-is');
+  
+  el('circle', { cx: xScale(eq.Y, o), cy: yScale(eq.r, o), r: 4.5, class: 'eq-point' }, svg);
+  
+  const k_o = 1 / (1 - state.c1 - d1 + state.m1);
+  el('text', { x: o.W - o.P.r - 5, y: o.P.t + 10, class: 'axis-label', 'text-anchor': 'end', fill: '#333' }, svg)
+    .textContent = `Multiplier k_o = 1/(1−c₁−d₁+m₁) = ${k_o.toFixed(2)}`;
+}
+
+function drawDrillMP() {
+  const eq = solve(state);
+  const svg = document.getElementById('svg-drill-mp');
+  if (!svg) return;
+  svg.innerHTML = '';
+  const W = 320, H = 140, P = { l: 38, r: 16, t: 14, b: 28 };
+  const o = {
+    W, H, P, clipId: 'clip-drill-mp',
+    xMin: 70, xMax: 130, yMin: -0.02, yMax: 0.15,
+    xLabel: 'output Y', yLabel: 'rate i, r',
+    xTicks: [70, 85, 100, 115, 130],
+    yTicks: [-0.02, 0, 0.05, 0.10, 0.15],
+    xFmt: v => v.toFixed(0), yFmt: v => (v * 100).toFixed(0) + '%'
+  };
+  drawAxes(svg, o);
+
+  el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.i, o), y2: yScale(eq.i, o), class: 'curve curve-mp' }, svg);
+  el('text', { x: W - P.r - 4, y: yScale(eq.i, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end' }, svg).textContent = 'i (nominal)';
+
+  if (tutorialState.unlocked.has('PC')) {
+    el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.r, o), y2: yScale(eq.r, o), class: 'curve curve-real' }, svg);
+    el('text', { x: W - P.r - 4, y: yScale(eq.r, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end', fill: '#185fa5' }, svg).textContent = 'r (real)';
+  }
+}
+
+function drawDrillPCChain() {
+  const eq = solve(state);
+  const z_eff = state.z + state.z_pulse;
+  const un = (state.m_struct + state.z_struct) / ALPHA_WS;
+  const Y_n = computeYn(state);
+
+  if (pcDrillStep >= 0) {
+    const svgA = document.getElementById('svg-drill-pc-a');
+    if (svgA) {
+      svgA.innerHTML = '';
+      const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
+      const oA = { W, H, P, clipId: 'clip-drill-pc-a',
+        xMin: 0, xMax: 0.10, yMin: 0, yMax: 0.40,
+        xLabel: 'unemploy u', yLabel: 'W/P',
+        xTicks: [0, 0.05, 0.10], yTicks: [0, 0.20, 0.40],
+        xFmt: v => (v * 100).toFixed(0) + '%', yFmt: v => v.toFixed(1)
+      };
+      drawAxes(svgA, oA);
+      const psY = 0.20;
+      el('line', { x1: P.l, x2: W - P.r, y1: yScale(psY, oA), y2: yScale(psY, oA), class: 'curve', stroke: pcDrillStep === 0 ? EQ_COL.PC : '#1a1a1a', 'stroke-width': '2.2' }, svgA);
+      
+      const wsPts = [];
+      for (let u = oA.xMin; u <= oA.xMax; u += 0.01) {
+        wsPts.push([u, psY - (u - un) * ALPHA_WS * 0.1]);
+      }
+      const d = wsPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oA).toFixed(2) + ',' + yScale(p[1], oA).toFixed(2)).join(' ');
+      el('path', { d, class: 'curve', stroke: pcDrillStep === 0 ? EQ_COL.PC : '#1a1a1a', 'stroke-width': '2.2', 'clip-path': `url(#${oA.clipId})` }, svgA);
+
+      const un_x = xScale(un, oA);
+      el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgA);
+      el('text', { x: un_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgA).textContent = 'uₙ';
+    }
+  }
+
+  if (pcDrillStep >= 1) {
+    const svgB = document.getElementById('svg-drill-pc-b');
+    if (svgB) {
+      svgB.innerHTML = '';
+      const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
+      const oB = { W, H, P, clipId: 'clip-drill-pc-b',
+        xMin: 0, xMax: 0.10, yMin: 80, yMax: 120,
+        xLabel: 'unemploy u', yLabel: 'output Y',
+        xTicks: [0, 0.05, 0.10], yTicks: [80, 100, 120],
+        xFmt: v => (v * 100).toFixed(0) + '%', yFmt: v => v.toFixed(0)
+      };
+      drawAxes(svgB, oB);
+      const okunPts = [];
+      for (let u = oB.xMin; u <= oB.xMax; u += 0.01) {
+        okunPts.push([u, L_LABOR * (1 - u)]);
+      }
+      const d = okunPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oB).toFixed(2) + ',' + yScale(p[1], oB).toFixed(2)).join(' ');
+      el('path', { d, class: 'curve', stroke: pcDrillStep === 1 ? EQ_COL.PC : '#1a1a1a', 'stroke-width': '2.2', 'clip-path': `url(#${oB.clipId})` }, svgB);
+
+      const un_x = xScale(un, oB);
+      el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgB);
+      el('circle', { cx: xScale(un, oB), cy: yScale(Y_n, oB), r: 3, class: 'eq-point' }, svgB);
+      
+      const yn_y = yScale(Y_n, oB);
+      el('line', { x1: P.l, x2: W - P.r, y1: yn_y, y2: yn_y, class: 'curve-natural' }, svgB);
+      el('text', { x: P.l + 4, y: yn_y - 4, class: 'axis-label', fill: '#666' }, svgB).textContent = 'Yₙ';
+    }
+  }
+
+  if (pcDrillStep >= 2) {
+    const svgC = document.getElementById('svg-drill-pc-c');
+    if (svgC) {
+      svgC.innerHTML = '';
+      const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
+      const oC = { W, H, P, clipId: 'clip-drill-pc-c',
+        xMin: 85, xMax: 115, yMin: -0.02, yMax: 0.10,
+        xLabel: 'output Y', yLabel: 'π',
+        xTicks: [85, 100, 115], yTicks: [-0.02, 0.04, 0.10],
+        xFmt: v => v.toFixed(0), yFmt: v => (v * 100).toFixed(0) + '%'
+      };
+      drawAxes(svgC, oC);
+
+      const pcPts = [];
+      for (let Y = oC.xMin; Y <= oC.xMax; Y += 1) {
+        pcPts.push([Y, state.pi_e + state.alpha * (Y - Y_n) / Y_n + z_eff]);
+      }
+      const d = pcPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oC).toFixed(2) + ',' + yScale(p[1], oC).toFixed(2)).join(' ');
+      el('path', { d, class: 'curve', stroke: pcDrillStep === 2 ? EQ_COL.PC : '#1a1a1a', 'stroke-width': '2.2', 'clip-path': `url(#${oC.clipId})` }, svgC);
+
+      const yn_x = xScale(Y_n, oC);
+      el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgC);
+      el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgC).textContent = 'Yₙ';
+      el('circle', { cx: xScale(eq.Y, oC), cy: yScale(eq.pi, oC), r: 3, class: 'eq-point' }, svgC);
+    }
+  }
+
+  const pcWSEq = document.getElementById('drill-eq-wsps');
+  const pcOkunEq = document.getElementById('drill-eq-okun');
+  const pcPhillEq = document.getElementById('drill-eq-phillips');
+  if (pcWSEq) pcWSEq.style.color = pcDrillStep === 0 ? EQ_COL.PC : '#1a1a1a';
+  if (pcOkunEq) pcOkunEq.style.color = pcDrillStep === 1 ? EQ_COL.PC : '#1a1a1a';
+  if (pcPhillEq) pcPhillEq.style.color = pcDrillStep === 2 ? EQ_COL.PC : '#1a1a1a';
+}
+
+// -------------------------------------------------------------------------
 // Time series chart
 // -------------------------------------------------------------------------
 function drawTimeSeries() {
@@ -1666,6 +1923,11 @@ renderTutorial = function() {
   const debtOn = isUnlocked('DEBT');
   setLocked('.control[data-block="DEBT"]', debtOn);
   setLocked('.debt-cue, #ts path[stroke="#0f6e56"], #ts circle[fill="#0f6e56"]', debtOn);
+
+  // Drill triggers gating (INV-S3-C)
+  setLocked('.drill-trigger[data-block="ISLM"]', islmOn);
+  setLocked('.drill-trigger[data-block="UIP"]', uipOn);
+  setLocked('.drill-trigger[data-block="PC"]', pcOn);
 };
 
 function reverseStep() {

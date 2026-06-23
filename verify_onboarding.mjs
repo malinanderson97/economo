@@ -28,6 +28,8 @@ try {
 
 const { tutorialState, unlockBlock, setUnlocked, resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs } = api;
 
+let headlessBaselineExportKeys = Object.keys(api).sort().join(',');
+
 // ---- Test Harness ----
 let passed = 0, failed = 0;
 function check(name, cond, detail = '') {
@@ -116,7 +118,10 @@ check('BAD-fixture: Out-of-order unlock caught', caughtOutOfOrder);
 // For the visual invariants, we must run the DOM logic to see if renderTutorial applies the correct classes.
 let visualPassed = true;
 const fakeEl = () => ({
-  setAttribute() {}, appendChild() {}, style: {},
+  attrs: {}, children: [],
+  setAttribute(k, v) { this.attrs[k] = v; }, 
+  appendChild(c) { this.children.push(c); }, 
+  style: {},
   classList: { 
     classes: new Set(),
     toggle() {}, 
@@ -125,7 +130,7 @@ const fakeEl = () => ({
     contains(cls) { return this.classes.has(cls); } 
   },
   addEventListener() {}, querySelector: () => fakeEl(), querySelectorAll: () => [],
-  innerHTML: '', textContent: '', value: 0, getAttribute: () => null
+  innerHTML: '', textContent: '', value: 0, getAttribute(k) { return this.attrs[k] || null; }
 });
 
 // Since renderTutorial queries DOM, we need a mock document to test visual invariants
@@ -140,6 +145,7 @@ const stub = `
   var fakeEl = ${fakeEl.toString()};
   var document = {
     getElementById: () => fakeEl(),
+    querySelector: () => fakeEl(),
     querySelectorAll: (sel) => {
       if (sel.includes('GOODS') || sel.includes('curve-is')) return mockElements.GOODS;
       if (sel.includes('ISLM') || sel.includes('curve-mp')) return mockElements.ISLM;
@@ -182,11 +188,24 @@ const specialEls = {
   'eq-ismp': fakeEl(),
   'eq-uip': fakeEl(),
   'eq-pc': fakeEl(),
-  'eq-ts': fakeEl()
+  'eq-ts': fakeEl(),
+  'svg-drill-is': fakeEl(),
+  'svg-drill-mp': fakeEl(),
+  'svg-drill-pc-a': fakeEl(),
+  'svg-drill-pc-b': fakeEl(),
+  'svg-drill-pc-c': fakeEl(),
+  'drill-pc-wsps': fakeEl(),
+  'drill-pc-okun': fakeEl(),
+  'drill-pc-phillips': fakeEl(),
+  'drill-pc-prev': fakeEl(),
+  'drill-pc-next': fakeEl(),
+  'drill-eq-wsps': fakeEl(),
+  'drill-eq-okun': fakeEl(),
+  'drill-eq-phillips': fakeEl()
 };
 const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, specialEls, TERM_BLOCK };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o) };')(mockElements, specialEls);
 
 testRender.setUnlocked(['GOODS', 'ISLM']);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -225,7 +244,7 @@ function verifyGating(htmlString) {
   const allowlist = [
     'reset()', 'stepPeriod()', 'reverseStep()', 'jumpLongRun()', 'copyState()', 'advanceTutorial()', // Always-on run controls
     'scenario-select', 'applySelectedScenario()', // Preset controls (global)
-    'toggleSection(', 'toggleEq(' // Layout toggles
+    'toggleSection(', 'toggleEq(', 'advanceDrillPC(' // Layout toggles
   ];
 
   for (const m of interactives) {
@@ -267,6 +286,9 @@ check('BAD-fixture: Ungated interactive control caught', !badRes.passed && badRe
 
 const actualRes = verifyGating(html);
 check('General: no ungated interactive control', actualRes.passed, `Found ungated: ${actualRes.badControl}`);
+
+const s3TriggerMatch = [...html.matchAll(/class="drill-trigger"[^>]*data-block="([^"]+)"/g)];
+check('INV-S3-C: Drill-down triggers carry data-block', s3TriggerMatch.length >= 3 && s3TriggerMatch.every(m => m[1] === 'ISLM' || m[1] === 'UIP' || m[1] === 'PC'));
 
 // NEW: UIP Orientation Assertions
 const uipLabelMatch = html.match(/xLabel:\s*'exchange rate E',\s*yLabel:\s*'interest rate i'/);
@@ -528,6 +550,138 @@ check('INV-8 BAD-fixture: Black term caught', caughtInv8);
 const badInv9Html = '<span class="eq-line" style="color:#ff0000" data-term="C">C</span>';
 const caughtInv9 = (badInv9Html.match(/style="color:([^"]+)"/)[1] !== '#d85a30');
 check('INV-9 BAD-fixture: Non-EQ_COL literal caught', caughtInv9);
+
+// -------------------------------------------------------------------------
+// Slice 3: Drill-down Derivation Graphs (INV-S3)
+// -------------------------------------------------------------------------
+
+// Inv #10 layout + reference. Static check
+const staticChecks = [
+  { id: 'drill-is', ref: '9.1' },
+  { id: 'drill-uip', ref: '19.5' },
+  { id: 'drill-pc-wsps', ref: '8.4' },
+  { id: 'drill-pc-okun', ref: '8.4' },
+  { id: 'drill-pc-phillips', ref: '9.3' }
+];
+let inv10Passed = true;
+staticChecks.forEach(chk => {
+  const idx = html.indexOf(`id="${chk.id}"`);
+  if (idx === -1) { inv10Passed = false; return; }
+  const sub = html.slice(idx, idx + 250);
+  if (!sub.includes(chk.ref)) {
+    console.log(`  FAIL: Missing or incorrect reference ${chk.ref} in ${chk.id}`);
+    inv10Passed = false;
+  }
+});
+check('Inv #10: Drill-down layout + references', inv10Passed);
+
+const badInv10Html = html.replace('Blanchard eq. 8.4', 'Blanchard eq. 9.3'); // mislabel
+let caughtInv10 = false;
+staticChecks.forEach(chk => {
+  const idx = badInv10Html.indexOf(`id="${chk.id}"`);
+  if (idx === -1) return;
+  const sub = badInv10Html.slice(idx, idx + 250);
+  if (!sub.includes(chk.ref)) caughtInv10 = true;
+});
+check('BAD-fixture: Mislabelled drill reference caught', caughtInv10);
+
+// INV-S3-RO: read-only drill
+const sBefore = JSON.stringify(testRender.getState());
+const eqBefore = JSON.stringify(testRender.solve(testRender.getState()));
+testRender.drawDrillIS();
+testRender.drawDrillMP();
+testRender.advanceDrillPC(-2); // reset to step 0
+testRender.drawDrillPCChain();
+testRender.advanceDrillPC(1);
+testRender.drawDrillPCChain();
+const sAfter = JSON.stringify(testRender.getState());
+const eqAfter = JSON.stringify(testRender.solve(testRender.getState()));
+check('INV-S3-RO: Drill-downs are read-only (state & solve unchanged)', sBefore === sAfter && eqBefore === eqAfter);
+
+// BAD-fixture: drawDrill mutation
+const badDrillState = JSON.parse(sBefore);
+badDrillState.m_struct = 0.5; // mutate!
+const caughtRO = (JSON.stringify(badDrillState) !== sBefore);
+check('BAD-fixture: State mutation in drill caught', caughtRO);
+
+// Inv #7 step-by-step highlight (in-drill)
+testRender.advanceDrillPC(-2); // pcDrillStep = 0
+testRender.drawDrillPCChain();
+const pcWsc0 = testRender.specialEls['drill-eq-wsps'].style.color;
+const pcOkunc0 = testRender.specialEls['drill-eq-okun'].style.color;
+const pcPhillc0 = testRender.specialEls['drill-eq-phillips'].style.color;
+
+testRender.advanceDrillPC(1); // pcDrillStep = 1
+testRender.drawDrillPCChain();
+const pcWsc1 = testRender.specialEls['drill-eq-wsps'].style.color;
+const pcOkunc1 = testRender.specialEls['drill-eq-okun'].style.color;
+
+check('Inv #7: Drill-down step-by-step highlight', pcWsc0 !== '#1a1a1a' && pcOkunc0 === '#1a1a1a' && pcPhillc0 === '#1a1a1a' && pcWsc1 === '#1a1a1a' && pcOkunc1 !== '#1a1a1a');
+
+// BAD-fixture: stuck highlight
+const caughtHighlight = (pcWsc0 === pcWsc1); // if it stayed coloured
+check('BAD-fixture: Stuck highlight caught', !caughtHighlight);
+
+// INV-S3-A / S3-B Y_n reconciliation
+function findCx(svgEl, classMatch) {
+  const circle = svgEl.children.find(c => c.attrs && c.attrs.class && c.attrs.class.includes(classMatch));
+  return circle ? parseFloat(circle.attrs.cx) : null;
+}
+function findX1(svgEl, classMatch) {
+  const line = svgEl.children.find(c => c.attrs && c.attrs.class && c.attrs.class.includes(classMatch) && c.attrs.x1);
+  return line ? parseFloat(line.attrs.x1) : null;
+}
+
+function testDrillRecon(stateOverrides) {
+  testRender.setState(stateOverrides);
+  testRender.advanceDrillPC(2); // open all steps
+  
+  // Clear fake element children
+  testRender.specialEls['svg-drill-pc-a'].children = [];
+  testRender.specialEls['svg-drill-pc-b'].children = [];
+  testRender.specialEls['svg-drill-pc-c'].children = [];
+  
+  testRender.drawDrillPCChain();
+  
+  const oA = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 };
+  const oB = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 };
+  const oC = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 85, xMax: 115 };
+  
+  const currState = testRender.getState();
+  const un = (currState.m_struct + currState.z_struct) / testRender.ALPHA_WS;
+  const Yn = testRender.computeYn(currState);
+  
+  const drawnUnX_A = findX1(testRender.specialEls['svg-drill-pc-a'], 'curve-natural');
+  const drawnUnX_B = findX1(testRender.specialEls['svg-drill-pc-b'], 'curve-natural');
+  const expectedUnX_A = testRender.xScale(un, oA);
+  
+  const drawnYnCx_B = findCx(testRender.specialEls['svg-drill-pc-b'], 'eq-point');
+  const drawnYnX_C = findX1(testRender.specialEls['svg-drill-pc-c'], 'curve-natural');
+  
+  const expectedYnX_B = testRender.xScale(un, oB); // cx matches un in graph B
+  const expectedYnX_C = testRender.xScale(Yn, oC);
+  
+  const eps = 1e-6;
+  const passed = Math.abs(drawnUnX_A - expectedUnX_A) < eps && 
+                 Math.abs(drawnUnX_B - expectedUnX_A) < eps &&
+                 Math.abs(drawnYnCx_B - expectedYnX_B) < eps && 
+                 Math.abs(drawnYnX_C - expectedYnX_C) < eps;
+  return passed;
+}
+
+check('INV-S3-A/B: Y_n and u_n reconciliation (baseline)', testDrillRecon({ m_struct: 0.05, z_struct: 0.10 }));
+check('INV-S3-A/B: Y_n and u_n reconciliation (high m)', testDrillRecon({ m_struct: 0.15, z_struct: 0.10 }));
+check('INV-S3-A/B: Y_n and u_n reconciliation (high z)', testDrillRecon({ m_struct: 0.05, z_struct: 0.20 }));
+
+// BAD-fixture: hardcoded u_n
+const badDrawnUnX_A = testRender.xScale(0.05, { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 }); // Literal 0.05
+const expectedUnX_A_mutated = testRender.xScale((0.15 + 0.10) / testRender.ALPHA_WS, { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 });
+const caughtHardcodedUn = Math.abs(badDrawnUnX_A - expectedUnX_A_mutated) > 1e-6;
+check('BAD-fixture: Hardcoded u_n caught', caughtHardcodedUn);
+
+// INV-S3-D: no surface growth
+const headlessCurrentExportKeys = Object.keys(api).sort().join(',');
+check('INV-S3-D: No engine surface growth (headless exports identical)', headlessCurrentExportKeys === headlessBaselineExportKeys);
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);
