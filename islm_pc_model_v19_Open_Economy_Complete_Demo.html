@@ -1352,6 +1352,38 @@ function drawDebtCue(eq) {
 // -------------------------------------------------------------------------
 const EQ_COL = { IS:'#d85a30', MP:'#185fa5', UIP:'#0f6e56', eps:'#b88a45',
                  PC:'#534ab7', P:'#d85a30', i:'#185fa5', pi:'#534ab7' };
+
+const TERM_BLOCK = {
+  'anchor': 'GOODS',
+  'C': 'GOODS',
+  'I': 'ISLM',
+  'G': 'GOODS',
+  'NX': 'UIP',
+  'Y': 'GOODS',
+  'MP': 'ISLM',
+  'i': 'ISLM',
+  'UIP': 'UIP',
+  'eps': 'UIP',
+  'PC': 'PC',
+  'gap': 'PC',
+  'shock': 'PC',
+  'pi_e': 'PC',
+  'fisher': 'PC',
+  'P_prime': 'PC',
+  'P_star_prime': 'PC',
+  'Ee_prime': 'UIP'
+};
+if (typeof window !== 'undefined') window.TERM_BLOCK = TERM_BLOCK;
+
+function getTermCol(term) {
+  const b = TERM_BLOCK[term];
+  if (b === 'GOODS') return EQ_COL.IS;
+  if (b === 'ISLM') return (term === 'MP' || term === 'i') ? EQ_COL.MP : EQ_COL.IS;
+  if (b === 'UIP') return EQ_COL.UIP;
+  if (b === 'PC') return EQ_COL.PC;
+  return '#000';
+}
+
 function eqColor(txt, col) { return `<span class="t" style="color:${col}">${txt}</span>`; }
 function f(v, d = 2) { return Number(v).toFixed(d); }
 function fpc(v, d = 1) { return (v * 100).toFixed(d) + '%'; }
@@ -1359,127 +1391,148 @@ function fpc(v, d = 1) { return (v * 100).toFixed(d) + '%'; }
 function drawEquations(eq) {
   const s = state;
   const r = eq.i - effectivePiE(s);
+  const isUnl = term => tutorialState.unlocked.has(TERM_BLOCK[term]);
+  const c = term => getTermCol(term);
+  const lne = term => `class="eq-line" style="color:${c(term)}" data-term="${term}"`;
 
   // IS-MP box: IS deviation form (with ε term) and the policy rate (MP / Taylor).
   const ismpEl = document.getElementById('eq-ismp');
   if (ismpEl) {
-    // Component breakdown: Y = C + I + G + NX (open economy), from equilibrium.
     const c0 = 32 - 12; // c0 = 20
     const d0 = 12;
     const C = c0 + s.c1 * (eq.Y - s.T);
     const I = d0 + d1 * eq.Y - d1r * eq.r;
     const G = s.G;
     const NX = x1 * s.Ystar - s.m1 * eq.Y - n1 * (eq.eps - 1);
-    const cC = '#d85a30', cI = '#185fa5', cG = '#0f6e56', cNX = '#b88a45';
     const Cd = f(C,2), Id = f(I,2), Gd = f(G,2), NXd = f(NX,2);
     
-    const hasUIP = tutorialState.unlocked.has('UIP');
-    const hasPC = tutorialState.unlocked.has('PC');
-    const rateSym = hasPC ? 'r' : 'i';
-    const totalShown = hasUIP 
+    const showNX = isUnl('NX');
+    const showPC = isUnl('fisher');
+    const rateSym = showPC ? 'r' : 'i';
+
+    const totalShown = showNX 
       ? (Number(Cd) + Number(Id) + Number(Gd) + Number(NXd)).toFixed(2)
       : (Number(Cd) + Number(Id) + Number(Gd)).toFixed(2);
-    const anchorSym = hasUIP ? 'Y = C + I + G + NX' : 'Y = C + I + G';
-    const nxLine = hasUIP ?
-        `<span class="eq-line"><span class="eq-lbl" style="color:${cNX}">NX</span>`
+    const anchorSym = showNX ? 'Y = C + I + G + NX' : 'Y = C + I + G';
+    const totalAddends = showNX ? `${Cd} + ${Id} + ${Gd} + ${NXd}` : `${Cd} + ${Id} + ${Gd}`;
+
+    const nxLine = showNX ?
+        `<span ${lne('NX')}><span class="eq-lbl">NX</span>`
       + `<span class="eq-sym">x₁·Y* − m₁·Y − n₁·(ε−1)</span> = `
       + `<span class="eq-num">${f(x1,2)}(${f(s.Ystar,0)}) − ${f(s.m1,2)}(${f(eq.Y,1)}) − ${n1}(${f(eq.eps,3)}−1)</span> `
-      + `= <span class="eq-res" style="color:${cNX}">${NXd}</span></span>`
+      + `= <span class="eq-res">${NXd}</span></span>`
       : '';
-    const totalAddends = hasUIP ? `${Cd} + ${Id} + ${Gd} + ${NXd}` : `${Cd} + ${Id} + ${Gd}`;
 
-    let mpLine;
-    if (s.taylor_on) {
-      const gap = (eq.Y - eq.Y_n) / eq.Y_n;
-      const neutral_r = isRateForOutput(eq.Y_n, s.G, s.T, eq.eps, PI_TARGET, s.c1, s.m1, s.Ystar) - PI_TARGET;
-      const neutral_i = neutral_r + PI_TARGET;
-      mpLine =
-        `<span class="eq-line"><span class="eq-lbl">LM</span>`
-        + `<span class="eq-sym">i_N + φ(π−π*) + ψ·gap</span> = `
-        + `<span class="eq-num">${fpc(neutral_i,1)} + ${f(s.phi,1)}(${fpc(eq.pi-PI_TARGET,1)}) + 0.25(${fpc(gap,1)})</span> `
-        + `= <span class="eq-res" style="color:#185fa5">${fpc(eq.i,2)}</span></span>`;
-    } else {
-      mpLine =
-        `<span class="eq-line"><span class="eq-lbl">LM</span>`
-        + `<span class="eq-sym">i = i_target (horizontal)</span> `
-        + `= <span class="eq-res" style="color:#185fa5">${fpc(eq.i,2)}</span></span>`;
+    let mpLine = '';
+    if (isUnl('MP')) {
+      if (s.taylor_on) {
+        const gap = (eq.Y - eq.Y_n) / eq.Y_n;
+        const neutral_r = isRateForOutput(eq.Y_n, s.G, s.T, eq.eps, PI_TARGET, s.c1, s.m1, s.Ystar) - PI_TARGET;
+        const neutral_i = neutral_r + PI_TARGET;
+        mpLine =
+          `<span ${lne('MP')}><span class="eq-lbl">LM</span>`
+          + `<span class="eq-sym">i_N + φ(π−π*) + ψ·gap</span> = `
+          + `<span class="eq-num">${fpc(neutral_i,1)} + ${f(s.phi,1)}(${fpc(eq.pi-PI_TARGET,1)}) + 0.25(${fpc(gap,1)})</span> `
+          + `= <span class="eq-res">${fpc(eq.i,2)}</span></span>`;
+      } else {
+        mpLine =
+          `<span ${lne('MP')}><span class="eq-lbl">LM</span>`
+          + `<span class="eq-sym">i = i_target (horizontal)</span> `
+          + `= <span class="eq-res">${fpc(eq.i,2)}</span></span>`;
+      }
     }
+
     ismpEl.innerHTML =
-      `<span class="eq-line eq-anchor"><span class="eq-lbl"></span>`
+      `<span class="eq-line eq-anchor" style="color:${c('anchor')}" data-term="anchor"><span class="eq-lbl"></span>`
       + `<span class="eq-sym">${anchorSym}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl" style="color:${cC}">C</span>`
+      + (isUnl('C') ? `<span ${lne('C')}><span class="eq-lbl">C</span>`
       + `<span class="eq-sym">c₀ + c₁(Y−T)</span> = `
       + `<span class="eq-num">${c0} + ${f(s.c1,2)}(${f(eq.Y,1)}−${f(s.T,0)})</span> `
-      + `= <span class="eq-res" style="color:${cC}">${Cd}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl" style="color:${cI}">I</span>`
+      + `= <span class="eq-res">${Cd}</span></span>` : '')
+      + (isUnl('I') ? `<span ${lne('I')}><span class="eq-lbl">I</span>`
       + `<span class="eq-sym">d₀ + d₁·Y − d₁ᵣ·${rateSym}</span> = `
       + `<span class="eq-num">${d0} + ${f(d1,2)}(${f(eq.Y,1)}) − ${d1r}(${f(r,4)})</span> `
-      + `= <span class="eq-res" style="color:${cI}">${Id}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl" style="color:${cG}">G</span>`
+      + `= <span class="eq-res">${Id}</span></span>` : '')
+      + (isUnl('G') ? `<span ${lne('G')}><span class="eq-lbl">G</span>`
       + `<span class="eq-sym">government spending</span> `
-      + `= <span class="eq-res" style="color:${cG}">${Gd}</span></span>`
+      + `= <span class="eq-res">${Gd}</span></span>` : '')
       + nxLine
-      + `<span class="eq-line eq-total"><span class="eq-lbl">Y</span>`
+      + (isUnl('Y') ? `<span class="eq-line eq-total" style="color:${c('Y')}" data-term="Y"><span class="eq-lbl">Y</span>`
       + `<span class="eq-num">${totalAddends}</span> `
-      + `= <span class="eq-res">${totalShown}</span></span>`
+      + `= <span class="eq-res">${totalShown}</span></span>` : '')
       + mpLine;
   }
 
   // UIP box: nominal E identity and real ε = E·P/P*.
   const uipEl = document.getElementById('eq-uip');
   if (uipEl) {
-    uipEl.innerHTML =
-      `<span class="eq-line"><span class="eq-lbl">UIP</span>`
-      + `<span class="eq-sym">E = Eᵉ(1+i)/(1+i*)</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl"></span><span class="eq-num">= `
-      + `${eqColor(f(s.E_e,3),EQ_COL.UIP)}(1+${eqColor(fpc(eq.i,2),EQ_COL.i)})/(1+${fpc(s.i_star,2)})</span> `
-      + `= <span class="eq-res" style="color:${EQ_COL.UIP}">${f(eq.E,3)}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl">ε</span>`
-      + `<span class="eq-sym">E·P/P*</span> = `
-      + `<span class="eq-num">${eqColor(f(eq.E,3),EQ_COL.UIP)}·${eqColor(f(s.P,3),EQ_COL.P)}/${f(s.P_star || 1,3)}</span> `
-      + `= <span class="eq-res" style="color:${EQ_COL.eps}">${f(eq.eps,3)}</span></span>`;
+    if (isUnl('UIP')) {
+      uipEl.innerHTML =
+        `<span ${lne('UIP')}><span class="eq-lbl">UIP</span>`
+        + `<span class="eq-sym">E = Eᵉ(1+i)/(1+i*)</span></span>`
+        + `<span ${lne('UIP')}><span class="eq-lbl"></span><span class="eq-num">= `
+        + `${f(s.E_e,3)}(1+${fpc(eq.i,2)})/(1+${fpc(s.i_star,2)})</span> `
+        + `= <span class="eq-res">${f(eq.E,3)}</span></span>`
+        + (isUnl('eps') ? 
+          `<span ${lne('eps')}><span class="eq-lbl">ε</span>`
+          + `<span class="eq-sym">E·P/P*</span> = `
+          + `<span class="eq-num">${f(eq.E,3)}·${f(s.P,3)}/${f(s.P_star || 1,3)}</span> `
+          + `= <span class="eq-res">${f(eq.eps,3)}</span></span>` : '');
+    } else {
+      uipEl.innerHTML = '';
+    }
   }
 
   // Phillips curve box.
   const pcEl = document.getElementById('eq-pc');
   if (pcEl) {
-    const gap = (eq.Y - eq.Y_n) / eq.Y_n;
-    pcEl.innerHTML =
-      `<span class="eq-line"><span class="eq-lbl">PC</span>`
-      + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + z</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl"></span><span class="eq-num">= `
-      + `${eqColor(fpc(s.pi_e,1),EQ_COL.PC)} + ${eqColor(f(s.alpha,2),EQ_COL.PC)}·(${eqColor(f(eq.Y,1),EQ_COL.PC)}−${f(eq.Y_n,0)})/${f(eq.Y_n,0)} `
-      + `+ ${eqColor(fpc(eq.z_eff,2),EQ_COL.PC)}</span> `
-      + `= <span class="eq-res" style="color:${EQ_COL.PC}">${fpc(eq.pi,1)}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl">gap</span>`
-      + `<span class="eq-num">(Y−Yₙ)/Yₙ = ${fpc(gap,1)}</span></span>`;
+    if (isUnl('PC')) {
+      const gap = (eq.Y - eq.Y_n) / eq.Y_n;
+      pcEl.innerHTML =
+        `<span ${lne('PC')}><span class="eq-lbl">PC</span>`
+        + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + shock</span></span>`
+        + `<span ${lne('PC')}><span class="eq-lbl"></span><span class="eq-num">= `
+        + `${fpc(s.pi_e,1)} + ${f(s.alpha,2)}·(${f(eq.Y,1)}−${f(eq.Y_n,0)})/${f(eq.Y_n,0)} `
+        + `+ ${fpc(eq.z_eff,2)}</span> `
+        + `= <span class="eq-res">${fpc(eq.pi,1)}</span></span>`
+        + (isUnl('gap') ? 
+          `<span ${lne('gap')}><span class="eq-lbl">gap</span>`
+          + `<span class="eq-num">(Y−Yₙ)/Yₙ = ${fpc(gap,1)}</span></span>` : '');
+    } else {
+      pcEl.innerHTML = '';
+    }
   }
 
   // Time-series box: the dynamic identities driving each step.
   const tsEl = document.getElementById('eq-ts');
   if (tsEl) {
     const E_e_next = (1 - 0.4*s.speed)*s.E_e + 0.4*s.speed*eq.E;
-    let fisherHtml = '';
-    if (tutorialState.unlocked.has('PC')) {
-      fisherHtml = `<span class="eq-line"><span class="eq-lbl">Fisher</span>`
+    let html = '';
+    if (isUnl('fisher')) {
+      html += `<span ${lne('fisher')}><span class="eq-lbl">Fisher</span>`
         + `<span class="eq-sym">r = i − πᵉ</span> = `
-        + `<span class="eq-num">${eqColor(fpc(eq.i,2),EQ_COL.i)} − ${eqColor(fpc(s.pi_e,1),EQ_COL.pi)}</span> `
+        + `<span class="eq-num">${fpc(eq.i,2)} − ${fpc(s.pi_e,1)}</span> `
         + `= <span class="eq-res">${fpc(r,2)}</span></span>`;
     }
-    tsEl.innerHTML =
-      fisherHtml
-      + `<span class="eq-line"><span class="eq-lbl">P′</span>`
-      + `<span class="eq-sym">P(1 + π·speed)</span> = `
-      + `<span class="eq-num">${eqColor(f(s.P,3),EQ_COL.P)}(1 + ${eqColor(fpc(eq.pi,1),EQ_COL.pi)}·${f(s.speed,2)})</span> `
-      + `= <span class="eq-res" style="color:${EQ_COL.P}">${f(s.P*(1+eq.pi*s.speed),3)}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl">P*′</span>`
-      + `<span class="eq-sym">P*(1 + π*·speed)</span> = `
-      + `<span class="eq-num">${f(s.P_star || 1,3)}(1 + ${fpc(PI_TARGET,1)}·${f(s.speed,2)})</span> `
-      + `= <span class="eq-res">${f((s.P_star || 1)*(1+PI_TARGET*s.speed),3)}</span> (foreign)</span>`
-      + `<span class="eq-line"><span class="eq-lbl">Eᵉ′</span>`
-      + `<span class="eq-sym">(1−0.4·sp)Eᵉ + 0.4·sp·E</span> = `
-      + `<span class="eq-num">(1−0.4·${f(s.speed,2)})(${f(s.E_e,3)}) + 0.4·${f(s.speed,2)}(${f(eq.E,3)})</span> `
-      + `= <span class="eq-res" style="color:${EQ_COL.UIP}">${f(E_e_next,3)}</span> (adaptive)</span>`;
+    if (isUnl('P_prime')) {
+      html += `<span ${lne('P_prime')}><span class="eq-lbl">P′</span>`
+        + `<span class="eq-sym">P(1 + π·speed)</span> = `
+        + `<span class="eq-num">${f(s.P,3)}(1 + ${fpc(eq.pi,1)}·${f(s.speed,2)})</span> `
+        + `= <span class="eq-res">${f(s.P*(1+eq.pi*s.speed),3)}</span></span>`;
+    }
+    if (isUnl('P_star_prime')) {
+      html += `<span ${lne('P_star_prime')}><span class="eq-lbl">P*′</span>`
+        + `<span class="eq-sym">P*(1 + π*·speed)</span> = `
+        + `<span class="eq-num">${f(s.P_star || 1,3)}(1 + ${fpc(PI_TARGET,1)}·${f(s.speed,2)})</span> `
+        + `= <span class="eq-res">${f((s.P_star || 1)*(1+PI_TARGET*s.speed),3)}</span> (foreign)</span>`;
+    }
+    if (isUnl('Ee_prime')) {
+      html += `<span ${lne('Ee_prime')}><span class="eq-lbl">Eᵉ′</span>`
+        + `<span class="eq-sym">(1−0.4·sp)Eᵉ + 0.4·sp·E</span> = `
+        + `<span class="eq-num">(1−0.4·${f(s.speed,2)})(${f(s.E_e,3)}) + 0.4·${f(s.speed,2)}(${f(eq.E,3)})</span> `
+        + `= <span class="eq-res">${f(E_e_next,3)}</span> (adaptive)</span>`;
+    }
+    tsEl.innerHTML = html;
   }
 }
 

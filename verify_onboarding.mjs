@@ -186,7 +186,7 @@ const specialEls = {
 };
 const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, specialEls };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, specialEls, TERM_BLOCK };')(mockElements, specialEls);
 
 testRender.setUnlocked(['GOODS', 'ISLM']);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -440,6 +440,94 @@ while ((badMatch = badLblRegex.exec(badHtml)) !== null) {
   }
 }
 check('BAD-fixture: hardcoded coefficient caught', !badOk);
+
+// -------------------------------------------------------------------------
+// Slice 2: Scoping and Colouring Invariants (INV-6, 8, 9)
+// -------------------------------------------------------------------------
+function getRenderedTerms() {
+  testRender.drawEquations(testRender.solve(testRender.state));
+  const html = ['eq-ismp', 'eq-uip', 'eq-pc', 'eq-ts']
+    .map(id => testRender.specialEls[id].innerHTML)
+    .join('');
+  const terms = new Set();
+  const regex = /data-term="([^"]+)"/g;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    terms.add(match[1]);
+  }
+  return terms;
+}
+
+function checkScope(unlockedArray, desc) {
+  testRender.setUnlocked(unlockedArray);
+  const terms = getRenderedTerms();
+  for (const t of terms) {
+    const block = testRender.TERM_BLOCK[t];
+    if (!block || !testRender.tutorialState.unlocked.has(block)) {
+      console.log(`  FAIL [${desc}] term '${t}' rendered but its block (${block}) is not unlocked.`);
+      return false;
+    }
+  }
+  return true;
+}
+
+check('INV-6 Scope: GOODS only', checkScope(['GOODS'], 'GOODS'));
+check('INV-6 Scope: +ISLM', checkScope(['GOODS', 'ISLM'], 'ISLM'));
+check('INV-6 Scope: +UIP', checkScope(['GOODS', 'ISLM', 'UIP'], 'UIP'));
+check('INV-6 Scope: +PC', checkScope(['GOODS', 'ISLM', 'UIP', 'PC'], 'PC'));
+check('INV-6 Scope: +DEBT', checkScope(['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'], 'DEBT'));
+
+// BAD-fixture: forced out of scope
+let caughtScope = false;
+testRender.setUnlocked(['GOODS']);
+const termsBefore = getRenderedTerms();
+// artificially inject a term that belongs to PC
+testRender.specialEls['eq-ismp'].innerHTML += '<span class="eq-line" data-term="PC"></span>';
+const htmlScopeTest = testRender.specialEls['eq-ismp'].innerHTML;
+const matchScope = /data-term="([^"]+)"/g;
+let ms;
+while ((ms = matchScope.exec(htmlScopeTest)) !== null) {
+  if (!testRender.tutorialState.unlocked.has(testRender.TERM_BLOCK[ms[1]])) {
+    caughtScope = true;
+  }
+}
+check('INV-6 BAD-fixture: Term scoped to wrong block caught', caughtScope);
+
+testRender.setUnlocked(['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT']);
+testRender.drawEquations(testRender.solve(testRender.state));
+let inv8Passed = true;
+let inv9Passed = true;
+['eq-ismp', 'eq-uip', 'eq-pc', 'eq-ts'].forEach(id => {
+  const html = testRender.specialEls[id].innerHTML;
+  const lines = [...html.matchAll(/style="color:([^"]+)".*?data-term="([^"]+)"/g)];
+  for (const m of lines) {
+    const col = m[1];
+    const term = m[2];
+    if (!col || col === 'black' || col === '#000' || col === '#000000') {
+      inv8Passed = false;
+    }
+    const b = testRender.TERM_BLOCK[term];
+    const allowed = (b === 'GOODS') ? '#d85a30' :
+                    (b === 'ISLM') ? ((term==='MP'||term==='i') ? '#185fa5' : '#d85a30') :
+                    (b === 'UIP') ? '#0f6e56' :
+                    (b === 'PC') ? '#534ab7' : null;
+    if (col !== allowed) {
+      inv9Passed = false;
+    }
+  }
+});
+check('INV-8 Permanent Colour: No term defaults to black', inv8Passed);
+check('INV-9 Palette Binding: Colours match EQ_COL strictly', inv9Passed);
+
+// BAD-fixture for INV-8 (term left black)
+const badInv8Html = '<span class="eq-line" style="color:black" data-term="C">C</span>';
+const caughtInv8 = !!badInv8Html.match(/style="color:(black|#000|#000000)"/);
+check('INV-8 BAD-fixture: Black term caught', caughtInv8);
+
+// BAD-fixture for INV-9 (non-EQ_COL literal)
+const badInv9Html = '<span class="eq-line" style="color:#ff0000" data-term="C">C</span>';
+const caughtInv9 = (badInv9Html.match(/style="color:([^"]+)"/)[1] !== '#d85a30');
+check('INV-9 BAD-fixture: Non-EQ_COL literal caught', caughtInv9);
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);
