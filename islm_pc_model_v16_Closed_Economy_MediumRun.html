@@ -77,9 +77,10 @@
   }
   .control { margin-bottom: 10px; }
   .control label {
-    display: flex; justify-content: space-between; font-size: 11.5px;
+    display: flex; align-items: center; font-size: 11.5px;
     color: #444; margin-bottom: 3px;
   }
+  .control label > span:last-child { margin-left: auto; }
   .control label .val { font-weight: 500; color: #1a1a1a; font-variant-numeric: tabular-nums; }
   .control label .val-edit {
     font-weight: 500; color: #1a1a1a; font-variant-numeric: tabular-nums;
@@ -193,7 +194,7 @@
   .eq-box.open .eq-toggle .eq-arrow { transform: rotate(90deg); }
   .eq-body { display: none; padding: 2px 9px 8px; border-top: 1px solid #ebe9e2; }
   .eq-box.open .eq-body { display: block; }
-  .eq-box .eq-line { display: block; white-space: nowrap; overflow-x: auto; }
+  .eq-box .eq-line { display: flex; align-items: baseline; white-space: nowrap; overflow-x: auto; }
   .eq-box .eq-anchor { color: #444; font-weight: 600; margin-bottom: 4px;
     padding-bottom: 4px; border-bottom: 1px solid #e2e0d8; }
   .eq-box .eq-total { margin-top: 3px; padding-top: 3px; border-top: 1px solid #e2e0d8; }
@@ -264,6 +265,27 @@
     padding: 6px 10px; border-radius: 5px; font-size: 11.5px; font-weight: 500;
     margin-bottom: 8px; text-align: center;
   }
+  /* Eq Ref */
+  .eq-ref { margin-left: auto; color: #888; font-size: 0.85em; }
+
+  /* Help mode */
+  .sym { cursor: default; }
+  .help-mode .sym { 
+    border-bottom: 1px dotted #888; 
+    cursor: help; 
+    position: relative; 
+  }
+  .help-mode .sym:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 100%; right: 0; width: max-content; max-width: 240px;
+    background: #1a1a1a; color: #fff;
+    padding: 8px 10px; border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+    font-size: 10.5px; font-family: system-ui, sans-serif; line-height: 1.5;
+    white-space: normal; z-index: 1000;
+    pointer-events: none; margin-top: 4px;
+    font-weight: 400; text-transform: none; letter-spacing: 0;
+  }
 </style>
 </head>
 <body>
@@ -271,6 +293,8 @@
 <div class="header">
   <h1>IS-MP-PC interactive model<span class="tier-badge">free tier · closed economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
   <div class="run-controls">
+    <button onclick="toggleHelpMode()" id="btn-help-mode" title="Hover over any symbol to see its definition.">❓ Help Mode: OFF</button>
+    <button onclick="advanceTutorial()" id="btn-advance" class="primary">Unlock Next Block</button>
     <button onclick="reset()">↺ Reset</button>
     <button class="reverse" id="reverse-btn" onclick="reverseStep()" disabled>← Reverse</button>
     <button onclick="stepPeriod()">→ Step one period</button>
@@ -622,9 +646,110 @@ function step(s) {
   };
 }
 
+const SYMBOL_DEFS = {
+  'π': { meaning: 'inflation rate', ref: 'eq. 9.3', role: 'the rate of change of prices' },
+  'α': { meaning: 'effect of output gap on inflation', ref: 'eq. 9.3', role: 'Phillips curve slope' },
+  'πᵉ': { meaning: 'expected inflation rate', ref: 'eq. 8.7', role: 'shifts the Phillips curve' },
+  'θ': { meaning: 'anchoring of expectations', ref: 'eq. 8.7', role: 'weight on target vs past inflation' },
+  'Yₙ': { meaning: 'natural or potential output', ref: 'eq. 8.4', role: 'level of output where π = πᵉ' },
+  'c₁': { meaning: 'marginal propensity to consume', ref: 'eq. 3.3', role: 'multiplier effect on output' },
+  'd₁ᵣ': { meaning: 'interest sensitivity of investment', ref: 'eq. 5.1', role: 'slope of the IS curve' },
+  'uₙ': { meaning: 'natural rate of unemployment', ref: 'eq. 8.4', role: 'unemployment rate where π = πᵉ' },
+  'c₀': { meaning: 'autonomous consumption', ref: 'eq. 3.3', role: 'consumption when disposable income is zero' },
+  'd₀': { meaning: 'autonomous investment', ref: 'eq. 5.1', role: 'investment independent of Y and r' },
+  'd₁': { meaning: 'output sensitivity of investment', ref: 'eq. 5.1', role: 'accelerator effect' },
+  'Y': { meaning: 'output / income', ref: 'eq. 3.1', role: 'total domestic production' },
+  'T': { meaning: 'taxes minus transfers', ref: 'eq. 3.1', role: 'reduces disposable income' },
+  'G': { meaning: 'government spending', ref: 'eq. 3.1', role: 'autonomous component of demand' },
+  'r': { meaning: 'real interest rate', ref: 'eq. 6.4', role: 'the rate that enters investment' },
+  'i': { meaning: 'nominal interest rate', ref: 'eq. 4.1', role: 'policy rate set by central bank' },
+  'i_N': { meaning: 'neutral nominal interest rate', ref: 'Ch. 23', role: 'nominal rate when Y = Yₙ and π = π*' },
+  'φ': { meaning: 'Taylor rule inflation response', ref: 'Ch. 23', role: 'strength of reaction to inflation gap' },
+  'ψ': { meaning: 'Taylor rule output response', ref: 'Ch. 23', role: 'strength of reaction to output gap' },
+  'π*': { meaning: 'target inflation rate', ref: 'Ch. 23', role: 'central bank inflation goal' },
+  'C': { meaning: 'consumption', ref: 'eq. 3.3', role: 'household spending' },
+  'I': { meaning: 'investment', ref: 'eq. 5.1', role: 'firm spending' },
+  'M/P': { meaning: 'real money demand', ref: 'eq. 5.3', role: 'liquidity preference' }
+};
+
+const EQ_REF = {
+  'C': 'eq. 3.3',
+  'I': 'eq. 5.1 / 9.1',
+  'anchor': 'eq. 9.1',
+  'fisher': 'eq. 6.4',
+  'MD': 'eq. 5.3',
+  'MP': 'Ch. 23',
+  'PC': 'eq. 9.3 (expectations 8.7, natural rate 8.4)'
+};
+
+function wrapSymbols(htmlOrText) {
+  if (!htmlOrText) return '';
+  const sortedTokens = Object.keys(SYMBOL_DEFS).sort((a, b) => b.length - a.length);
+  let parts = htmlOrText.split(/(<[^>]*>)/g);
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 1) continue; // skip tags
+    let t = parts[i];
+    for (let j = 0; j < sortedTokens.length; j++) {
+      const token = sortedTokens[j];
+      const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const isWord = /^[a-zA-Z0-9_]+$/.test(token[0]) && /^[a-zA-Z0-9_]+$/.test(token[token.length - 1]);
+      const regex = isWord 
+        ? new RegExp('\\b' + escaped + '\\b', 'g') 
+        : new RegExp(escaped, 'g');
+      t = t.replace(regex, '%%SYM' + j + '%%');
+    }
+    parts[i] = t;
+  }
+  let result = parts.join('');
+  for (let j = 0; j < sortedTokens.length; j++) {
+    const token = sortedTokens[j];
+    const def = SYMBOL_DEFS[token];
+    if (result.includes('%%SYM' + j + '%%')) {
+      const tooltip = def.meaning + '; ' + def.ref + '; ' + def.role;
+      result = result.split('%%SYM' + j + '%%').join('<span class="sym" data-sym="' + token + '" data-tooltip="' + tooltip + '">' + token + '</span>');
+    }
+  }
+  return result;
+}
+
+const endLine = term => (EQ_REF[term] ? `<span class="eq-ref">(${EQ_REF[term]})</span>` : '');
+
 // -------------------------------------------------------------------------
 // Controls
 // -------------------------------------------------------------------------
+function syncControls() {
+  [...paramDefs, ...shockDefs, ...dynamicsDefs, ...debtDefs].forEach(p => {
+    const inp = document.getElementById('ctl-' + p.key);
+    if (inp) inp.value = state[p.key];
+    const lbl = document.getElementById('val-' + p.key);
+    if (lbl) {
+      const editFmt = p.editFmt || (v => p.fmt(v).replace(/[^0-9.\-]/g, ''));
+      lbl.value = editFmt(state[p.key]);
+    }
+  });
+  const tt = document.getElementById('taylor-toggle');
+  if (tt) tt.classList.toggle('on', state.taylor_on);
+  const dt = document.getElementById('deanchor-toggle');
+  if (dt) dt.classList.toggle('on', state.deanchor_on);
+}
+
+function toggleHelpMode() {
+  document.body.classList.toggle('help-mode');
+  const btn = document.getElementById('btn-help-mode');
+  if (btn) btn.textContent = document.body.classList.contains('help-mode') ? '❓ Help Mode: ON' : '❓ Help Mode: OFF';
+}
+
+function syncDynamicsParams() {
+  const ind = document.getElementById('shock-indicator');
+  if (Math.abs(state.z_pulse) > 0.0005) {
+    ind.textContent = `active pulse: +${(state.z_pulse * 100).toFixed(2)}%  (decays each period)`;
+    ind.classList.add('active');
+  } else {
+    ind.textContent = 'no active pulse';
+    ind.classList.remove('active');
+  }
+}
+
 function buildSliders(root, defs) {
   defs.forEach(p => {
     const wrap = document.createElement('div');
@@ -634,7 +759,7 @@ function buildSliders(root, defs) {
     const suffix = p.suffix ? `<span class="val-suffix">${p.suffix}</span>` : '';
     const meter = p.meter ? `<div class="theta-meter" id="meter-${p.key}"></div>` : '';
     wrap.innerHTML = `
-      <label>${p.label} <span><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(state[p.key])}">${suffix}</span></label>
+      <label>${wrapSymbols(p.label)} <span><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(state[p.key])}">${suffix}</span></label>
       <input type="range" id="ctl-${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${state[p.key]}">
       ${meter}
     `;
@@ -696,22 +821,6 @@ function toggleDeanchor() {
   state.deanchor_on = !state.deanchor_on;
   syncControls();
   render();
-}
-
-function syncControls() {
-  [...paramDefs, ...shockDefs, ...dynamicsDefs, ...debtDefs].forEach(p => {
-    const inp = document.getElementById('ctl-' + p.key);
-    if (inp) inp.value = state[p.key];
-    const lbl = document.getElementById('val-' + p.key);
-    if (lbl) {
-      const editFmt = p.editFmt || (v => p.fmt(v).replace(/[^0-9.\-]/g, ''));
-      lbl.value = editFmt(state[p.key]);
-    }
-  });
-  const tt = document.getElementById('taylor-toggle');
-  if (tt) tt.classList.toggle('on', state.taylor_on);
-  const dt = document.getElementById('deanchor-toggle');
-  if (dt) dt.classList.toggle('on', state.deanchor_on);
 }
 
 function updateShockIndicator() {
@@ -831,7 +940,7 @@ function drawISLM() {
 
   const yn_x = xScale(eq.Y_n, o);
   el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).textContent = 'Yₙ';
+  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('Yₙ');
 
   if (ZLB >= o.yMin && ZLB <= o.yMax) {
     const zlb_y = yScale(ZLB, o);
@@ -850,8 +959,8 @@ function drawISLM() {
   el('line', { x1: P.l, x2: W - P.r, y1: mp_y, y2: mp_y, class: 'curve curve-lm' }, svg);
 
   const isEndVal = isRateForOutput(o.xMax, state.G, state.T, state.pi_e, state.c1);
-  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(isEndVal, o) + 12, o), class: 'curve-label label-is' }, svg).textContent = 'IS';
-  el('text', { x: P.l + 6, y: mp_y - 5, class: 'curve-label label-lm' }, svg).textContent = 'MP (CB rate)';
+  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(isEndVal, o) + 12, o), class: 'curve-label label-is' }, svg).innerHTML = wrapSymbols('IS');
+  el('text', { x: P.l + 6, y: mp_y - 5, class: 'curve-label label-lm' }, svg).innerHTML = wrapSymbols('MP (CB rate)');
 
   el('circle', { cx: xScale(eq.Y, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
 
@@ -929,15 +1038,15 @@ function drawMoneyMarket() {
   // The CB pins i (flat line). The money stock is whatever clears demand at that rate.
   const i_y = yScale(clamp(eq.i, o.yMin, o.yMax), o);
   el('line', { x1: P.l, x2: W - P.r, y1: i_y, y2: i_y, class: 'curve curve-lm' }, svg);
-  el('text', { x: P.l + 6, y: i_y - 5, class: 'curve-label label-lm' }, svg).textContent = 'i (CB sets)';
+  el('text', { x: P.l + 6, y: i_y - 5, class: 'curve-label label-lm' }, svg).innerHTML = wrapSymbols('i (CB sets)');
 
   if (MP >= o.xMin && MP <= o.xMax) {
     const ms_x = xScale(MP, o);
     el('line', { x1: ms_x, x2: ms_x, y1: P.t, y2: H - P.b, class: 'curve curve-ms' }, svg);
-    el('text', { x: ms_x + 3, y: P.t + 12, class: 'curve-label label-ms' }, svg).textContent = 'M^s (adjusts)';
+    el('text', { x: ms_x + 3, y: P.t + 12, class: 'curve-label label-ms' }, svg).innerHTML = wrapSymbols('M^s (adjusts)');
   }
 
-  el('text', { x: xScale(o.xMax, o) - 22, y: yScale((60 + eq.Y - o.xMax) / 2000, o) - 4, class: 'curve-label label-md' }, svg).textContent = 'M^d';
+  el('text', { x: xScale(o.xMax, o) - 22, y: yScale((60 + eq.Y - o.xMax) / 2000, o) - 4, class: 'curve-label label-md' }, svg).innerHTML = wrapSymbols('M^d');
 
   if (MP >= o.xMin && MP <= o.xMax) {
     el('circle', { cx: xScale(MP, o), cy: yScale(clamp(eq.i, o.yMin, o.yMax), o), r: 4.5, class: 'eq-point' }, svg);
@@ -965,7 +1074,7 @@ function drawPC() {
 
   const yn_x = xScale(eq.Y_n, o);
   el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).textContent = 'Yₙ';
+  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('Yₙ');
 
   const target_y = yScale(PI_TARGET, o);
   el('line', { x1: P.l, x2: W - P.r, y1: target_y, y2: target_y, class: 'curve-target' }, svg);
@@ -974,7 +1083,7 @@ function drawPC() {
   const pe_y = yScale(state.pi_e, o);
   if (state.pi_e >= o.yMin && state.pi_e <= o.yMax) {
     el('line', { x1: P.l, x2: W - P.r, y1: pe_y, y2: pe_y, class: 'curve-target' }, svg);
-    el('text', { x: P.l + 4, y: pe_y - 3, class: 'axis-label', fill: '#666' }, svg).textContent = 'πᵉ';
+    el('text', { x: P.l + 4, y: pe_y - 3, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('πᵉ');
   }
 
   const pcPts = [];
@@ -984,7 +1093,7 @@ function drawPC() {
   drawLine(svg, pcPts, o, 'curve-pc');
 
   const pcEndVal = state.pi_e + state.alpha * (o.xMax - eq.Y_n) / eq.Y_n + z_eff;
-  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(pcEndVal, o) - 4, o), class: 'curve-label label-pc' }, svg).textContent = 'PC';
+  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(pcEndVal, o) - 4, o), class: 'curve-label label-pc' }, svg).innerHTML = wrapSymbols('PC');
 
   el('circle', { cx: xScale(clamp(eq.Y, o.xMin, o.xMax), o), cy: yScale(clamp(eq.pi, o.yMin, o.yMax), o), r: 4.5, class: 'eq-point' }, svg);
 
@@ -1031,7 +1140,7 @@ function drawTimeSeries() {
   drawAxes(svg, o);
 
   const rateMin = -0.05, rateMax = 0.20;
-  el('text', { x: W - P.r + 4, y: P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg).textContent = 'i, π';
+  el('text', { x: W - P.r + 4, y: P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg).innerHTML = wrapSymbols('i, π');
   [-0.05, 0, 0.05, 0.10, 0.15, 0.20].forEach(v => {
     const y = H - P.b - (v - rateMin) / (rateMax - rateMin) * (H - P.t - P.b);
     el('text', { x: W - P.r + 4, y: y + 3, class: 'axis-label' }, svg).textContent = (v * 100).toFixed(0) + '%';
@@ -1083,11 +1192,11 @@ function drawReadout() {
     { label: 'Primary T−G',  value: pb.toFixed(1),                       delta: pb >= 0 ? 'surplus' : 'deficit',                  cls: pb >= 0 ? 'pos' : 'neg' },
     { label: 'Debt B/Y',     value: debt_ratio.toFixed(1) + '%',         delta: '',                                              cls: debt_ratio > 100 ? 'neg' : '' }
   ];
-  document.getElementById('readout').innerHTML = stats.map(s => `
+  document.getElementById('readout').innerHTML = wrapSymbols(stats.map(s => `
     <div class="stat">
       <span class="label">${s.label}</span>
       <span class="value">${s.value}<span class="delta ${s.cls}">${s.delta}</span></span>
-    </div>`).join('');
+    </div>`).join(''));
 
   document.getElementById('period-label').textContent = `period ${state.period}`;
   document.getElementById('pie-readout').textContent = (state.pi_e * 100).toFixed(2) + '%';
@@ -1252,73 +1361,77 @@ function drawEquations(eq) {
     const cC = '#d85a30', cI = '#185fa5', cG = '#0f6e56';
     const Cd = f(C,2), Id = f(I,2), Gd = f(G,2);
     const totalShown = (Number(Cd) + Number(Id) + Number(Gd)).toFixed(2);
-    isEl.innerHTML =
-      `<span class="eq-line eq-anchor"><span class="eq-lbl"></span>`
-      + `<span class="eq-sym">Y = C + I + G</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl" style="color:${cC}">C</span>`
+    isEl.innerHTML = wrapSymbols(
+      `<span class="eq-line eq-anchor" data-term="anchor"><span class="eq-lbl"></span>`
+      + `<span class="eq-sym">Y = C + I + G</span>${endLine('anchor')}</span>`
+      + `<span class="eq-line" data-term="C"><span class="eq-lbl" style="color:${cC}">C</span>`
       + `<span class="eq-sym">c₀ + c₁(Y−T)</span> = `
       + `<span class="eq-num">${f(c0,2)} + ${f(s.c1,2)}(${f(eq.Y,1)}−${f(s.T,0)})</span> `
-      + `= <span class="eq-res" style="color:${cC}">${Cd}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl" style="color:${cI}">I</span>`
-      + `<span class="eq-sym">d₀ + d₁·Y − d₁r·r</span> = `
+      + `= <span class="eq-res" style="color:${cC}">${Cd}</span>${endLine('C')}</span>`
+      + `<span class="eq-line" data-term="I"><span class="eq-lbl" style="color:${cI}">I</span>`
+      + `<span class="eq-sym">d₀ + d₁·Y − d₁ᵣ·r</span> = `
       + `<span class="eq-num">${f(d0,2)} + ${f(d1,2)}(${f(eq.Y,1)}) − ${f(d1r,0)}(${f(r,4)})</span> `
-      + `= <span class="eq-res" style="color:${cI}">${Id}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl" style="color:${cG}">G</span>`
+      + `= <span class="eq-res" style="color:${cI}">${Id}</span>${endLine('I')}</span>`
+      + `<span class="eq-line" data-term="G"><span class="eq-lbl" style="color:${cG}">G</span>`
       + `<span class="eq-sym">government spending</span> `
-      + `= <span class="eq-res" style="color:${cG}">${Gd}</span></span>`
-      + `<span class="eq-line eq-total"><span class="eq-lbl">Y</span>`
+      + `= <span class="eq-res" style="color:${cG}">${Gd}</span>${endLine('G')}</span>`
+      + `<span class="eq-line eq-total" data-term="Y"><span class="eq-lbl">Y</span>`
       + `<span class="eq-num">${Cd} + ${Id} + ${Gd}</span> `
-      + `= <span class="eq-res">${totalShown}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl">MP</span>`
+      + `= <span class="eq-res">${totalShown}</span>${endLine('Y')}</span>`
+      + `<span class="eq-line" data-term="MP"><span class="eq-lbl">MP</span>`
       + `<span class="eq-sym">i set by the central bank${s.taylor_on ? ' (Taylor rule)' : ''}</span> `
-      + `= <span class="eq-res" style="color:#185fa5">${fpc(eq.i,2)}</span></span>`;
+      + `= <span class="eq-res" style="color:#185fa5">${fpc(eq.i,2)}</span>${endLine('MP')}</span>`
+    );
   }
 
   // Money market box: real money demand = supply at the clearing rate.
   const mmEl = document.getElementById('eq-mm');
   if (mmEl) {
-    mmEl.innerHTML =
-      `<span class="eq-line"><span class="eq-lbl">i</span>`
+    mmEl.innerHTML = wrapSymbols(
+      `<span class="eq-line" data-term="i"><span class="eq-lbl">i</span>`
       + `<span class="eq-sym">set by the central bank</span> `
       + `= <span class="eq-res" style="color:#185fa5">${fpc(eq.i,2)}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl">M^d</span>`
+      + `<span class="eq-line" data-term="MD"><span class="eq-lbl">M/P</span>`
       + `<span class="eq-sym">L(Y,i) = 60 + Y − 2000·i</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl"></span>`
+      + `<span class="eq-line" data-term="MD"><span class="eq-lbl"></span>`
       + `<span class="eq-num">= 60 + ${eqColor(f(eq.Y,1),EQ_COL.LM)} − 2000·${eqColor(fpc(eq.i,2),EQ_COL.LM)}</span> `
-      + `= <span class="eq-res" style="color:${EQ_COL.MS}">${f(eq.MP,2)}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl">M^s</span>`
-      + `<span class="eq-sym">adjusts to equal M^d at the CB's rate → M/P = ${f(eq.MP,2)}</span></span>`;
+      + `= <span class="eq-res" style="color:${EQ_COL.MS}">${f(eq.MP,2)}</span>${endLine('MD')}</span>`
+      + `<span class="eq-line"><span class="eq-lbl">Mˢ</span>`
+      + `<span class="eq-sym">adjusts to equal M/P at the CB's rate → M/P = ${f(eq.MP,2)}</span></span>`
+    );
   }
 
   // Phillips curve box.
   const pcEl = document.getElementById('eq-pc');
   if (pcEl) {
     const gap = (eq.Y - eq.Y_n) / eq.Y_n;
-    pcEl.innerHTML =
-      `<span class="eq-line"><span class="eq-lbl">PC</span>`
-      + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + z</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl"></span><span class="eq-num">= `
+    pcEl.innerHTML = wrapSymbols(
+      `<span class="eq-line" data-term="PC"><span class="eq-lbl">PC</span>`
+      + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + shock</span></span>`
+      + `<span class="eq-line" data-term="PC"><span class="eq-lbl"></span><span class="eq-num">= `
       + `${eqColor(fpc(s.pi_e,1),EQ_COL.PC)} + ${eqColor(f(s.alpha,2),EQ_COL.PC)}·(${eqColor(f(eq.Y,1),EQ_COL.PC)}−${f(eq.Y_n,0)})/${f(eq.Y_n,0)} `
       + `+ ${eqColor(fpc(eq.z_eff,2),EQ_COL.PC)}</span> `
-      + `= <span class="eq-res" style="color:${EQ_COL.PC}">${fpc(eq.pi,1)}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl">gap</span>`
-      + `<span class="eq-num">(Y−Yₙ)/Yₙ = ${fpc(gap,1)}</span></span>`;
+      + `= <span class="eq-res" style="color:${EQ_COL.PC}">${fpc(eq.pi,1)}</span>${endLine('PC')}</span>`
+      + `<span class="eq-line" data-term="gap"><span class="eq-lbl">gap</span>`
+      + `<span class="eq-num">(Y−Yₙ)/Yₙ = ${fpc(gap,1)}</span></span>`
+    );
   }
 
   // Time-series box: the dynamic identities driving each step.
   const tsEl = document.getElementById('eq-ts');
   if (tsEl) {
-    tsEl.innerHTML =
-      `<span class="eq-line"><span class="eq-lbl">Fisher</span>`
+    tsEl.innerHTML = wrapSymbols(
+      `<span class="eq-line" data-term="fisher"><span class="eq-lbl">Fisher</span>`
       + `<span class="eq-sym">r = i − πᵉ</span> = `
       + `${eqColor(fpc(eq.i,2),EQ_COL.i)} − ${eqColor(fpc(s.pi_e,1),EQ_COL.pi)} `
-      + `= <span class="eq-res">${fpc(r,2)}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl">P′</span>`
+      + `= <span class="eq-res">${fpc(r,2)}</span>${endLine('fisher')}</span>`
+      + `<span class="eq-line" data-term="P"><span class="eq-lbl">P′</span>`
       + `<span class="eq-sym">P(1 + π·speed)</span> = `
       + `${eqColor(f(s.P,3),EQ_COL.P)}(1 + ${eqColor(fpc(eq.pi,1),EQ_COL.pi)}·${f(s.speed,2)}) `
       + `= <span class="eq-res" style="color:${EQ_COL.P}">${f(s.P*(1+eq.pi*s.speed),3)}</span></span>`
-      + `<span class="eq-line"><span class="eq-lbl">πᵉ′</span>`
-      + `<span class="eq-sym">πᵉ + speed[θ(π*−πᵉ) + (1−θ)(π−πᵉ)]</span></span>`;
+      + `<span class="eq-line" data-term="pi_e"><span class="eq-lbl">πᵉ′</span>`
+      + `<span class="eq-sym">πᵉ + speed[θ(π*−πᵉ) + (1−θ)(π−πᵉ)]</span></span>`
+    );
   }
 }
 

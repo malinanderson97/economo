@@ -20,13 +20,13 @@ const headlessCode = scripts.slice(0, domStart);
 let api;
 try {
   // We use Function to evaluate the sliced script, which gives us access to the tutorial state machine.
-  api = new Function(headlessCode + '\nfunction render() {}\nreturn { tutorialState, unlockBlock, setUnlocked, resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs };')();
+  api = new Function(headlessCode + '\nfunction render() {}\nreturn { tutorialState, unlockBlock, setUnlocked, resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine };')();
 } catch (e) {
   console.error('FAILED TO IMPORT HEADLESS:', e.message);
   process.exit(1);
 }
 
-const { tutorialState, unlockBlock, setUnlocked, resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs } = api;
+const { tutorialState, unlockBlock, setUnlocked, resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine } = api;
 
 let headlessBaselineExportKeys = Object.keys(api).sort().join(',');
 
@@ -251,7 +251,7 @@ function verifyGating(htmlString) {
   const allowlist = [
     'reset()', 'stepPeriod()', 'reverseStep()', 'jumpLongRun()', 'copyState()', 'advanceTutorial()', // Always-on run controls
     'scenario-select', 'applySelectedScenario()', // Preset controls (global)
-    'toggleSection(', 'toggleEq(', 'advanceDrillPC(' // Layout toggles
+    'toggleSection(', 'toggleEq(', 'advanceDrillPC(', 'toggleHelpMode(' // Layout toggles
   ];
 
   for (const m of interactives) {
@@ -766,10 +766,50 @@ if(testRender.specialEls['drill-uip']) testRender.specialEls['drill-uip'].classL
 
 const sBefore3b = JSON.stringify(testRender.getState());
 const eqBefore3b = JSON.stringify(testRender.solve(testRender.getState()));
+
 testRender.render();
 const sAfter3b = JSON.stringify(testRender.getState());
 const eqAfter3b = JSON.stringify(testRender.solve(testRender.getState()));
 check('INV-3b-RO: render() with open drills is read-only', sBefore3b === sAfter3b && eqBefore3b === eqAfter3b);
+
+// -------------------------------------------------------------------------
+// Item C: Help Mode & Eq Refs (INV-C1 - C4, INV-93-1 - 2)
+// -------------------------------------------------------------------------
+
+check('INV-C1: wrapSymbols is pure and string-to-string (headless)', typeof wrapSymbols('Yₙ') === 'string' && wrapSymbols('Yₙ') !== 'Yₙ');
+
+const badWrapCode = headlessCode.replace('return result;', 'return { notAString: true };');
+const badWrapApi = new Function(badWrapCode + '\nfunction render() {}\nreturn { wrapSymbols };')();
+check('BAD-fixture: wrapSymbols impurity caught', typeof badWrapApi.wrapSymbols('Yₙ') !== 'string');
+
+testRender.setUnlocked(['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT']);
+testRender.drawEquations(testRender.solve(testRender.state));
+check('INV-C2: drawEquations applies wrapSymbols', testRender.specialEls['eq-ismp'].innerHTML.includes('class="sym"'));
+
+testRender.specialEls['eq-ismp'].innerHTML = '<span class="eq-line"><span class="eq-sym">Yₙ</span></span>'; // missing .sym
+check('BAD-fixture: Unwrapped symbol caught', !testRender.specialEls['eq-ismp'].innerHTML.includes('class="sym"'));
+
+const c3Match = wrapSymbols('Yₙ').match(/data-tooltip="([^"]+)"/);
+const expectedTooltip = `${SYMBOL_DEFS['Yₙ'].meaning}; ${SYMBOL_DEFS['Yₙ'].ref}; ${SYMBOL_DEFS['Yₙ'].role}`;
+check('INV-C3: Tooltips correctly extract the symbol mapping', c3Match && c3Match[1] === expectedTooltip);
+
+const badTooltip = wrapSymbols('Yₙ').replace(expectedTooltip, 'WRONG');
+check('BAD-fixture: Incorrect tooltip mapping caught', badTooltip.match(/data-tooltip="([^"]+)"/)[1] !== expectedTooltip);
+
+check('INV-C4: EQ_REF contains valid targets', typeof EQ_REF['C'] === 'string');
+const badEqRefCode = headlessCode.replace("'C': 'eq. 3.3',", "");
+const badEqRefApi = new Function(badEqRefCode + '\nfunction render() {}\nreturn { EQ_REF };')();
+check('BAD-fixture: Empty EQ_REF caught', typeof badEqRefApi.EQ_REF['C'] !== 'string');
+
+check('INV-93-1: endLine outputs an eq-ref span when a ref exists', endLine('C').includes('class="eq-ref"') && endLine('C').includes(EQ_REF['C']));
+const badEndLineCode1 = headlessCode.replace('`<span class="eq-ref">(${EQ_REF[term]})</span>`', 'EQ_REF[term]');
+const badEndLineApi1 = new Function(badEndLineCode1 + '\nfunction render() {}\nreturn { endLine, EQ_REF };')();
+check('BAD-fixture: endLine misses span caught', !badEndLineApi1.endLine('C').includes('class="eq-ref"'));
+
+check('INV-93-2: endLine outputs nothing when a ref does not exist', endLine('UNKNOWN_REF_XXX') === '');
+const badEndLineCode2 = headlessCode.replace("? `<span class=\"eq-ref\">(${EQ_REF[term]})</span>` : ''", "? `<span class=\"eq-ref\">(${EQ_REF[term]})</span>` : '<span class=\"eq-ref\">GARBAGE</span>'");
+const badEndLineApi2 = new Function(badEndLineCode2 + '\nfunction render() {}\nreturn { endLine };')();
+check('BAD-fixture: endLine creates garbage for missing ref caught', badEndLineApi2.endLine('UNKNOWN_REF_XXX') !== '');
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);

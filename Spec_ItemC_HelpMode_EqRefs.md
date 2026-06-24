@@ -28,7 +28,33 @@ They ship together because both are render-time decorations of the same equation
 - **INV-93-2 (reference map matches the doc).** The line→eq-number map equals the §9.3 mapping exactly (see §3.2). Assert against a recorded table. (This is the "display strings must reconcile" rule applied to references.)
 - **No layout regression.** The existing assertions that `#readout` follows the charts, eq-line reconciliation (INV-6/8/9), colour binding (EQ_COL), and drill invariants all stay green. The eq-ref span sits as a trailing right-aligned element in the existing flex row; it must not disturb the label/sym/num/result layout the reconciliation assertions read.
 
----
+---## 1a. HEADLESS-SAFETY (mandatory — this slice broke on it once)
+
+The verifiers (`verify_v19`, `verify_onboarding`) build a *headless slice* of the
+HTML by extracting all <script> text and constructing it with `new Function(...)`.
+If the script is not brace-balanced, or if top-level code touches the DOM, that
+construction throws `SyntaxError: Unexpected end of input` / `FAILED TO LOAD ENGINE`
+and EVERY headless verifier dies. A prior attempt did exactly this. Therefore:
+
+- **HS-1 (brace balance).** Every edit must leave the <script> block brace-,
+  paren-, and bracket-balanced. After EACH edit, before running anything else,
+  check the script still constructs:
+  `node -e "const h=require('fs').readFileSync('islm_pc_model_v19_Open_Economy_Complete_Demo.html','utf8');const s=[...h.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n');new Function(s);console.log('CONSTRUCTS OK')"`
+  If it does not print CONSTRUCTS OK, the edit is broken — fix the braces, do not proceed.
+
+- **HS-2 (headless-safe placement).** `SYMBOL_DEFS` and `wrapSymbols` must be PURE:
+  plain data + string manipulation only. No `document`, no `window`, no DOM calls at
+  definition time. They must sit in the headless region (above `function buildSliders`,
+  alongside the other engine-region helpers), so the headless slice still constructs.
+  Tooltip wiring that DOES touch the DOM goes in the DOM region (at/after buildSliders),
+  never at top level.
+
+- **HS-3 (STOP on load failure).** If any verifier prints `SyntaxError`,
+  `Unexpected end of input`, `FAILED TO LOAD`, or `DOM Stub Run Failed`: STOP.
+  Paste the full error. Do NOT create debug files, do NOT write a replacement harness,
+  do NOT reconstruct the headless slice, do NOT use Set-Content. A red verifier is a
+  signal to report, not to route around.
+
 
 ## 2. Symbol set (from §9.2; the tokens the panels emit)
 

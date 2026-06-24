@@ -33,12 +33,12 @@ const stub = `var document={getElementById:()=>fakeEl(),createElement:()=>fakeEl
 let api;
 try {
   api = new Function(stub + scripts +
-    '\nreturn {solve,step,clone,initialState,effectiveTheta,SCENARIOS};')();
+    '\nreturn {solve,step,clone,initialState,effectiveTheta,SCENARIOS,wrapSymbols,SYMBOL_DEFS,EQ_REF,endLine};')();
 } catch (e) {
   console.error('FAILED TO LOAD ENGINE:', e.message);
   process.exit(1);
 }
-const { solve, step, clone, initialState, effectiveTheta, SCENARIOS } = api;
+const { solve, step, clone, initialState, effectiveTheta, SCENARIOS, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine } = api;
 
 // ---- Tiny test harness -----------------------------------------------------
 let passed = 0, failed = 0;
@@ -216,6 +216,37 @@ console.log('Verifying islm_pc_model_v16 …\n');
   // Actual analysis on html
   checkHandlers(html, false);
 }
+
+// -------------------------------------------------------------------------
+// Item C: Help Mode & Eq Refs (INV-C1, C3, C4, 93-1, 93-2)
+// -------------------------------------------------------------------------
+
+check('INV-C1: wrapSymbols is pure and string-to-string (headless)', typeof wrapSymbols('Yₙ') === 'string' && wrapSymbols('Yₙ') !== 'Yₙ');
+const badWrapCode = scripts.replace('return result;', 'return { notAString: true };');
+const badWrapApi = new Function(stub + badWrapCode + '\nreturn { wrapSymbols };')();
+check('BAD-fixture: wrapSymbols impurity caught', typeof badWrapApi.wrapSymbols('Yₙ') !== 'string');
+
+const c3Match = wrapSymbols('Yₙ').match(/data-tooltip="([^"]+)"/);
+const expectedTooltip = `${SYMBOL_DEFS['Yₙ'].meaning}; ${SYMBOL_DEFS['Yₙ'].ref}; ${SYMBOL_DEFS['Yₙ'].role}`;
+check('INV-C3: Tooltips correctly extract the symbol mapping', c3Match && c3Match[1] === expectedTooltip);
+
+const badTooltip = wrapSymbols('Yₙ').replace(expectedTooltip, 'WRONG');
+check('BAD-fixture: Incorrect tooltip mapping caught', badTooltip.match(/data-tooltip="([^"]+)"/)[1] !== expectedTooltip);
+
+check('INV-C4: EQ_REF contains valid targets', typeof EQ_REF['C'] === 'string');
+const badEqRefCode = scripts.replace("'C': 'eq. 3.3',", "");
+const badEqRefApi = new Function(stub + badEqRefCode + '\nreturn { EQ_REF };')();
+check('BAD-fixture: Empty EQ_REF caught', typeof badEqRefApi.EQ_REF['C'] !== 'string');
+
+check('INV-93-1: endLine outputs an eq-ref span when a ref exists', endLine('C').includes('class="eq-ref"') && endLine('C').includes(EQ_REF['C']));
+const badEndLineCode1 = scripts.replace('`<span class="eq-ref">(${EQ_REF[term]})</span>`', 'EQ_REF[term]');
+const badEndLineApi1 = new Function(stub + badEndLineCode1 + '\nreturn { endLine, EQ_REF };')();
+check('BAD-fixture: endLine misses span caught', !badEndLineApi1.endLine('C').includes('class="eq-ref"'));
+
+check('INV-93-2: endLine outputs nothing when a ref does not exist', endLine('UNKNOWN_REF_XXX') === '');
+const badEndLineCode2 = scripts.replace("? `<span class=\"eq-ref\">(${EQ_REF[term]})</span>` : ''", "? `<span class=\"eq-ref\">(${EQ_REF[term]})</span>` : '<span class=\"eq-ref\">GARBAGE</span>'");
+const badEndLineApi2 = new Function(stub + badEndLineCode2 + '\nreturn { endLine };')();
+check('BAD-fixture: endLine creates garbage for missing ref caught', badEndLineApi2.endLine('UNKNOWN_REF_XXX') !== '');
 
 // ---- Summary ---------------------------------------------------------------
 console.log(`\n${passed} passed, ${failed} failed.`);

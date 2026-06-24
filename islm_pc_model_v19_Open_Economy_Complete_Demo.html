@@ -73,9 +73,10 @@
   }
   .control { margin-bottom: 10px; }
   .control label {
-    display: flex; justify-content: space-between; font-size: 11.5px;
+    display: flex; align-items: center; font-size: 11.5px;
     color: #444; margin-bottom: 3px;
   }
+  .control label > span:last-child { margin-left: auto; }
   .control label .val { font-weight: 500; color: #1a1a1a; font-variant-numeric: tabular-nums; }
   .control label .val-edit {
     font-weight: 500; color: #1a1a1a; font-variant-numeric: tabular-nums;
@@ -210,7 +211,7 @@
   .eq-box.open .eq-toggle .eq-arrow { transform: rotate(90deg); }
   .eq-body { display: none; padding: 2px 9px 8px; border-top: 1px solid #ebe9e2; }
   .eq-box.open .eq-body { display: block; }
-  .eq-box .eq-line { display: block; white-space: nowrap; overflow-x: auto; }
+  .eq-box .eq-line { display: flex; align-items: baseline; white-space: nowrap; overflow-x: auto; }
   .eq-box .eq-anchor { color: #444; font-weight: 600; margin-bottom: 4px;
     padding-bottom: 4px; border-bottom: 1px solid #e2e0d8; }
   .eq-box .eq-total { margin-top: 3px; padding-top: 3px; border-top: 1px solid #e2e0d8; }
@@ -296,6 +297,27 @@
     #left-panel, #right-col { overflow-y: visible; height: auto; }
     .charts { grid-template-columns: 1fr; grid-template-rows: none; height: auto; }
   }
+  /* Eq Ref */
+  .eq-ref { margin-left: auto; color: #888; font-size: 0.85em; }
+
+  /* Help mode */
+  .sym { cursor: default; }
+  .help-mode .sym { 
+    border-bottom: 1px dotted #888; 
+    cursor: help; 
+    position: relative; 
+  }
+  .help-mode .sym:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 100%; right: 0; width: max-content; max-width: 240px;
+    background: #1a1a1a; color: #fff;
+    padding: 8px 10px; border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+    font-size: 10.5px; font-family: system-ui, sans-serif; line-height: 1.5;
+    white-space: normal; z-index: 1000;
+    pointer-events: none; margin-top: 4px;
+    font-weight: 400; text-transform: none; letter-spacing: 0;
+  }
 </style>
 </head>
 <body>
@@ -303,6 +325,7 @@
 <div class="header">
   <h1>ISLM-UIP-PC interactive model<span class="tier-badge">paid tier &middot; open economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
   <div class="run-controls">
+    <button onclick="toggleHelpMode()" id="btn-help-mode" title="Hover over any symbol to see its definition.">❓ Help Mode: OFF</button>
     <button onclick="advanceTutorial()" id="btn-advance" class="primary">Unlock Next Block</button>
     <button onclick="reset()">↺ Reset</button>
     <button class="reverse" id="reverse-btn" onclick="reverseStep()" disabled>← Reverse</button>
@@ -697,7 +720,6 @@ function nextCredibility(s, pi) {
   const excess = (gap - DEANCHOR_TOL) / 0.02;     // 2 pts beyond band ⇒ full erosion rate
   return clamp(s.cred - DEANCHOR_ERO * excess, 0, 1);
 }
-
 // -------------------------------------------------------------------------
 // Time dynamics
 // -------------------------------------------------------------------------
@@ -740,6 +762,86 @@ function step(s) {
   };
 }
 
+const SYMBOL_DEFS = {
+  'π': { meaning: 'inflation rate', ref: 'eq. 9.3', role: 'the rate of change of prices' },
+  'α': { meaning: 'effect of output gap on inflation', ref: 'eq. 9.3', role: 'Phillips curve slope' },
+  'πᵉ': { meaning: 'expected inflation rate', ref: 'eq. 8.7', role: 'shifts the Phillips curve' },
+  'θ': { meaning: 'anchoring of expectations', ref: 'eq. 8.7', role: 'weight on target vs past inflation' },
+  'Yₙ': { meaning: 'natural or potential output', ref: 'eq. 8.4', role: 'level of output where π = πᵉ' },
+  'c₁': { meaning: 'marginal propensity to consume', ref: 'eq. 3.3', role: 'multiplier effect on output' },
+  'd₁ᵣ': { meaning: 'interest sensitivity of investment', ref: 'eq. 5.1', role: 'slope of the IS curve' },
+  'm₁': { meaning: 'marginal propensity to import', ref: 'eq. 19.1', role: 'open-economy leakage' },
+  'k_open': { meaning: 'open economy multiplier', ref: 'eq. 19.2', role: 'magnifies autonomous spending' },
+  'uₙ': { meaning: 'natural rate of unemployment', ref: 'eq. 8.4', role: 'unemployment rate where π = πᵉ' },
+  'c₀': { meaning: 'autonomous consumption', ref: 'eq. 3.3', role: 'consumption when disposable income is zero' },
+  'd₀': { meaning: 'autonomous investment', ref: 'eq. 5.1', role: 'investment independent of Y and r' },
+  'd₁': { meaning: 'output sensitivity of investment', ref: 'eq. 5.1', role: 'accelerator effect' },
+  'x₁': { meaning: 'sensitivity of exports to foreign output', ref: 'eq. 19.1', role: 'foreign demand' },
+  'n₁': { meaning: 'sensitivity of net exports to real exchange rate', ref: 'eq. 19.1', role: 'Marshall-Lerner condition' },
+  'ε': { meaning: 'real exchange rate', ref: 'eq. 18.1', role: 'relative price of domestic goods' },
+  'Y': { meaning: 'output / income', ref: 'eq. 3.1', role: 'total domestic production' },
+  'T': { meaning: 'taxes minus transfers', ref: 'eq. 3.1', role: 'reduces disposable income' },
+  'G': { meaning: 'government spending', ref: 'eq. 3.1', role: 'autonomous component of demand' },
+  'r': { meaning: 'real interest rate', ref: 'eq. 6.4', role: 'the rate that enters investment' },
+  'i': { meaning: 'nominal interest rate', ref: 'eq. 4.1', role: 'policy rate set by central bank' },
+  'i_N': { meaning: 'neutral nominal interest rate', ref: 'Ch. 23', role: 'nominal rate when Y = Yₙ and π = π*' },
+  'φ': { meaning: 'Taylor rule inflation response', ref: 'Ch. 23', role: 'strength of reaction to inflation gap' },
+  'ψ': { meaning: 'Taylor rule output response', ref: 'Ch. 23', role: 'strength of reaction to output gap' },
+  'π*': { meaning: 'target inflation rate', ref: 'Ch. 23', role: 'central bank inflation goal' },
+  'Y*': { meaning: 'foreign output', ref: 'eq. 19.1', role: 'drives exports' },
+  'NX': { meaning: 'net exports', ref: 'eq. 19.1', role: 'trade balance' },
+  'C': { meaning: 'consumption', ref: 'eq. 3.3', role: 'household spending' },
+  'I': { meaning: 'investment', ref: 'eq. 5.1', role: 'firm spending' },
+  'Eᵉ': { meaning: 'expected exchange rate', ref: 'eq. 19.5', role: 'future currency value' },
+  'E': { meaning: 'nominal exchange rate', ref: 'eq. 19.5', role: 'price of domestic currency' },
+  'i*': { meaning: 'foreign nominal interest rate', ref: 'eq. 19.5', role: 'return on foreign bonds' },
+  'M/P': { meaning: 'real money demand', ref: 'eq. 5.3', role: 'liquidity preference' }
+};
+
+const EQ_REF = {
+  'C': 'eq. 3.3',
+  'I': 'eq. 5.1 / 9.1',
+  'anchor': 'eq. 9.1',
+  'fisher': 'eq. 6.4',
+  'MD': 'eq. 5.3',
+  'MP': 'Ch. 23',
+  'PC': 'eq. 9.3 (expectations 8.7, natural rate 8.4)',
+  'UIP': 'eq. 19.5',
+  'NX': 'eq. 19.1 / 19.2'
+};
+
+function wrapSymbols(htmlOrText) {
+  if (!htmlOrText) return '';
+  const sortedTokens = Object.keys(SYMBOL_DEFS).sort((a, b) => b.length - a.length);
+  let parts = htmlOrText.split(/(<[^>]*>)/g);
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 1) continue; // skip tags
+    let t = parts[i];
+    for (let j = 0; j < sortedTokens.length; j++) {
+      const token = sortedTokens[j];
+      const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const isWord = /^[a-zA-Z0-9_]+$/.test(token[0]) && /^[a-zA-Z0-9_]+$/.test(token[token.length - 1]);
+      const regex = isWord 
+        ? new RegExp('\\b' + escaped + '\\b', 'g') 
+        : new RegExp(escaped, 'g');
+      t = t.replace(regex, '%%SYM' + j + '%%');
+    }
+    parts[i] = t;
+  }
+  let result = parts.join('');
+  for (let j = 0; j < sortedTokens.length; j++) {
+    const token = sortedTokens[j];
+    const def = SYMBOL_DEFS[token];
+    if (result.includes('%%SYM' + j + '%%')) {
+      const tooltip = def.meaning + '; ' + def.ref + '; ' + def.role;
+      result = result.split('%%SYM' + j + '%%').join('<span class="sym" data-sym="' + token + '" data-tooltip="' + tooltip + '">' + token + '</span>');
+    }
+  }
+  return result;
+}
+
+const endLine = term => (EQ_REF[term] ? `<span class="eq-ref">(${EQ_REF[term]})</span>` : '');
+
 // -------------------------------------------------------------------------
 // Controls
 // -------------------------------------------------------------------------
@@ -753,7 +855,7 @@ function buildSliders(root, defs) {
     const suffix = p.suffix ? `<span class="val-suffix">${p.suffix}</span>` : '';
     const meter = p.meter ? `<div class="theta-meter" id="meter-${p.key}"></div>` : '';
     wrap.innerHTML = `
-      <label>${p.label} <span><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(state[p.key])}">${suffix}</span></label>
+      <label>${wrapSymbols(p.label)} <span><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(state[p.key])}">${suffix}</span></label>
       <input type="range" id="ctl-${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${state[p.key]}">
       ${meter}
     `;
@@ -818,6 +920,19 @@ function syncControls() {
   document.getElementById('taylor-toggle').classList.toggle('on', state.taylor_on);
   const dt = document.getElementById('deanchor-toggle');
   if (dt) dt.classList.toggle('on', state.deanchor_on);
+}
+
+function toggleHelpMode() {
+  document.body.classList.toggle('help-mode');
+  const btn = document.getElementById('btn-help-mode');
+  if (btn) btn.textContent = document.body.classList.contains('help-mode') ? '❓ Help Mode: ON' : '❓ Help Mode: OFF';
+}
+
+function syncDynamicsParams() {
+  const sp = document.getElementById('speed');
+  if (sp) sp.value = state.speed;
+  const spV = document.getElementById('speed-val');
+  if (spV) spV.textContent = state.speed.toFixed(2);
 }
 
 function toggleTaylor() {
@@ -950,7 +1065,7 @@ function drawISMP() {
 
   const yn_x = xScale(eq.Y_n, o);
   el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).textContent = 'Yₙ';
+  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('Yₙ');
 
   if (ZLB >= o.yMin && ZLB <= o.yMax) {
     const zlb_y = yScale(ZLB, o);
@@ -972,9 +1087,9 @@ function drawISMP() {
   }
 
   const isEndVal = isRateForOutput(o.xMax, state.G, state.T, eq.eps, effectivePiE(state), state.c1, state.m1, state.Ystar);
-  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(isEndVal, o) + 12, o), class: 'curve-label label-is' }, svg).textContent = 'IS';
+  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(isEndVal, o) + 12, o), class: 'curve-label label-is' }, svg).innerHTML = wrapSymbols('IS');
 
-  el('text', { x: P.l + 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp' }, svg).textContent = 'MP';
+  el('text', { x: P.l + 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp' }, svg).innerHTML = wrapSymbols('MP');
 
   el('circle', { cx: xScale(eq.Y, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
 
@@ -1068,7 +1183,7 @@ function drawUIP() {
 
   const ee_y = yScale(state.i_star, o);
   el('line', { x1: P.l, x2: W - P.r, y1: ee_y, y2: ee_y, class: 'curve-natural' }, svg);
-  el('text', { x: W - P.r - 10, y: ee_y - 4, class: 'axis-label', fill: '#666' }, svg).textContent = 'i*';
+  el('text', { x: W - P.r - 10, y: ee_y - 4, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('i*');
 
   const uipPts = [];
   for (let i = o.yMin; i <= o.yMax; i += 0.005) {
@@ -1083,7 +1198,7 @@ function drawUIP() {
   drawLine(svg, epsPts, o, 'curve-eps');
 
   const uipEndE = state.E_e * (1 + o.yMax) / (1 + state.i_star);
-  el('text', { x: xScale(uipEndE, o) + 4, y: labelY(yScale(o.yMax, o) + 12, o), class: 'curve-label label-uip' }, svg).textContent = 'UIP';
+  el('text', { x: xScale(uipEndE, o) + 4, y: labelY(yScale(o.yMax, o) + 12, o), class: 'curve-label label-uip' }, svg).innerHTML = wrapSymbols('UIP');
 
   el('circle', { cx: xScale(eq.E, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
 
@@ -1127,26 +1242,26 @@ function drawPC() {
 
   const yn_x = xScale(eq.Y_n, o);
   el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).textContent = 'Yₙ';
+  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('Yₙ');
 
   const target_y = yScale(PI_TARGET, o);
   el('line', { x1: P.l, x2: W - P.r, y1: target_y, y2: target_y, class: 'curve-target' }, svg);
-  el('text', { x: W - P.r - 4, y: target_y - 3, class: 'axis-label', 'text-anchor': 'end', fill: '#666' }, svg).textContent = 'π*=2%';
+  el('text', { x: W - P.r - 4, y: target_y - 3, class: 'axis-label', 'text-anchor': 'end', fill: '#666' }, svg).innerHTML = wrapSymbols('π*=2%');
 
   const pe_y = yScale(state.pi_e, o);
   if (state.pi_e >= o.yMin && state.pi_e <= o.yMax) {
     el('line', { x1: P.l, x2: W - P.r, y1: pe_y, y2: pe_y, class: 'curve-target' }, svg);
-    el('text', { x: P.l + 4, y: pe_y - 3, class: 'axis-label', fill: '#666' }, svg).textContent = 'πᵉ';
+    el('text', { x: P.l + 4, y: pe_y - 3, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('πᵉ');
   }
 
   const pcPts = [];
   for (let Y = o.xMin; Y <= o.xMax; Y += 1) {
-    pcPts.push([Y, state.pi_e + state.alpha * (Y - eq.Y_n) / eq.Y_n + z_eff]);
+    pcPts.push([Y, state.pi_e + state.alpha * ((Y - eq.Y_n) / eq.Y_n) + z_eff]);
   }
   drawLine(svg, pcPts, o, 'curve-pc');
 
-  const pcEndVal = state.pi_e + state.alpha * (o.xMax - eq.Y_n) / eq.Y_n + z_eff;
-  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(pcEndVal, o) - 4, o), class: 'curve-label label-pc' }, svg).textContent = 'PC';
+  const pcEndVal = state.pi_e + state.alpha * ((o.xMax - eq.Y_n) / eq.Y_n) + z_eff;
+  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(pcEndVal, o) - 4, o), class: 'curve-label label-pc' }, svg).innerHTML = wrapSymbols('PC');
 
   el('circle', { cx: xScale(clamp(eq.Y, o.xMin, o.xMax), o), cy: yScale(clamp(eq.pi, o.yMin, o.yMax), o), r: 4.5, class: 'eq-point' }, svg);
 
@@ -1234,7 +1349,7 @@ function drawDrillIS() {
   
   const k_o = 1 / (1 - state.c1 - d1 + state.m1);
   el('text', { x: o.W - o.P.r - 5, y: o.P.t + 10, class: 'axis-label', 'text-anchor': 'end', fill: '#333' }, svg)
-    .textContent = `Multiplier k_o = 1/(1−c₁−d₁+m₁) = ${k_o.toFixed(2)}`;
+    .innerHTML = wrapSymbols(`Multiplier k_o = 1/(1−c₁−d₁+m₁) = ${k_o.toFixed(2)}`);
 }
 
 function drawDrillMP() {
@@ -1254,11 +1369,11 @@ function drawDrillMP() {
   drawAxes(svg, o);
 
   el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.i, o), y2: yScale(eq.i, o), class: 'curve curve-mp' }, svg);
-  el('text', { x: W - P.r - 4, y: yScale(eq.i, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end' }, svg).textContent = 'i (nominal)';
+  el('text', { x: W - P.r - 4, y: yScale(eq.i, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end' }, svg).innerHTML = wrapSymbols('i (nominal)');
 
   if (tutorialState.unlocked.has('PC')) {
     el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.r, o), y2: yScale(eq.r, o), class: 'curve curve-real' }, svg);
-    el('text', { x: W - P.r - 4, y: yScale(eq.r, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end', fill: '#185fa5' }, svg).textContent = 'r (real)';
+    el('text', { x: W - P.r - 4, y: yScale(eq.r, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end', fill: '#185fa5' }, svg).innerHTML = wrapSymbols('r (real)');
   }
 }
 
@@ -1292,7 +1407,7 @@ function drawDrillPCChain() {
 
       const un_x = xScale(un, oA);
       el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgA);
-      el('text', { x: un_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgA).textContent = 'uₙ';
+      el('text', { x: un_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgA).innerHTML = wrapSymbols('uₙ');
     }
   }
 
@@ -1321,7 +1436,7 @@ function drawDrillPCChain() {
       
       const yn_y = yScale(Y_n, oB);
       el('line', { x1: P.l, x2: W - P.r, y1: yn_y, y2: yn_y, class: 'curve-natural' }, svgB);
-      el('text', { x: P.l + 4, y: yn_y - 4, class: 'axis-label', fill: '#666' }, svgB).textContent = 'Yₙ';
+      el('text', { x: P.l + 4, y: yn_y - 4, class: 'axis-label', fill: '#666' }, svgB).innerHTML = wrapSymbols('Yₙ');
     }
   }
 
@@ -1347,7 +1462,7 @@ function drawDrillPCChain() {
 
       const yn_x = xScale(Y_n, oC);
       el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgC);
-      el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgC).textContent = 'Yₙ';
+      el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgC).innerHTML = wrapSymbols('Yₙ');
       el('circle', { cx: xScale(eq.Y, oC), cy: yScale(eq.pi, oC), r: 3, class: 'eq-point' }, svgC);
     }
   }
@@ -1384,7 +1499,7 @@ function drawTimeSeries() {
   drawAxes(svg, o);
 
   const rateMin = -0.05, rateMax = 0.20;
-  el('text', { x: W - P.r + 4, y: P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg).textContent = 'i, π';
+  el('text', { x: W - P.r + 4, y: P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg).innerHTML = wrapSymbols('i, π');
   [-0.05, 0, 0.05, 0.10, 0.15, 0.20].forEach(v => {
     const y = H - P.b - (v - rateMin) / (rateMax - rateMin) * (H - P.t - P.b);
     el('text', { x: W - P.r + 4, y: y + 3, class: 'axis-label' }, svg).textContent = (v * 100).toFixed(0) + '%';
@@ -1439,11 +1554,11 @@ function drawReadout() {
     { label: 'Primary T−G',  value: pb.toFixed(1),                       delta: pb >= 0 ? 'surplus' : 'deficit',                  cls: pb >= 0 ? 'pos' : 'neg' },
     { label: 'Debt B/Y',     value: debt_ratio.toFixed(1) + '%',         delta: '',                                              cls: debt_ratio > 100 ? 'neg' : '' }
   ];
-  document.getElementById('readout').innerHTML = stats.map(s => `
+  document.getElementById('readout').innerHTML = wrapSymbols(stats.map(s => `
     <div class="stat">
       <span class="label">${s.label}</span>
       <span class="value">${s.value}<span class="delta ${s.cls}">${s.delta}</span></span>
-    </div>`).join('');
+    </div>`).join(''));
 
   document.getElementById('period-label').textContent = `period ${state.period}`;
   document.getElementById('pie-readout').textContent = tutorialState.unlocked.has('PC') ? (state.pi_e * 100).toFixed(2) + '%' : '';
@@ -1651,6 +1766,7 @@ function drawEquations(eq) {
   const isUnl = term => tutorialState.unlocked.has(TERM_BLOCK[term]);
   const c = term => getTermCol(term);
   const lne = term => `class="eq-line" style="color:${c(term)}" data-term="${term}"`;
+  const endLine = term => (EQ_REF[term] ? `<span class="eq-ref">${EQ_REF[term]}</span>` : '') + '</span>';
 
   // IS-MP box: IS deviation form (with ε term) and the policy rate (MP / Taylor).
   const ismpEl = document.getElementById('eq-ismp');
@@ -1677,7 +1793,7 @@ function drawEquations(eq) {
         `<span ${lne('NX')}><span class="eq-lbl">NX</span>`
       + `<span class="eq-sym">x₁·Y* − m₁·Y − n₁·(ε−1)</span> = `
       + `<span class="eq-num">${f(x1,2)}(${f(s.Ystar,0)}) − ${f(s.m1,2)}(${f(eq.Y,1)}) − ${n1}(${f(eq.eps,3)}−1)</span> `
-      + `= <span class="eq-res">${NXd}</span></span>`
+      + `= <span class="eq-res">${NXd}</span>${endLine('NX')}`
       : '';
 
     let mpLine = '';
@@ -1690,51 +1806,53 @@ function drawEquations(eq) {
           `<span ${lne('MP')}><span class="eq-lbl">LM</span>`
           + `<span class="eq-sym">i_N + φ(π−π*) + ψ·gap</span> = `
           + `<span class="eq-num">${fpc(neutral_i,1)} + ${f(s.phi,1)}(${fpc(eq.pi-PI_TARGET,1)}) + 0.25(${fpc(gap,1)})</span> `
-          + `= <span class="eq-res">${fpc(eq.i,2)}</span></span>`;
+          + `= <span class="eq-res">${fpc(eq.i,2)}</span>${endLine('MP')}`;
       } else {
         mpLine =
           `<span ${lne('MP')}><span class="eq-lbl">LM</span>`
           + `<span class="eq-sym">i = i_target (horizontal)</span> `
-          + `= <span class="eq-res">${fpc(eq.i,2)}</span></span>`;
+          + `= <span class="eq-res">${fpc(eq.i,2)}</span>${endLine('MP')}`;
       }
     }
 
-    ismpEl.innerHTML =
+    ismpEl.innerHTML = wrapSymbols(
       `<span class="eq-line eq-anchor" style="color:${c('anchor')}" data-term="anchor"><span class="eq-lbl"></span>`
-      + `<span class="eq-sym">${anchorSym}</span></span>`
+      + `<span class="eq-sym">${anchorSym}</span>${endLine('anchor')}</span>`
       + (isUnl('C') ? `<span ${lne('C')}><span class="eq-lbl">C</span>`
       + `<span class="eq-sym">c₀ + c₁(Y−T)</span> = `
       + `<span class="eq-num">${c0} + ${f(s.c1,2)}(${f(eq.Y,1)}−${f(s.T,0)})</span> `
-      + `= <span class="eq-res">${Cd}</span></span>` : '')
+      + `= <span class="eq-res">${Cd}</span>${endLine('C')}</span>` : '')
       + (isUnl('I') ? `<span ${lne('I')}><span class="eq-lbl">I</span>`
       + `<span class="eq-sym">d₀ + d₁·Y − d₁ᵣ·${rateSym}</span> = `
       + `<span class="eq-num">${d0} + ${f(d1,2)}(${f(eq.Y,1)}) − ${d1r}(${f(r,4)})</span> `
-      + `= <span class="eq-res">${Id}</span></span>` : '')
+      + `= <span class="eq-res">${Id}</span>${endLine('I')}</span>` : '')
       + (isUnl('G') ? `<span ${lne('G')}><span class="eq-lbl">G</span>`
       + `<span class="eq-sym">government spending</span> `
-      + `= <span class="eq-res">${Gd}</span></span>` : '')
+      + `= <span class="eq-res">${Gd}</span>${endLine('G')}</span>` : '')
       + nxLine
       + (isUnl('Y') ? `<span class="eq-line eq-total" style="color:${c('Y')}" data-term="Y"><span class="eq-lbl">Y</span>`
       + `<span class="eq-num">${totalAddends}</span> `
-      + `= <span class="eq-res">${totalShown}</span></span>` : '')
-      + mpLine;
+      + `= <span class="eq-res">${totalShown}</span>${endLine('Y')}</span>` : '')
+      + mpLine
+    );
   }
 
   // UIP box: nominal E identity and real ε = E·P/P*.
   const uipEl = document.getElementById('eq-uip');
   if (uipEl) {
     if (isUnl('UIP')) {
-      uipEl.innerHTML =
+      uipEl.innerHTML = wrapSymbols(
         `<span ${lne('UIP')}><span class="eq-lbl">UIP</span>`
         + `<span class="eq-sym">E = Eᵉ(1+i)/(1+i*)</span></span>`
         + `<span ${lne('UIP')}><span class="eq-lbl"></span><span class="eq-num">= `
         + `${f(s.E_e,3)}(1+${fpc(eq.i,2)})/(1+${fpc(s.i_star,2)})</span> `
-        + `= <span class="eq-res">${f(eq.E,3)}</span></span>`
+        + `= <span class="eq-res">${f(eq.E,3)}</span>${endLine('UIP')}</span>`
         + (isUnl('eps') ? 
           `<span ${lne('eps')}><span class="eq-lbl">ε</span>`
           + `<span class="eq-sym">E·P/P*</span> = `
           + `<span class="eq-num">${f(eq.E,3)}·${f(s.P,3)}/${f(s.P_star || 1,3)}</span> `
-          + `= <span class="eq-res">${f(eq.eps,3)}</span></span>` : '');
+          + `= <span class="eq-res">${f(eq.eps,3)}</span>${endLine('eps')}</span>` : '')
+      );
     } else {
       uipEl.innerHTML = '';
     }
@@ -1745,16 +1863,17 @@ function drawEquations(eq) {
   if (pcEl) {
     if (isUnl('PC')) {
       const gap = (eq.Y - eq.Y_n) / eq.Y_n;
-      pcEl.innerHTML =
+      pcEl.innerHTML = wrapSymbols(
         `<span ${lne('PC')}><span class="eq-lbl">PC</span>`
         + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + shock</span></span>`
         + `<span ${lne('PC')}><span class="eq-lbl"></span><span class="eq-num">= `
         + `${fpc(s.pi_e,1)} + ${f(s.alpha,2)}·(${f(eq.Y,1)}−${f(eq.Y_n,0)})/${f(eq.Y_n,0)} `
         + `+ ${fpc(eq.z_eff,2)}</span> `
-        + `= <span class="eq-res">${fpc(eq.pi,1)}</span></span>`
+        + `= <span class="eq-res">${fpc(eq.pi,1)}</span>${endLine('PC')}</span>`
         + (isUnl('gap') ? 
           `<span ${lne('gap')}><span class="eq-lbl">gap</span>`
-          + `<span class="eq-num">(Y−Yₙ)/Yₙ = ${fpc(gap,1)}</span></span>` : '');
+          + `<span class="eq-num">(Y−Yₙ)/Yₙ = ${fpc(gap,1)}</span></span>` : '')
+      );
     } else {
       pcEl.innerHTML = '';
     }
