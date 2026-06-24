@@ -15,8 +15,9 @@ these get their own checks *and* your eyes.
 ## Gates
 
 1. **Verifier-green is the gate** — and on this side that includes `verify_onboarding.mjs`
-   alongside `verify_v16.mjs` (22/0) and `verify_v19.mjs` (30/0). Not self-report, not a
-   screenshot, not two AIs agreeing.
+   (78/0) alongside `verify_v16.mjs` (32/0) and `verify_v19.mjs` (40/0). Not self-report,
+   not a screenshot, not two AIs agreeing. (Counts current as of Item D; they grow as
+   invariants are added — the point is 0 failures, not a fixed number.)
 2. **Never weaken a check to go green** (mirrors `CLAUDE.md` rule 2). When a spec changes
    a fact (e.g. an element moves), *flip* the assertion so it stays true — never delete it.
 3. **Scope narrowly** — the named change, not "fix the layout."
@@ -78,3 +79,19 @@ these get their own checks *and* your eyes.
     good. An agent committing or restoring its own changes bypasses the gate. If you think a
     commit is warranted, suggest the message; do not run it. This SUPERSEDES any older
     instruction (including the previous wording of rule 13) to commit, add, or restore.
+    **This ban is not about danger, it is about authority** — it includes commands that look
+    harmless or "recovery" (`git restore`, `git checkout -- <file>`, `git stash`) just as
+    much as destructive ones. If the working tree is broken, dirty, or in an unexpected
+    state, do NOT try to fix it with git — STOP and report what you see; restoring or
+    resetting state is the human's decision, made after reading `git status`. "I was just
+    cleaning up / getting back to a known state" is exactly the action that is forbidden.
+    (Violated in the Item C session: the agent ran `git restore .` unprompted.)
+
+16. **No scratch, patch, debug, or temp files in the repo — and never redirect command
+    output to a file.** Do not create `diff_*.patch`, `test_*.mjs`, scratch `.md` notes, or
+    any helper file the task did not explicitly ask for; do not run `git diff > file`,
+    `... > out.txt`, or any redirect that writes into the working tree — print to stdout and
+    paste it in your report instead. Stray files pollute `git status` and risk being swept
+    into a commit. (Violated twice in the Item C session: `diff_v16.patch` / `diff_v19.patch`
+    and a `test_repl.mjs` scratch file.) Any genuinely needed temp file goes outside the
+    repo, never under the repo root.
