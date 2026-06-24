@@ -226,7 +226,7 @@
     font-size: 10.5px; color: #888; margin-top: 4px; line-height: 1.4;
   }
   body.dragging * { cursor: grabbing !important; }
-  .zlb-line { stroke: #d85a30; stroke-dasharray: 3 3; stroke-width: 1; fill: none; }
+  .zlb-line { stroke: #6fa8dc; stroke-dasharray: 3 3; stroke-width: 1; fill: none; }
   .zlb-banner {
     background: #fff4ec; color: #993c1d; border: 1px solid #d85a30;
     padding: 6px 10px; border-radius: 5px; font-size: 11.5px; font-weight: 500;
@@ -775,6 +775,7 @@ const CURVE_DEFS = {
 };
 
 const SYMBOL_DEFS = {
+  'ZLB': { meaning: 'zero lower bound', ref: 'Ch. 23', role: 'floor below which the nominal policy rate cannot fall' },
   'π': { meaning: 'inflation rate', ref: 'eq. 9.3', role: 'the rate of change of prices' },
   'α': { meaning: 'effect of output gap on inflation', ref: 'eq. 9.3', role: 'Phillips curve slope' },
   'πᵉ': { meaning: 'expected inflation rate', ref: 'eq. 8.7', role: 'shifts the Phillips curve' },
@@ -891,6 +892,14 @@ function svgTitle(textEl, label) {
 
   textEl.setAttribute('data-tooltip', text);
   textEl.setAttribute('data-svgtip', '1');
+}
+
+function wrapStaticSymbols() {
+  if (typeof document === 'undefined') return;
+  const els = document.querySelectorAll('.chart-box h3, .chart-box .sub, .legend-row span');
+  for (let i = 0; i < els.length; i++) {
+    els[i].innerHTML = wrapSymbols(els[i].innerHTML);
+  }
 }
 
 const endLine = term => (EQ_REF[term] ? `<span class="eq-ref">(${EQ_REF[term]})</span>` : '');
@@ -1123,7 +1132,7 @@ function drawISMP() {
   if (ZLB >= o.yMin && ZLB <= o.yMax) {
     const zlb_y = yScale(ZLB, o);
     el('line', { x1: P.l, x2: W - P.r, y1: zlb_y, y2: zlb_y, class: 'zlb-line' }, svg);
-    el('text', { x: P.l + 4, y: zlb_y - 3, class: 'axis-label', fill: '#d85a30' }, svg).textContent = '−0.5% ZLB';
+    { const _t = el('text', { x: P.l + 4, y: zlb_y - 3, class: 'axis-label', fill: '#6fa8dc' }, svg); _t.textContent = '−0.5% ZLB'; svgTitle(_t, '−0.5% ZLB'); }
   }
 
   const isPts = [];
@@ -2300,6 +2309,8 @@ async function copyState() {
 // -------------------------------------------------------------------------
 
 if (typeof document !== 'undefined' && document.addEventListener) {
+  wrapStaticSymbols();
+  
   document.addEventListener('mouseover', e => {
     if (!document.body.classList.contains('help-mode')) return;
     const sym = e.target.closest('.sym');

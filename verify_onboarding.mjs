@@ -222,7 +222,7 @@ const specialEls = {
 };
 const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, getPcDrillStep: () => typeof pcDrillStep !== "undefined" ? pcDrillStep : 0, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, getPcDrillStep: () => typeof pcDrillStep !== "undefined" ? pcDrillStep : 0, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window, SCENARIOS };')(mockElements, specialEls);
 
 testRender.setUnlocked(['GOODS', 'ISLM']);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -956,6 +956,55 @@ badSvgTitleApiS3.drawTimeSeries();
 let badTextsS3 = getSvgTexts(specialEls['ts']);
 let badIPi = badTextsS3.find(t => t.textContent === 'i, π');
 check('BAD-fixture: Dropped second token in compound label caught', badIPi && badIPi.getAttribute('data-tooltip') && !badIPi.getAttribute('data-tooltip').includes('|'));
+
+let zlbText = allTextsOn.find(t => t.textContent === '−0.5% ZLB');
+check('INV-A1: ZLB label gets tooltip', zlbText && zlbText.getAttribute('data-tooltip') && zlbText.getAttribute('data-tooltip').includes(testRender.SYMBOL_DEFS['ZLB'].meaning));
+
+const badSvgTitleCodeA1 = scripts.replace("'ZLB': { meaning: 'zero lower bound'", "'ZLB_WRONG': { meaning: 'zero lower bound'");
+const badSvgTitleApiA1 = new Function('mockElements', 'specialEls', chipStub + badSvgTitleCodeA1 + '\nreturn { document, window, drawISMP, solve, state };')(mockElements, specialEls);
+badSvgTitleApiA1.document.body.classList.add('help-mode');
+specialEls['ismp'].children = [];
+badSvgTitleApiA1.window.lastSolveResult = badSvgTitleApiA1.solve(badSvgTitleApiA1.state);
+badSvgTitleApiA1.drawISMP();
+let badTextsA1 = getSvgTexts(specialEls['ismp']);
+let badZLB = badTextsA1.find(t => t.textContent === '−0.5% ZLB');
+check('BAD-fixture: Missing ZLB def caught', badZLB && !badZLB.getAttribute('data-tooltip'));
+
+let testSub = testRender.document.createElement('div');
+testSub.innerHTML = 'real r = i − πᵉ';
+testRender.document.querySelectorAll = () => [testSub];
+testRender.wrapStaticSymbols();
+check('INV-A2: static-wrap pass injects class="sym" into a subtitle', testSub.innerHTML.includes('class="sym"'));
+
+const badWrapStaticCodeA2 = scripts.replace("els[i].innerHTML = wrapSymbols(els[i].innerHTML);", "els[i].innerHTML = els[i].innerHTML;");
+const badWrapStaticApiA2 = new Function('mockElements', 'specialEls', chipStub + badWrapStaticCodeA2 + '\nreturn { document, wrapStaticSymbols };')(mockElements, specialEls);
+let badTestSub = badWrapStaticApiA2.document.createElement('div');
+badTestSub.innerHTML = 'real r = i − πᵉ';
+badWrapStaticApiA2.document.querySelectorAll = () => [badTestSub];
+badWrapStaticApiA2.wrapStaticSymbols();
+check('BAD-fixture: neutered wrapStaticSymbols caught', !badTestSub.innerHTML.includes('class="sym"'));
+
+check('INV-A3: wrapStaticSymbols does NOT touch scenario narratives', !testRender.SCENARIOS[0].narrative.includes('class="sym"'));
+
+const badWrapStaticCodeA3 = scripts.replace("function wrapStaticSymbols() {", "function wrapStaticSymbols() { SCENARIOS.forEach(s => s.narrative = wrapSymbols(s.narrative));");
+const badWrapStaticApiA3 = new Function('mockElements', 'specialEls', chipStub + badWrapStaticCodeA3 + '\nreturn { document, wrapStaticSymbols, SCENARIOS };')(mockElements, specialEls);
+badWrapStaticApiA3.document.querySelectorAll = () => [];
+badWrapStaticApiA3.wrapStaticSymbols();
+check('BAD-fixture: wrapping narrative caught', badWrapStaticApiA3.SCENARIOS[0].narrative.includes('class="sym"'));
+
+let testLegend = testRender.document.createElement('div');
+testLegend.innerHTML = 'IS: Y = f(G,T,r,ε) <span class="drill-trigger" data-block="ISLM" onclick="toggleDrill(\'drill-is\')">derivation ▸</span>';
+testRender.document.querySelectorAll = () => [testLegend];
+testRender.wrapStaticSymbols();
+check('INV-A4: wrapStaticSymbols preserves child markup like onclick', testLegend.innerHTML.includes('onclick="toggleDrill(') && testLegend.innerHTML.includes('class="drill-trigger"'));
+
+const badWrapStaticCodeA4 = scripts.replace("els[i].innerHTML = wrapSymbols(els[i].innerHTML);", "els[i].innerHTML = wrapSymbols(els[i].textContent);");
+const badWrapStaticApiA4 = new Function('mockElements', 'specialEls', chipStub + badWrapStaticCodeA4 + '\nreturn { document, wrapStaticSymbols };')(mockElements, specialEls);
+let badTestLegend = badWrapStaticApiA4.document.createElement('div');
+badTestLegend.innerHTML = 'IS: Y = f(G,T,r,ε) <span class="drill-trigger" data-block="ISLM" onclick="toggleDrill(\'drill-is\')">derivation ▸</span>';
+badWrapStaticApiA4.document.querySelectorAll = () => [badTestLegend];
+badWrapStaticApiA4.wrapStaticSymbols();
+check('BAD-fixture: clobbering legend markup caught', !badTestLegend.innerHTML.includes('onclick="toggleDrill('));
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);
