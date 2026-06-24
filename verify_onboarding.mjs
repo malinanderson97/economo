@@ -156,9 +156,15 @@ const stub = `
       if (sel.includes('PC')) return mockElements.PC;
       return [];
     },
-    createElement: () => fakeEl(),
-    createElementNS: () => fakeEl(),
-    body: { classList: { toggle(){}, add(){}, remove(){} } }
+    createElement: (tag) => { let e = fakeEl(); e.tagName = tag; return e; },
+    createElementNS: (ns, tag) => { let e = fakeEl(); e.tagName = tag; return e; },
+    body: { classList: {
+      classes: new Set(),
+      toggle(c) { if (this.classes.has(c)) this.classes.delete(c); else this.classes.add(c); },
+      add(c) { this.classes.add(c); },
+      remove(c) { this.classes.delete(c); },
+      contains(c) { return this.classes.has(c); }
+    } }
   };
   var window = { addEventListener(){} };
   var mockElements = ${JSON.stringify(mockElements)};
@@ -192,6 +198,10 @@ const specialEls = {
   'eq-uip': fakeEl(),
   'eq-pc': fakeEl(),
   'eq-ts': fakeEl(),
+  'ismp': fakeEl(),
+  'uip': fakeEl(),
+  'pc': fakeEl(),
+  'ts': fakeEl(),
   'svg-drill-is': fakeEl(),
   'svg-drill-mp': fakeEl(),
   'svg-drill-pc-a': fakeEl(),
@@ -212,7 +222,7 @@ const specialEls = {
 };
 const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, getPcDrillStep: () => typeof pcDrillStep !== "undefined" ? pcDrillStep : 0 };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, getPcDrillStep: () => typeof pcDrillStep !== "undefined" ? pcDrillStep : 0, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window };')(mockElements, specialEls);
 
 testRender.setUnlocked(['GOODS', 'ISLM']);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -810,6 +820,142 @@ check('INV-93-2: endLine outputs nothing when a ref does not exist', endLine('UN
 const badEndLineCode2 = headlessCode.replace("? `<span class=\"eq-ref\">(${EQ_REF[term]})</span>` : ''", "? `<span class=\"eq-ref\">(${EQ_REF[term]})</span>` : '<span class=\"eq-ref\">GARBAGE</span>'");
 const badEndLineApi2 = new Function(badEndLineCode2 + '\nfunction render() {}\nreturn { endLine };')();
 check('BAD-fixture: endLine creates garbage for missing ref caught', badEndLineApi2.endLine('UNKNOWN_REF_XXX') !== '');
+
+const expC = `<span class="sym" data-sym="C" data-tooltip="${SYMBOL_DEFS['C'].meaning}; ${SYMBOL_DEFS['C'].ref}; ${SYMBOL_DEFS['C'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['C'].meaning}; ${SYMBOL_DEFS['C'].ref}; ${SYMBOL_DEFS['C'].role}"></span>C</span>`;
+const expI = `<span class="sym" data-sym="I" data-tooltip="${SYMBOL_DEFS['I'].meaning}; ${SYMBOL_DEFS['I'].ref}; ${SYMBOL_DEFS['I'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['I'].meaning}; ${SYMBOL_DEFS['I'].ref}; ${SYMBOL_DEFS['I'].role}"></span>I</span>`;
+const expPiStar = `<span class="sym" data-sym="π*" data-tooltip="${SYMBOL_DEFS['π*'].meaning}; ${SYMBOL_DEFS['π*'].ref}; ${SYMBOL_DEFS['π*'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['π*'].meaning}; ${SYMBOL_DEFS['π*'].ref}; ${SYMBOL_DEFS['π*'].role}"></span>π*</span>`;
+const exp_i = `<span class="sym" data-sym="i" data-tooltip="${SYMBOL_DEFS['i'].meaning}; ${SYMBOL_DEFS['i'].ref}; ${SYMBOL_DEFS['i'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['i'].meaning}; ${SYMBOL_DEFS['i'].ref}; ${SYMBOL_DEFS['i'].role}"></span>i</span>`;
+const expPi = `<span class="sym" data-sym="π" data-tooltip="${SYMBOL_DEFS['π'].meaning}; ${SYMBOL_DEFS['π'].ref}; ${SYMBOL_DEFS['π'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['π'].meaning}; ${SYMBOL_DEFS['π'].ref}; ${SYMBOL_DEFS['π'].role}"></span>π</span>`;
+
+const s1Expected = `<div>${expC} and ${expI} and <span>${expPiStar}</span> and ${exp_i}, ${expPi}</div>`;
+check('INV-S1: wrapSymbols is pure and string-to-string (headless)', 
+  testRender.wrapSymbols('<div>C and I and <span>π*</span> and i, π</div>') === s1Expected &&
+  testRender.wrapSymbols('no match here') === 'no match here' &&
+  testRender.findSymbols('no match here').length === 0 &&
+  testRender.findSymbols('i, π').length === 2 &&
+  testRender.findSymbols('i, π')[0].token === 'i' &&
+  testRender.findSymbols('i, π')[1].token === 'π'
+);
+
+const badWrapCodeS1 = headlessCode.replace('class="sym"', 'class="sym-wrong"');
+const badWrapApiS1 = new Function(badWrapCodeS1 + '\nfunction render() {}\nreturn { wrapSymbols };')();
+check('BAD-fixture: Mutated wrapSymbols output caught', badWrapApiS1.wrapSymbols('<div>C and I and <span>π*</span> and i, π</div>') !== s1Expected);
+
+check('INV-S5: wrapSymbols ignores CURVE_DEFS labels', !testRender.wrapSymbols('IS and PC').includes('class="sym"'));
+
+function getSvgTexts(svgNode) {
+  let texts = [];
+  function walk(node) {
+    if (node.tagName === 'text') texts.push(node);
+    node.children.forEach(walk);
+  }
+  walk(svgNode);
+  return texts;
+}
+
+testRender.document.body.classList.remove('help-mode');
+testRender.specialEls['ismp'].children = [];
+testRender.specialEls['uip'].children = [];
+testRender.specialEls['pc'].children = [];
+testRender.specialEls['ts'].children = [];
+testRender.window.lastSolveResult = testRender.solve(testRender.state);
+testRender.drawISMP();
+testRender.drawUIP();
+testRender.drawPC();
+testRender.drawTimeSeries();
+
+let allTextsOff = [
+  ...getSvgTexts(testRender.specialEls['ismp']),
+  ...getSvgTexts(testRender.specialEls['uip']),
+  ...getSvgTexts(testRender.specialEls['pc']),
+  ...getSvgTexts(testRender.specialEls['ts'])
+];
+let hasTooltipOff = allTextsOff.some(t => t.getAttribute('data-tooltip'));
+check('INV-S2: No <title> appended when help-mode is OFF', !hasTooltipOff);
+
+const badSvgTitleCodeS2 = scripts.replace("if (!document.body.classList.contains('help-mode')) return;", "");
+const badSvgTitleApiS2 = new Function('mockElements', 'specialEls', chipStub + badSvgTitleCodeS2 + '\nreturn { document, window, drawISMP, solve, state };')(mockElements, specialEls);
+badSvgTitleApiS2.document.body.classList.remove('help-mode');
+specialEls['ismp'].children = [];
+badSvgTitleApiS2.window.lastSolveResult = badSvgTitleApiS2.solve(badSvgTitleApiS2.state);
+badSvgTitleApiS2.drawISMP();
+let badTextsS2 = getSvgTexts(specialEls['ismp']);
+check('BAD-fixture: Unconditional <title> append caught', badTextsS2.some(t => t.getAttribute('data-tooltip')));
+
+testRender.document.body.classList.add('help-mode');
+testRender.specialEls['ismp'].children = [];
+testRender.specialEls['uip'].children = [];
+testRender.specialEls['pc'].children = [];
+testRender.specialEls['ts'].children = [];
+testRender.state.block = 'PC';
+testRender.window.lastSolveResult = testRender.solve(testRender.state);
+testRender.drawISMP();
+testRender.drawUIP();
+testRender.drawPC();
+testRender.drawTimeSeries();
+
+let allTextsOn = [
+  ...getSvgTexts(testRender.specialEls['ismp']),
+  ...getSvgTexts(testRender.specialEls['uip']),
+  ...getSvgTexts(testRender.specialEls['pc']),
+  ...getSvgTexts(testRender.specialEls['ts'])
+];
+let s3Pass = true;
+let iPiFound = false;
+let s4Pass = true;
+allTextsOn.forEach(t => {
+  const lbl = t.textContent;
+  const tooltip = t.getAttribute('data-tooltip');
+  const found = testRender.findSymbols(lbl);
+  if (found.length > 0) {
+    if (!tooltip) {
+      s3Pass = false;
+    } else {
+      const expTitle = found.map(f => f.def.meaning + '; ' + f.def.ref + '; ' + f.def.role).join(' | ');
+      if (tooltip !== expTitle) {
+        s3Pass = false;
+      }
+    }
+    if (lbl === 'i, π' && tooltip && tooltip.includes(testRender.SYMBOL_DEFS['i'].meaning) && tooltip.includes(testRender.SYMBOL_DEFS['π'].meaning)) {
+      iPiFound = true;
+    }
+  } else {
+    if (['IS', 'MP', 'UIP', 'PC'].includes(lbl)) {
+      if (!tooltip) {
+        s4Pass = false;
+      } else {
+        const d = testRender.CURVE_DEFS[lbl];
+        const expTitle = d.meaning + '; ' + d.ref + '; ' + d.role;
+        if (tooltip !== expTitle) {
+          s4Pass = false;
+        }
+      }
+    }
+  }
+});
+check('INV-S3: exactly one <title> with combined definitions when help-mode ON', s3Pass && iPiFound);
+check('INV-S4: Curve names get tooltips via CURVE_DEFS', s4Pass);
+
+const badSvgTitleCodeS4 = scripts.replace("} else if (CURVE_DEFS[label]) {", "} else if (false) {");
+const badSvgTitleApiS4 = new Function('mockElements', 'specialEls', chipStub + badSvgTitleCodeS4 + '\nreturn { document, window, drawISMP, solve, state, CURVE_DEFS };')(mockElements, specialEls);
+badSvgTitleApiS4.document.body.classList.add('help-mode');
+specialEls['ismp'].children = [];
+badSvgTitleApiS4.window.lastSolveResult = badSvgTitleApiS4.solve(badSvgTitleApiS4.state);
+badSvgTitleApiS4.drawISMP();
+let badTextsS4 = getSvgTexts(specialEls['ismp']);
+let badIS = badTextsS4.find(t => t.textContent === 'IS');
+check('BAD-fixture: Skipped CURVE_DEFS fallback caught', badIS && !badIS.getAttribute('data-tooltip'));
+
+const badSvgTitleCodeS3 = scripts.replace("return matches.sort", "return [matches[0]].filter(Boolean); // drop rest");
+const badSvgTitleApiS3 = new Function('mockElements', 'specialEls', chipStub + badSvgTitleCodeS3 + '\nreturn { document, window, drawTimeSeries, solve, state };')(mockElements, specialEls);
+badSvgTitleApiS3.document.body.classList.add('help-mode');
+specialEls['ts'].children = [];
+badSvgTitleApiS3.state.block = 'PC';
+badSvgTitleApiS3.window.lastSolveResult = badSvgTitleApiS3.solve(badSvgTitleApiS3.state);
+badSvgTitleApiS3.drawTimeSeries();
+let badTextsS3 = getSvgTexts(specialEls['ts']);
+let badIPi = badTextsS3.find(t => t.textContent === 'i, π');
+check('BAD-fixture: Dropped second token in compound label caught', badIPi && badIPi.getAttribute('data-tooltip') && !badIPi.getAttribute('data-tooltip').includes('|'));
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);

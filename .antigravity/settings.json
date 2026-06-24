@@ -1,0 +1,8 @@
+{
+  "antigravity.terminal.allowList": [
+    "node verify_onboarding.mjs",
+    "node verify_v16.mjs",
+    "node verify_v19.mjs",
+    "node mutation_check.mjs"
+  ]
+}

@@ -302,6 +302,7 @@
   .eq-ref { margin-left: auto; color: #888; font-size: 0.85em; }
 
   /* Help mode */
+  .help-mode .curve-label { pointer-events: auto; }
   .sym { cursor: default; }
   .help-mode .sym { 
     border-bottom: 1px dotted #888; 
@@ -309,6 +310,7 @@
     position: relative; 
   }
   .sym .sym-pop { display: none; }
+  #svg-tooltip { display: none; }
   .sym-pop {
     position: fixed;
     width: max-content; max-width: 240px;
@@ -323,6 +325,7 @@
 </style>
 </head>
 <body>
+<div class="sym-pop" id="svg-tooltip" data-tooltip=""></div>
 
 <div class="header">
   <h1>ISLM-UIP-PC interactive model<span class="tier-badge">open economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
@@ -764,6 +767,13 @@ function step(s) {
   };
 }
 
+const CURVE_DEFS = {
+  'IS':  { meaning: 'goods-market equilibrium', ref: 'Ch. 5', role: 'output where demand equals production at each interest rate' },
+  'MP':  { meaning: 'monetary policy rate',     ref: 'Ch. 5', role: 'the interest rate the central bank sets' },
+  'UIP': { meaning: 'uncovered interest parity', ref: 'eq. 19.5', role: 'links domestic and foreign returns through the exchange rate' },
+  'PC':  { meaning: 'Phillips curve',           ref: 'eq. 9.3', role: 'links inflation to the output gap' }
+};
+
 const SYMBOL_DEFS = {
   'π': { meaning: 'inflation rate', ref: 'eq. 9.3', role: 'the rate of change of prices' },
   'α': { meaning: 'effect of output gap on inflation', ref: 'eq. 9.3', role: 'Phillips curve slope' },
@@ -812,6 +822,27 @@ const EQ_REF = {
   'NX': 'eq. 19.1 / 19.2'
 };
 
+function findSymbols(text) {
+  if (!text) return [];
+  const sortedTokens = Object.keys(SYMBOL_DEFS).sort((a, b) => b.length - a.length);
+  let t = text;
+  let matches = [];
+  for (let j = 0; j < sortedTokens.length; j++) {
+    const token = sortedTokens[j];
+    const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const isWord = /^[a-zA-Z0-9_]+$/.test(token[0]) && /^[a-zA-Z0-9_]+$/.test(token[token.length - 1]);
+    const regex = isWord 
+      ? new RegExp('\\b' + escaped + '\\b', 'g') 
+      : new RegExp(escaped, 'g');
+    let match;
+    while ((match = regex.exec(t)) !== null) {
+      matches.push({ token, def: SYMBOL_DEFS[token], index: match.index });
+    }
+    t = t.replace(regex, matchStr => ' '.repeat(matchStr.length));
+  }
+  return matches.sort((a, b) => a.index - b.index);
+}
+
 function wrapSymbols(htmlOrText) {
   if (!htmlOrText) return '';
   const sortedTokens = Object.keys(SYMBOL_DEFS).sort((a, b) => b.length - a.length);
@@ -840,6 +871,26 @@ function wrapSymbols(htmlOrText) {
     }
   }
   return result;
+}
+
+function svgTitle(textEl, label) {
+  if (typeof document === 'undefined') return;
+  if (!document.body || !document.body.classList) return;
+  if (typeof document.body.classList.contains !== 'function') return;
+  if (!document.body.classList.contains('help-mode')) return;
+
+  let text = '';
+  const found = findSymbols(label);
+  if (found.length) {
+    text = found.map(f => f.def.meaning + '; ' + f.def.ref + '; ' + f.def.role).join(' | ');
+  } else if (CURVE_DEFS[label]) {
+    const d = CURVE_DEFS[label];
+    text = d.meaning + '; ' + d.ref + '; ' + d.role;
+  }
+  if (!text) return;
+
+  textEl.setAttribute('data-tooltip', text);
+  textEl.setAttribute('data-svgtip', '1');
 }
 
 const endLine = term => (EQ_REF[term] ? `<span class="eq-ref">(${EQ_REF[term]})</span>` : '');
@@ -933,6 +984,7 @@ function toggleHelpMode() {
   document.body.classList.toggle('help-mode');
   const btn = document.getElementById('btn-help-mode');
   if (btn) btn.textContent = document.body.classList.contains('help-mode') ? '❓ Help Mode: ON' : '❓ Help Mode: OFF';
+  render();
 }
 
 
@@ -991,8 +1043,8 @@ function drawAxes(svg, o) {
   });
   el('line', { x1: o.P.l, x2: o.P.l, y1: o.P.t, y2: o.H - o.P.b, class: 'axis-line' }, svg);
   el('line', { x1: o.P.l, x2: o.W - o.P.r, y1: o.H - o.P.b, y2: o.H - o.P.b, class: 'axis-line' }, svg);
-  el('text', { x: o.W - o.P.r, y: o.H - o.P.b - 4, class: 'axis-label', 'text-anchor': 'end' }, svg).textContent = o.xLabel;
-  el('text', { x: o.P.l + 4, y: o.P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg).textContent = o.yLabel;
+  { const _t = el('text', { x: o.W - o.P.r, y: o.H - o.P.b - 4, class: 'axis-label', 'text-anchor': 'end' }, svg); _t.textContent = o.xLabel; svgTitle(_t, o.xLabel); }
+  { const _t = el('text', { x: o.P.l + 4, y: o.P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg); _t.textContent = o.yLabel; svgTitle(_t, o.yLabel); }
 }
 
 function xScale(v, o) { return o.P.l + (v - o.xMin)/(o.xMax - o.xMin) * (o.W - o.P.l - o.P.r); }
@@ -1066,7 +1118,7 @@ function drawISMP() {
 
   const yn_x = xScale(eq.Y_n, o);
   el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('Yₙ');
+  { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
 
   if (ZLB >= o.yMin && ZLB <= o.yMax) {
     const zlb_y = yScale(ZLB, o);
@@ -1088,9 +1140,9 @@ function drawISMP() {
   }
 
   const isEndVal = isRateForOutput(o.xMax, state.G, state.T, eq.eps, effectivePiE(state), state.c1, state.m1, state.Ystar);
-  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(isEndVal, o) + 12, o), class: 'curve-label label-is' }, svg).innerHTML = wrapSymbols('IS');
+  { const _t = el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(isEndVal, o) + 12, o), class: 'curve-label label-is' }, svg); _t.textContent = 'IS'; svgTitle(_t, 'IS'); }
 
-  el('text', { x: P.l + 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp' }, svg).innerHTML = wrapSymbols('MP');
+  { const _t = el('text', { x: P.l + 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp' }, svg); _t.textContent = 'MP'; svgTitle(_t, 'MP'); }
 
   el('circle', { cx: xScale(eq.Y, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
 
@@ -1184,7 +1236,7 @@ function drawUIP() {
 
   const ee_y = yScale(state.i_star, o);
   el('line', { x1: P.l, x2: W - P.r, y1: ee_y, y2: ee_y, class: 'curve-natural' }, svg);
-  el('text', { x: W - P.r - 10, y: ee_y - 4, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('i*');
+  { const _t = el('text', { x: W - P.r - 10, y: ee_y - 4, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'i*'; svgTitle(_t, 'i*'); }
 
   const uipPts = [];
   for (let i = o.yMin; i <= o.yMax; i += 0.005) {
@@ -1199,7 +1251,7 @@ function drawUIP() {
   drawLine(svg, epsPts, o, 'curve-eps');
 
   const uipEndE = state.E_e * (1 + o.yMax) / (1 + state.i_star);
-  el('text', { x: xScale(uipEndE, o) + 4, y: labelY(yScale(o.yMax, o) + 12, o), class: 'curve-label label-uip' }, svg).innerHTML = wrapSymbols('UIP');
+  { const _t = el('text', { x: xScale(uipEndE, o) + 4, y: labelY(yScale(o.yMax, o) + 12, o), class: 'curve-label label-uip' }, svg); _t.textContent = 'UIP'; svgTitle(_t, 'UIP'); }
 
   el('circle', { cx: xScale(eq.E, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
 
@@ -1243,16 +1295,16 @@ function drawPC() {
 
   const yn_x = xScale(eq.Y_n, o);
   el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-  el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('Yₙ');
+  { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
 
   const target_y = yScale(PI_TARGET, o);
   el('line', { x1: P.l, x2: W - P.r, y1: target_y, y2: target_y, class: 'curve-target' }, svg);
-  el('text', { x: W - P.r - 4, y: target_y - 3, class: 'axis-label', 'text-anchor': 'end', fill: '#666' }, svg).innerHTML = wrapSymbols('π*=2%');
+  { const _t = el('text', { x: W - P.r - 4, y: target_y - 3, class: 'axis-label', 'text-anchor': 'end', fill: '#666' }, svg); _t.textContent = 'π*=2%'; svgTitle(_t, 'π*=2%'); }
 
   const pe_y = yScale(state.pi_e, o);
   if (state.pi_e >= o.yMin && state.pi_e <= o.yMax) {
     el('line', { x1: P.l, x2: W - P.r, y1: pe_y, y2: pe_y, class: 'curve-target' }, svg);
-    el('text', { x: P.l + 4, y: pe_y - 3, class: 'axis-label', fill: '#666' }, svg).innerHTML = wrapSymbols('πᵉ');
+    { const _t = el('text', { x: P.l + 4, y: pe_y - 3, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'πᵉ'; svgTitle(_t, 'πᵉ'); }
   }
 
   const pcPts = [];
@@ -1262,7 +1314,7 @@ function drawPC() {
   drawLine(svg, pcPts, o, 'curve-pc');
 
   const pcEndVal = state.pi_e + state.alpha * ((o.xMax - eq.Y_n) / eq.Y_n) + z_eff;
-  el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(pcEndVal, o) - 4, o), class: 'curve-label label-pc' }, svg).innerHTML = wrapSymbols('PC');
+  { const _t = el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(pcEndVal, o) - 4, o), class: 'curve-label label-pc' }, svg); _t.textContent = 'PC'; svgTitle(_t, 'PC'); }
 
   el('circle', { cx: xScale(clamp(eq.Y, o.xMin, o.xMax), o), cy: yScale(clamp(eq.pi, o.yMin, o.yMax), o), r: 4.5, class: 'eq-point' }, svg);
 
@@ -1370,11 +1422,11 @@ function drawDrillMP() {
   drawAxes(svg, o);
 
   el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.i, o), y2: yScale(eq.i, o), class: 'curve curve-mp' }, svg);
-  el('text', { x: W - P.r - 4, y: yScale(eq.i, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end' }, svg).innerHTML = wrapSymbols('i (nominal)');
+  { const _t = el('text', { x: W - P.r - 4, y: yScale(eq.i, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end' }, svg); _t.textContent = 'i (nominal)'; svgTitle(_t, 'i (nominal)'); }
 
   if (tutorialState.unlocked.has('PC')) {
     el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.r, o), y2: yScale(eq.r, o), class: 'curve curve-real' }, svg);
-    el('text', { x: W - P.r - 4, y: yScale(eq.r, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end', fill: '#185fa5' }, svg).innerHTML = wrapSymbols('r (real)');
+    { const _t = el('text', { x: W - P.r - 4, y: yScale(eq.r, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end', fill: '#185fa5' }, svg); _t.textContent = 'r (real)'; svgTitle(_t, 'r (real)'); }
   }
 }
 
@@ -1408,7 +1460,7 @@ function drawDrillPCChain() {
 
       const un_x = xScale(un, oA);
       el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgA);
-      el('text', { x: un_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgA).innerHTML = wrapSymbols('uₙ');
+      { const _t = el('text', { x: un_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgA); _t.textContent = 'uₙ'; svgTitle(_t, 'uₙ'); }
     }
   }
 
@@ -1437,7 +1489,7 @@ function drawDrillPCChain() {
       
       const yn_y = yScale(Y_n, oB);
       el('line', { x1: P.l, x2: W - P.r, y1: yn_y, y2: yn_y, class: 'curve-natural' }, svgB);
-      el('text', { x: P.l + 4, y: yn_y - 4, class: 'axis-label', fill: '#666' }, svgB).innerHTML = wrapSymbols('Yₙ');
+      { const _t = el('text', { x: P.l + 4, y: yn_y - 4, class: 'axis-label', fill: '#666' }, svgB); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
     }
   }
 
@@ -1463,7 +1515,7 @@ function drawDrillPCChain() {
 
       const yn_x = xScale(Y_n, oC);
       el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgC);
-      el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgC).innerHTML = wrapSymbols('Yₙ');
+      { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgC); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
       el('circle', { cx: xScale(eq.Y, oC), cy: yScale(eq.pi, oC), r: 3, class: 'eq-point' }, svgC);
     }
   }
@@ -1500,7 +1552,7 @@ function drawTimeSeries() {
   drawAxes(svg, o);
 
   const rateMin = -0.05, rateMax = 0.20;
-  el('text', { x: W - P.r + 4, y: P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg).innerHTML = wrapSymbols('i, π');
+  { const _t = el('text', { x: W - P.r + 4, y: P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg); _t.textContent = 'i, π'; svgTitle(_t, 'i, π'); }
   [-0.05, 0, 0.05, 0.10, 0.15, 0.20].forEach(v => {
     const y = H - P.b - (v - rateMin) / (rateMax - rateMin) * (H - P.t - P.b);
     el('text', { x: W - P.r + 4, y: y + 3, class: 'axis-label' }, svg).textContent = (v * 100).toFixed(0) + '%';
@@ -2251,34 +2303,57 @@ if (typeof document !== 'undefined' && document.addEventListener) {
   document.addEventListener('mouseover', e => {
     if (!document.body.classList.contains('help-mode')) return;
     const sym = e.target.closest('.sym');
-    if (!sym) return;
-    const pop = sym.querySelector('.sym-pop');
-    if (!pop) return;
+    if (sym) {
+      const pop = sym.querySelector('.sym-pop');
+      if (!pop) return;
 
-    const rect = sym.getBoundingClientRect();
+      const rect = sym.getBoundingClientRect();
+      pop.style.display = 'block';
+      const popRect = pop.getBoundingClientRect();
+      
+      let top = rect.bottom + 4;
+      let left = rect.left;
+      
+      if (left + popRect.width > window.innerWidth) {
+        left = window.innerWidth - popRect.width - 10;
+      }
+      if (top + popRect.height > window.innerHeight) {
+        top = rect.top - popRect.height - 4;
+      }
+      
+      pop.style.top = top + 'px';
+      pop.style.left = Math.max(10, left) + 'px';
+      return;
+    }
+
+    const svgLabel = e.target.closest('[data-svgtip]');
+    if (!svgLabel || !svgLabel.getAttribute('data-tooltip')) return;
+    const pop = document.getElementById('svg-tooltip');
+    if (!pop) return;
+    pop.setAttribute('data-tooltip', svgLabel.getAttribute('data-tooltip'));
+    const rect = svgLabel.getBoundingClientRect();
     pop.style.display = 'block';
     const popRect = pop.getBoundingClientRect();
-    
-    let top = rect.bottom + 4;
-    let left = rect.left;
-    
-    if (left + popRect.width > window.innerWidth) {
-      left = window.innerWidth - popRect.width - 10;
-    }
-    if (top + popRect.height > window.innerHeight) {
-      top = rect.top - popRect.height - 4;
-    }
-    
+    let top = rect.bottom + 4, left = rect.left;
+    if (left + popRect.width > window.innerWidth) left = window.innerWidth - popRect.width - 10;
+    if (top + popRect.height > window.innerHeight) top = rect.top - popRect.height - 4;
     pop.style.top = top + 'px';
     pop.style.left = Math.max(10, left) + 'px';
   });
 
   document.addEventListener('mouseout', e => {
     const sym = e.target.closest('.sym');
-    if (!sym) return;
-    if (e.relatedTarget && sym.contains(e.relatedTarget)) return;
-    const pop = sym.querySelector('.sym-pop');
-    if (pop) pop.style.display = 'none';
+    if (sym) {
+      if (e.relatedTarget && sym.contains(e.relatedTarget)) return;
+      const pop = sym.querySelector('.sym-pop');
+      if (pop) pop.style.display = 'none';
+    }
+
+    const svgLabel = e.target.closest('[data-svgtip]');
+    if (svgLabel) {
+      const pop = document.getElementById('svg-tooltip');
+      if (pop) pop.style.display = 'none';
+    }
   });
 }
 
