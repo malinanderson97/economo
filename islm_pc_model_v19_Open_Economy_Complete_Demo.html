@@ -77,6 +77,7 @@
     color: #444; margin-bottom: 3px;
   }
   .control label > span:last-child { margin-left: auto; }
+  .control label .ctl-sym > span:last-child { margin-left: 6px; }
   .control label .val { font-weight: 500; color: #1a1a1a; font-variant-numeric: tabular-nums; }
   .control label .val-edit {
     font-weight: 500; color: #1a1a1a; font-variant-numeric: tabular-nums;
@@ -307,17 +308,19 @@
     cursor: help; 
     position: relative; 
   }
-  .help-mode .sym:hover::after {
-    content: attr(data-tooltip);
+  .sym .sym-pop { display: none; }
+  .help-mode .sym:hover .sym-pop { display: block; }
+  .sym-pop {
     position: absolute;
-    top: 100%; right: 0; width: max-content; max-width: 240px;
+    top: 100%; left: 0; width: max-content; max-width: 240px;
     background: #1a1a1a; color: #fff;
     padding: 8px 10px; border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.22);
     font-size: 10.5px; font-family: system-ui, sans-serif; line-height: 1.5;
-    white-space: normal; z-index: 1000;
+    white-space: normal; z-index: 10;
     pointer-events: none; margin-top: 4px;
     font-weight: 400; text-transform: none; letter-spacing: 0;
   }
+  .sym-pop::after { content: attr(data-tooltip); }
 </style>
 </head>
 <body>
@@ -834,7 +837,7 @@ function wrapSymbols(htmlOrText) {
     const def = SYMBOL_DEFS[token];
     if (result.includes('%%SYM' + j + '%%')) {
       const tooltip = def.meaning + '; ' + def.ref + '; ' + def.role;
-      result = result.split('%%SYM' + j + '%%').join('<span class="sym" data-sym="' + token + '" data-tooltip="' + tooltip + '">' + token + '</span>');
+      result = result.split('%%SYM' + j + '%%').join('<span class="sym" data-sym="' + token + '" data-tooltip="' + tooltip + '"><span class="sym-pop" data-tooltip="' + tooltip + '"></span>' + token + '</span>');
     }
   }
   return result;
@@ -854,8 +857,13 @@ function buildSliders(root, defs) {
     const parse = p.parse || (v => v);
     const suffix = p.suffix ? `<span class="val-suffix">${p.suffix}</span>` : '';
     const meter = p.meter ? `<div class="theta-meter" id="meter-${p.key}"></div>` : '';
+    let labelHtml = String(wrapSymbols(p.label));
+    let splitIdx = labelHtml.indexOf('<span class="sym"');
+    let descHtml = splitIdx !== -1 ? labelHtml.substring(0, splitIdx).trim() : labelHtml;
+    let symHtml = splitIdx !== -1 ? labelHtml.substring(splitIdx).trim() : '';
+
     wrap.innerHTML = `
-      <label>${wrapSymbols(p.label)} <span><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(state[p.key])}">${suffix}</span></label>
+      <label><span class="ctl-desc">${descHtml}</span> <span class="ctl-sym">${symHtml} <span><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(state[p.key])}">${suffix}</span></span></label>
       <input type="range" id="ctl-${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${state[p.key]}">
       ${meter}
     `;
@@ -1766,7 +1774,7 @@ function drawEquations(eq) {
   const isUnl = term => tutorialState.unlocked.has(TERM_BLOCK[term]);
   const c = term => getTermCol(term);
   const lne = term => `class="eq-line" style="color:${c(term)}" data-term="${term}"`;
-  const endLine = term => (EQ_REF[term] ? `<span class="eq-ref">${EQ_REF[term]}</span>` : '') + '</span>';
+  const endLine = term => (EQ_REF[term] ? `<span class="eq-ref">(${EQ_REF[term]})</span>` : '') + '</span>';
 
   // IS-MP box: IS deviation form (with ε term) and the policy rate (MP / Taylor).
   const ismpEl = document.getElementById('eq-ismp');
