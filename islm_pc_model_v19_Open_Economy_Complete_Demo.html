@@ -325,7 +325,7 @@
 <body>
 
 <div class="header">
-  <h1>ISLM-UIP-PC interactive model<span class="tier-badge">paid tier &middot; open economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
+  <h1>ISLM-UIP-PC interactive model<span class="tier-badge">open economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
   <div class="run-controls">
     <button onclick="toggleHelpMode()" id="btn-help-mode" title="Hover over any symbol to see its definition.">❓ Help Mode: OFF</button>
     <button onclick="advanceTutorial()" id="btn-advance" class="primary">Unlock Next Block</button>
@@ -935,12 +935,6 @@ function toggleHelpMode() {
   if (btn) btn.textContent = document.body.classList.contains('help-mode') ? '❓ Help Mode: ON' : '❓ Help Mode: OFF';
 }
 
-function syncDynamicsParams() {
-  const sp = document.getElementById('speed');
-  if (sp) sp.value = state.speed;
-  const spV = document.getElementById('speed-val');
-  if (spV) spV.textContent = state.speed.toFixed(2);
-}
 
 function toggleTaylor() {
   state.taylor_on = !state.taylor_on;
@@ -2091,42 +2085,36 @@ function applyOilShock() {
 const SCENARIOS = [
   {
     id: 'taylorPrinciple',
-    tier: 'paid',
     label: '1. The Taylor Principle',
     narrative: 'Taylor rule ON with φ = 1.5 and partially-anchored expectations (θ=0.25), so expectations can actually move. Apply the oil shock and step: with φ = 1.5 the bank responds more than one-for-one and inflation comes smoothly back to the 2% target within the medium run. Then—without resetting—lower φ to 0.5 and shock again. Now the bank is too passive: the economy overshoots into deflation, the rate is cut nearly to zero, expectations de-anchor (watch the warning chip), and the return to target takes far longer and oscillates. The contrast between the two φ settings is the Taylor principle.',
     state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
   },
   {
     id: 'expectationsDeAnchored',
-    tier: 'paid',
     label: '2a. De-Anchored Expectations (1970s)',
     narrative: 'θ = 1: expectations are purely adaptive and start at 8%. A transitory cost-push shock (z_pulse = +2%) hits. Disinflation requires a painful recession because the central bank must drag πᵉ down by brute force. Since the shock is transitory, output eventually returns to exactly potential (100). Permanent supply shocks have no stationary equilibrium in the open economy under naive exchange-rate expectations (Blanchard Ch. 20).',
     state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.08, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.02, theta: 1, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
   },
   {
     id: 'expectationsAnchored',
-    tier: 'paid',
     label: '2b. Anchored Expectations (1990s)',
     narrative: 'θ = 1: credibility is absolute. The same persistent cost-push shock (z = 2%) barely ripples—πᵉ stays nailed to the 2% target, and the adjustment is far smoother than in 2a even though the permanent shock carries the same lasting output cost. Use this side-by-side with preset 2a to show why central-bank credibility is a policy tool.',
     state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0.02, z_pulse: 0, theta: 1, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
   },
   {
     id: 'exchangeRateDisinflation',
-    tier: 'paid',
     label: '3. Exchange-Rate Disinflation',
     narrative: 'Taylor OFF, expectations mostly anchored (θ=0.7). Cut the policy rate to 1%. UIP triggers a nominal depreciation; net exports surge and Y rises above Yₙ. Over time prices climb relative to foreign, the real exchange rate appreciates, and Y drifts back. A temporary stimulus from a weak currency — and because i is held below i* indefinitely, inflation settles slightly above 2% rather than at it.',
     state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.01, i: 0.01, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.7, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
   },
   {
     id: 'twinDeficits',
-    tier: 'paid',
     label: '4. Twin Deficits & Real Appreciation',
     narrative: 'Taylor OFF, expectations mostly anchored (θ=0.7). A modest fiscal expansion (G raised from 20 to 22, a 10% rise) with no monetary offset drives up domestic prices. The real exchange rate appreciates, crowding out net exports until Y returns to Yₙ and inflation returns to 2% — leaving ε permanently higher (≈1.04). Watch ε climb on the time series.',
     state: { G: 22, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.7, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
   },
   {
     id: 'globalRateHike',
-    tier: 'paid',
     label: '5. Global Rate Hike Spillover',
     narrative: 'Foreign rates jump to 6%. UIP wants a weaker domestic currency unless the CB matches the hike. With Taylor ON, the domestic rule sees the inflationary depreciation and hikes i. The economy converges to a higher domestic rate with a persistently weaker nominal E — and because i_target still embodies the old neutral rate, inflation settles somewhat above 2%. Raise i_target toward the new world rate to bring it home: a stale-intercept lesson.',
     state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.06, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
@@ -2187,7 +2175,7 @@ function formatStateExport() {
   const pct = (v, d = 2) => (v * 100).toFixed(d) + '%';
   const L = [];
   L.push('═══════════════════════════════════════════════════════════════');
-  L.push('  ISLM-UIP-PC Model · State export (v19, paid tier, open economy)');
+  L.push('  ISLM-UIP-PC Model · State export (v19, open economy)');
   L.push(`  Period ${state.period} · Taylor ${state.taylor_on ? 'ON' : 'OFF'} · cred=${state.cred.toFixed(2)}`);
   L.push('═══════════════════════════════════════════════════════════════');
   L.push('');

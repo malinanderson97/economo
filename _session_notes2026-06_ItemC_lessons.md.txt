@@ -1,0 +1,15 @@
+Item C session — durable lessons (June 2026)
+Process (candidates for AGENTS.md if not already there):
+
+Rule 15 (no agent git) exists but was violated this session — agent ran git restore . unprompted. Restate forcefully: agent runs ONLY read-only git (status/log/diff/show); never restore/checkout/reset/add/commit/rm/stash.
+NEW rule: agent never creates scratch/patch/debug files in the repo, and never redirects command output to a file (git diff > x.patch forbidden — print to stdout). Violated twice this session.
+DOM/event-listener code goes in the Boot region (below buildSliders), never the headless slice — even guarded top-level document access above buildSliders is fragile (the && document.addEventListener guard was load-bearing during the DOM-stub verifier pass, not belt-and-suspenders).
+
+Technical patterns established:
+
+Tooltip popups inside scrolling containers (overflow-x:auto on .eq-line) get clipped; solved with position:fixed + JS getBoundingClientRect placement + viewport clamping. CSS-only/absolute cannot escape the clip.
+wrapSymbols must stay byte-identical across v16/v19 — asymmetric diffs were a real bug (v19 missed the .sym-pop markup for a full round).
+BAD-fixtures must mutate the real headless function (rebuild source string, re-import), not assert on literals — four were vacuous before being rewritten.
+Verifier-green ≠ correct: "engine-correct but diagram-wrong" (clipped/off-screen/wrong-direction visuals) passes green. Browser-check every visual change.
+
+Watch items for cleanup (Item D): unused syncDynamicsParams in v19; cosmetic ((...)) parenthesisation leftover in v19 drawPC.

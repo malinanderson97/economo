@@ -1,7 +1,10 @@
 # IS-MP-PC Interactive Macro Model
 
-An interactive, browser-based teaching tool for intermediate macroeconomics, built around Blanchard's **IS-MP-PC** framework (*Macroeconomics*, 9th Global Edition, 2024). Each variant is a single self-contained HTML file — no build step, no dependencies. Open it in a browser and it runs.
+An interactive, browser-based teaching tool for intermediate macroeconomics, built around Blanchard's **IS-MP-PC** framework (*Macroeconomics*, 9th Global Edition, 2024).
 
+The product is a single progressive learning tool that the learner unlocks block-by-block from a closed short-run economy through to the full open-economy medium run. The full model is always on screen; blocks not yet taught are greyed and locked.
+
+Each variant is a single self-contained HTML file — no build step, no dependencies. Open it in a browser and it runs.
 > **For agents working on this repo:** the hard part of this project is *economic correctness*, not HTML/JS. The engine can be syntactically perfect and still be economically wrong in ways that produce plausible-looking output ("looks plausible" is the core failure mode). Read the "Model engine" and "Scope boundaries" sections before changing anything in `solve()` / `step()`. After **any** engine change, run BOTH verifiers (see "Verifying changes") and require a fully green result before declaring the change complete. Do not widen a test tolerance to make a check pass — if an invariant is genuinely meant to change, that is a human decision documented in `Model_Textbook_Correspondence`.
 
 ---

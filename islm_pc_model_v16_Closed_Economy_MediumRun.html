@@ -293,7 +293,7 @@
 <body>
 
 <div class="header">
-  <h1>IS-MP-PC interactive model<span class="tier-badge">free tier · closed economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
+  <h1>IS-MP-PC interactive model<span class="tier-badge">closed economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
   <div class="run-controls">
     <button onclick="toggleHelpMode()" id="btn-help-mode" title="Hover over any symbol to see its definition.">❓ Help Mode: OFF</button>
     <button onclick="advanceTutorial()" id="btn-advance" class="primary">Unlock Next Block</button>
@@ -473,7 +473,7 @@ const DEANCHOR_REC  = 0.03;   // recovery rate per period when back inside the b
 // IS curve in deviation form: output = baseline + responses to deviations of each driver
 // from its baseline. Y is an index (100 = potential output). G and T are centred on a
 // realistic ~20% government share of output, so the baseline component split is realistic:
-// C≈58, I≈17, G≈20, NX≈5 (free tier closed: C≈63, I≈17, G≈20). r is the real rate.
+// C≈58, I≈17, G≈20, NX≈5 (closed economy: C≈63, I≈17, G≈20). r is the real rate.
 const IS_Y_BASE = 100;     // baseline output (index: 100 = potential)
 const IS_G_BASE = 20;      // baseline government spending (~20% of Y)
 const IS_T_BASE = 20;      // baseline taxes (balanced budget at baseline)
@@ -741,16 +741,7 @@ function toggleHelpMode() {
   if (btn) btn.textContent = document.body.classList.contains('help-mode') ? '❓ Help Mode: ON' : '❓ Help Mode: OFF';
 }
 
-function syncDynamicsParams() {
-  const ind = document.getElementById('shock-indicator');
-  if (Math.abs(state.z_pulse) > 0.0005) {
-    ind.textContent = `active pulse: +${(state.z_pulse * 100).toFixed(2)}%  (decays each period)`;
-    ind.classList.add('active');
-  } else {
-    ind.textContent = 'no active pulse';
-    ind.classList.remove('active');
-  }
-}
+
 
 function buildSliders(root, defs) {
   defs.forEach(p => {
@@ -1549,35 +1540,30 @@ function applyOilShock() {
 const SCENARIOS = [
   {
     id: 'monetaryNeutrality',
-    tier: 'free',
     label: 'A. Monetary Neutrality',
     narrative: 'Anchored expectations (θ=1), Taylor rule ON. The CB cuts its target rate from 3% to 1%. Short-run boom: lower r lifts output and the money stock expands to meet higher demand. With the Taylor rule active the CB then raises the rate back toward neutral as inflation runs hot, so output and the real rate return to baseline — only the price level is permanently higher. Turn the Taylor rule OFF to see the cautionary case: with a permanently fixed nominal rate there is no anchor, and the boom never unwinds (the modern reason central banks target inflation, not the money stock).',
     state: { G: 20, T: 20, i: 0.01, i_target: 0.01, P: 1.0, pi_e: 0.02, c1: 0.5, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0, theta: 1, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
   },
   {
     id: 'fiscalCrowdingOut',
-    tier: 'free',
     label: 'B. Fiscal Expansion & Crowding Out',
     narrative: 'Anchored expectations (θ=1), Taylor rule ON. G raised from 20 to 21 (a 5% rise in government spending). IS shifts right: short-run boom (Y≈102). With the Taylor rule active the CB raises i in response to the positive output gap and above-target inflation, crowding out investment until Y returns to Yₙ. Legacy: a permanently higher price level. Turn the Taylor rule off to see how a passive CB lets the adjustment run through expectations instead.',
     state: { G: 21, T: 20, i: 0.03, i_target: 0.03, P: 1.0, pi_e: 0.02, c1: 0.5, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0, theta: 1, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
   },
   {
     id: 'oilShock70s',
-    tier: 'free',
     label: 'C. 1970s Oil Shock',
     narrative: 'Anchored expectations (θ=1). A one-off +5% cost-push shock hits. Stagflation: inflation jumps while the output gap turns negative. The economy slowly returns as the pulse decays. Toggle the Taylor rule to compare a CB that leans against the inflation spike versus one that holds the rate fixed.',
     state: { G: 20, T: 20, i: 0.03, i_target: 0.03, P: 1.0, pi_e: 0.02, c1: 0.5, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.05, theta: 1, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
   },
   {
     id: 'disinflationSacrifice',
-    tier: 'free',
     label: 'D. Disinflation & Sacrifice Ratio',
     narrative: 'Weakly-anchored expectations (θ=0.70), Taylor rule ON, starting with πᵉ=8%. The CB hikes its target rate to drag realised inflation down. It engineers a recession: output troughs below potential and πᵉ chases slowly down to target, then the CB eases as inflation falls and output recovers to Yₙ. The cumulative output loss is the "sacrifice ratio." Compare with θ=1 to see stronger anchoring shrink the recession — then turn the Taylor rule OFF to see that a permanently fixed high rate produces a deflationary spiral instead of recovery.',
     state: { G: 20, T: 20, i: 0.07, i_target: 0.07, P: 1.0, pi_e: 0.08, c1: 0.5, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0, theta: 0.70, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
   },
   {
     id: 'debtSnowball',
-    tier: 'free',
     label: 'E. Debt Snowball',
     narrative: 'Anchored expectations (θ=1). A modest persistent deficit (G=21, T=20 — spending ~5% of Y above taxes) with starting debt B=20 (20% of Y). Watch B/Y drift up on the time series even though Y stays near Yₙ. Discuss why r > g matters for sustainability.',
     state: { G: 21, T: 20, i: 0.03, i_target: 0.03, P: 1.0, pi_e: 0.02, c1: 0.5, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0, theta: 1, phi: 1.5, taylor_on: false, speed: 0.5, B: 20, g: 0.02, period: 0, history: [] }
