@@ -1,309 +1,0 @@
-
-Contents
-1. Scope and anchoring
-2. Blanchard's building blocks (with equation numbers)
-2.1 Consumption — Chapter 3
-2.2 Investment — Chapters 3, 5, 9
-2.3 The real interest rate — Chapter 6
-2.4 Equilibrium condition — Chapter 3 / Chapter 9
-3. Derivation of the closed-economy IS coefficients (symbolic)
-3.1 Coefficient table (symbolic)
-3.2 Why the tax multiplier is asymmetric
-3.3 The c? slider
-4. Numeric check-case (baseline calibration)
-4.1 Relation to the original tool (pre-refactor v16)
-5. The LM / MP block (money market and the policy rate)
-5.1 Money demand and the LM relation — Chapters 4–5
-5.2 The flat MP line (the rate-setting mechanism) — Chapters 5 and 9
-5.3 The unemployment–output-gap conversion (shared with the PC block)
-5.4 The Taylor rule (when active) — Chapter 23
-5.5 Interest smoothing (a tested departure from the textbook rule)
-5.6 LM/MP block summary
-6. The Phillips-curve block (inflation)
-6.1 From wage- and price-setting to inflation — Chapter 8
-6.2 The natural rate and the Phillips curve — eqs. 8.4–8.5
-6.3 Conversion to output space — Chapter 9, eq. 9.3
-6.4 The ? slider, and why steepness is carried by credibility
-6.5 Inflation expectations and anchoring — eq. 8.7
-6.6 Supply shocks: two distinct channels — Section 8-3
-6.7 Phillips-curve block summary
-7. The open-economy block (exchange rate and foreign output)
-7.1 Uncovered interest parity — Chapters 17 and 19
-7.2 The open-economy IS with net exports — eq. 19.1 / 19.2
-7.3 Linearising net exports (Marshall–Lerner)
-7.4 Deriving the reduced-form coefficients
-7.5 Numeric check-case (open economy)
-7.6 The foreign-output channel
-7.7 Open-economy block summary
-8. Implementation prompt (applied — retained as the build record)
-9. Roadmap (planned work)
-9.1 Forward-looking exchange-rate expectations (open economy v2)
-9.2 Help mode — hover-to-define symbols
-9.3 Custom UI skill (de-generic the interface)
-9.4 Blanchard equation references in the "Show the equations behind this chart" panels
-
-
-Model–Textbook Correspondence
-Mapping the IS-LM-PC interactive tool to Blanchard, Macroeconomics, 9th Global Edition (2024)
-Block 1 — The IS curve / goods market. Equation references are to the 9th Global Edition. Each coefficient is given first in symbolic form (derivable from Blanchard's algebra), then instantiated as a numeric check-case.
-1. Scope and anchoring
-The tool exists in two variants, each anchored to a different part of Blanchard:
-• Closed economy (v16): anchored to Chapter 9 (the IS-LM-PC model), which is where Blanchard links the goods market, the interest rate, and inflation. The IS block derives from eq. (9.1).
-• Open economy (v19): the IS block and the exchange-rate channel are anchored to Chapters 18–19 (the open-economy goods market and the IS relation with net exports), eq. (18.4); the Phillips-curve block is carried over from Chapter 9. Blanchard has no single chapter combining an open-economy IS with a Phillips curve, so this variant is an explicit synthesis of Ch. 18–19 (IS + UIP) and Ch. 9 (PC), documented as such rather than transcribed from one chapter.
-Sections 2–4 cover the closed-economy IS block; §5 the LM/MP block; §6 the Phillips curve; §7 the open-economy exchange-rate and foreign-output channel. §8 is the consolidated implementation prompt.
-2. Blanchard's building blocks (with equation numbers)
-2.1 Consumption — Chapter 3
-Blanchard's consumption function is the linear relation
-C = c? + c? Y_D            (eq. 3.2)
-with disposable income defined by the identity Y_D ? Y ? T, so that
-C = c? + c? (Y ? T)        (eq. 3.3)
-c? is the propensity to consume, restricted to 0 < c? < 1 (eq. 3.2 discussion). Blanchard's empirical estimate for the United States is around 0.6, with the Appendix 3 regressions yielding 0.5 and 0.8 (Ch. 3, “The size of the multiplier”).
-2.2 Investment — Chapters 3, 5, 9
-Chapter 3 takes investment as exogenous (I = ?, eq. 3.4) purely as a simplification, explicitly flagged as temporary: Blanchard notes a firm facing higher sales “might well decide they need more machines” and promises a richer treatment in Chapter 5. From Chapter 5 onward investment depends on both output and the interest rate:
-I = I(Y, i)               (eq. 5.1)   [+ in Y, ? in i]
-Chapter 9 keeps this functional form, with the real borrowing rate r + x in place of i:
-I = I(Y, r + x)           (within eq. 9.1)
-Accordingly the accelerator term (investment depending on Y) is retained in both model variants. It is dropped only in Chapter 3, before the interest rate exists. We linearise as I = d? + d? Y ? d?? · r, where d? is the output (accelerator) sensitivity and d?? the real-rate sensitivity. The linear form I = d? + d? Y is exactly Blanchard's own in Ch. 18, Problem 7.
-2.3 The real interest rate — Chapter 6
-The rate entering spending decisions is the real rate, related to the nominal rate by the Fisher approximation
-r ? i ? ??              (eq. 6.4)
-The tool's Fisher step r = i ? ?? matches eq. (6.4) exactly.
-2.4 Equilibrium condition — Chapter 3 / Chapter 9
-Goods-market equilibrium requires production equal demand:
-Y = Z                     (eq. 3.6)
-Substituting consumption, investment, and government spending gives Blanchard's short-run output equation, eq. (9.1):
-Y = C(Y ? T) + I(Y, r + x) + G    (eq. 9.1)
-3. Derivation of the closed-economy IS coefficients (symbolic)
-Substitute the linear forms into the equilibrium condition Y = Z (eq. 3.6), setting the risk premium x = 0 for the baseline tool:
-Y = c? + c?(Y ? T) + d? + d? Y ? d?? r + G
-Collect the terms in Y on the left (this is Blanchard's own “move c?Y to the left, reorganise the right” step from the Ch. 3 derivation of eq. 3.8):
-Y ? c? Y ? d? Y = c? + d? + G ? c? T ? d?? r
-(1 ? c? ? d?) Y = [c? + d? + G ? c? T ? d?? r]
-Divide through by (1 ? c? ? d?):
-Y = [1 / (1 ? c? ? d?)] · [c? + d? + G ? c? T ? d?? r]
-This is the accelerator-augmented version of Blanchard's eq. (3.8). The multiplier 1/(1 ? c? ? d?) generalises his 1/(1 ? c?): the induced-spending propensity is now the sum c? + d?, because both consumption and investment respond to output.
-3.1 Coefficient table (symbolic)
-Driver / coefficientSymbolic formBlanchard sourceMultiplier1 / (1 ? c? ? d?)Generalises eq. (3.8); accelerator from eq. (9.1)?Y/?G  (spending)1 / (1 ? c? ? d?)eq. (3.8) / eq. (9.1)?Y/?T  (tax)? c? / (1 ? c? ? d?)eq. (3.8) tax-multiplier form?Y/?r  (real rate)? d?? / (1 ? c? ? d?)investment from eq. (5.1)/(9.1)r definitionr = i ? ??eq. (6.4)
-3.2 Why the tax multiplier is asymmetric
-The tax multiplier ?c?/(1 ? c? ? d?) carries d? in the denominator but only c? in the numerator. This is not an inconsistency. A tax change acts on disposable income, and in this model only consumption responds to disposable income; investment responds to output (Y), not to (Y ? T). So the direct first-round impact of a tax rise runs through consumption alone (numerator ?c?), while the subsequent amplification runs through both consumption and the investment accelerator as output falls (shared denominator 1 ? c? ? d?).
-By contrast a spending change hits demand directly and fully (numerator 1), which is why |?Y/?T| < ?Y/?G and the balanced-budget multiplier is non-zero.
-3.3 The c? slider
-Because every IS coefficient is a function of c?, the tool exposes c? as a live slider (a behavioural primitive). Moving c? with d? held fixed recomputes the multiplier, the G coefficient, the T coefficient, and the r coefficient simultaneously.
-• Range 0.3–0.8 (covering Blanchard's Appendix 3 estimates of 0.5 and 0.8, centred near his point estimate of 0.6).
-• As c? + d? ? 1 the multiplier diverges; the slider is capped short of this and flags instability. This connects to Blanchard's Ch. 3 “trick question” about c? > 1.
-• Live readouts display the implied multiplier and each reduced-form coefficient so the algebra is visible while dragging.
-4. Numeric check-case (baseline calibration)
-Baseline parameters: c? + d? = 0.6 (Blanchard's Ch. 3 estimate and the combined parameter in Ch. 18 Problem 7), split for display as c? = 0.5, d? = 0.1; real-rate sensitivity d?? = 200. The split is a presentational decomposition only — Blanchard never separates c? and d?, since the multiplier depends only on their sum.
-CoefficientFormulaValueNeeds split?Multiplier1/(1 ? 0.6)2.5No?Y/?G1/(1 ? 0.6)+2.5No?Y/?T? 0.5/(1 ? 0.6)?1.25Yes?Y/?r? 200/(1 ? 0.6)?500No
-Cross-check: the multiplier 2.5 matches the value Blanchard computes in Chapter 3 for c? = 0.6 (1/(1 ? 0.6) = 2.5). Only the tax multiplier depends on how the 0.6 is split between c? and d?; the spending and rate coefficients depend on the sum alone.
-4.1 Relation to the original tool (pre-refactor v16)
-This subsection records the migration that has now been carried out; it describes the tool as it stood before the IS refactor, for reference. The original v16 IS read Y = 100 + 2·(G ? 20) ? (T ? 20) ? 400·(r ? 0.01), i.e. a G coefficient of 2, a T coefficient of ?1, an r coefficient of ?400, and no accelerator term. Adopting eq. (9.1) faithfully (accelerator retained, c? + d? = 0.6) changed three things — these changes are now implemented, verified, and strictly reconciled in both variants:
-CoefficientOriginal v16Faithful (Ch. 9), now implemented, verified, and strictly reconciledReasonG+2+2.5c?+d? = 0.6, not 0.5T?1?1.25larger denom; numerator c?r?400?500larger multiplier amplifies rate channelaccelerator d?Yabsentpresenteq. (9.1) keeps I(Y, ·)
-5. The LM / MP block (money market and the policy rate)
-Block 2. Blanchard modernises the LM curve across Chapters 5 and 9: the central bank sets the interest rate directly and the money stock adjusts endogenously, replacing the traditional upward-sloping LM. The tool follows this modern treatment. Money demand is retained only as a descriptive relation behind the chosen rate, not as the rate-setting mechanism.
-5.1 Money demand and the LM relation — Chapters 4–5
-The demand for money is proportional to nominal income times a decreasing function of the interest rate:
-M? = $Y · L(i)            (eq. 4.1)   [L decreasing in i]
-Dividing by the price level P gives the relation in real terms, which Blanchard names the LM relation:
-M / P = Y · L(i)          (eq. 5.3)
-The tool adopts this multiplicative form (income and the interest-rate function multiply), matching eq. (5.3) exactly in structure. Blanchard keeps L(i) as a general decreasing function and never gives it a numerical form, so any linearisation is ours, not his. We linearise L(i) as:
-L(i) = ?? ? ?? i      ?   M / P = Y · (?? ? ?? i)
-Note the structural consequence of the multiplicative form: the interest-sensitivity term (??? i) is scaled by income Y, so money demand becomes more interest-elastic (in level terms) as output rises. This differs from a purely additive specification, in which the income and interest terms are separate. The numerical values of ?? and ?? are deferred and will be announced when the HTML panel is updated; they will be chosen to match the panel's behaviour at the baseline (Y = 100).
-Money demand is abstract in this model because it determines nothing: with the central bank setting the rate (Section 5.2), M/P adjusts passively to clear at the chosen i. The money-market panel is therefore a consequence display (it shows what the money stock must do), not a control. No money-demand slider is provided, by design: dragging ?? or ?? would change M/P alone while output, the rate, and inflation stay fixed, which would misrepresent money demand as a policy lever. (A money-demand-sensitivity slider would be meaningful only if the upward-sloping LM curve were reinstated, where it sets the LM slope and the degree of crowding-out.)
-5.2 The flat MP line (the rate-setting mechanism) — Chapters 5 and 9
-Blanchard argues the assumption that the central bank fixes M and lets i adjust is at odds with reality: central banks now choose an interest rate and adjust the money supply to achieve it (Ch. 5, “Deriving the LM Curve”). The LM curve becomes a horizontal line at the rate the central bank chooses; Blanchard notes the term “curve” is then a misnomer. Chapter 9 carries this through as the flat LM in the IS-LM-PC model. The tool implements exactly this: the central bank sets i directly, drawn as a flat MP line, and the money stock is endogenous.
-The neutral nominal rate (the rate that holds output at potential when inflation is on target) follows Blanchard's Ch. 23 definition of the target nominal rate:
-? = r? + ??          (neutral nominal rate, Ch. 23)
-In the tool, the neutral rate is computed shock-aware each period (the "Option B" anchor): rather than fixing it at a constant 3%, the Taylor rule anchors to the rate that holds output at potential given the current fiscal stance and exchange rate — i.e. it inverts the IS block at Y = Y? for the prevailing G, T (and, in v19, ?): r? = isRateForOutput(Y?, G, T, ?), then ? = r? + ??. At the baseline (G = T = 20, ? = 1) this evaluates to exactly r + ? = 1% + 2% = 3%, consistent with the IS block's baseline real rate r? = 1%. Away from baseline it tracks the moving target. The earlier fixed-3% formulation (still present as the named constant I_NEUTRAL) was a proportional-control approximation: because it ignored shifts in G/T/?, the economy settled at a small residual gap rather than precisely at Y?. The shock-aware anchor removes that residual, so the medium-run equilibrium converges exactly to potential (verified by the "Taylor convergence" and "Taylor anchors to I_NEUTRAL not i_target" regression checks).
-5.3 The unemployment–output-gap conversion (shared with the PC block)
-Blanchard's policy rule and his Phillips curve are written in unemployment, but the tool works in output. The conversion is a single identity derived in Chapter 9 (the steps that take eq. 9.2 to eq. 9.3); it is recorded once here and referenced by both the Taylor rule below and the Phillips-curve block.
-By definition the unemployment rate is unemployment over the labour force:
-u ? U/L = (L ? N)/L = 1 ? N/L      ?   N = L(1 ? u)
-Maintaining the Chapter 7 simplification that output equals employment (Y = N):
-Y = N = L(1 ? u)        and at the natural rate   Y? = L(1 ? u?)
-Subtracting gives the deviation of output from potential:
-Y ? Y? = L[(1 ? u) ? (1 ? u?)] = ? L (u ? u?)
-Equivalently, the conversion identity used throughout the tool:
-(u ? u?) = ? (Y ? Y?) / L          (from eqs. 9.2–9.3)
-Two consequences follow whenever a Blanchard relation in u is rewritten in Y: a sign flip (u and Y move oppositely) and a division by L. In Blanchard's one-good setup Y ? N ? L, so dividing by L and normalising by Y? nearly coincide; the tool normalises by Y?. This is the same reconciliation the Phillips-curve block requires (eq. 9.3 carries the factor ?/L).
-5.4 The Taylor rule (when active) — Chapter 23
-Blanchard's interest-rate rule sets the policy rate around its target in response to inflation and unemployment gaps:
-i = ? + a(? ? ??) ? b(u ? u?)        (Taylor rule, Ch. 23)
-with a, b > 0, and crucially a > 1 — the Taylor principle: because spending depends on the real rate, the nominal rate must rise more than one-for-one with inflation so that the real rate rises. Applying the conversion identity from Section 5.3 to the unemployment term rewrites the rule in output-gap form:
-? b(u ? u?) = ? b · [?(Y ? Y?)/L] = + (b/L)(Y ? Y?)
-?   i = ? + a(? ? ??) + (b/L)(Y ? Y?)
-The tool's rule i = I_NEUTRAL + ?(? ? ?*) + ?·(Y ? Y?)/Y? maps onto this term by term:
-Blanchard (Ch. 23)ToolCorrespondence? = r? + ??shock-aware neutral rate (Option B); = 3% at baselineexact (r? recomputed from IS at Y=Y?)a (? ? ??), a > 1? (? ? ?*), ? > 1a ? ? (Taylor principle)? b(u ? u?)+ ? (Y ? Y?)/Y?, ? = 0.25? ? b·Y?/L  via §5.3
-So the tool's positive output-gap coefficient ? = 0.25 is Blanchard's negative unemployment coefficient ?b, after the Okun-type conversion of Section 5.3. The sign difference is the conversion, not a disagreement.
-5.5 Interest smoothing (a tested departure from the textbook rule)
-The tool includes interest-rate smoothing (RHO_TAYLOR = 0.8 in v16, 0.75 in v19), i.e. the policy rate partially adjusts toward its rule-implied target each period: i? = ?·i??? + (1??)·i. This is a standard real-world extension but is not* part of Blanchard's stated Ch. 23 rule, which has no lagged-rate term. It is retained deliberately; its effect on dynamics and stability has now been checked by the regression harness (all presets remain finite and converge over 300 periods), so it is no longer a pending item — it is a documented and tested departure from the textbook rule.
-5.6 LM/MP block summary
-ElementBlanchard sourceStatusMoney demand M/P = Y·L(i)eq. (4.1) / (5.3)Form matched; L(i) linearised by usFlat MP line (CB sets i)Ch. 5 / Ch. 9Exact conceptual matchNeutral rate ? = r? + ?? (shock-aware, Option B)Ch. 23Recomputed from IS at Y=Y?; = 3% at baselineu?Y conversioneqs. 9.2–9.3Derived in §5.3; shared with PCTaylor rule, a > 1Ch. 23Matched; written in output-gap formInterest smoothing ? (0.8 v16 / 0.75 v19)— (not in textbook)Extension; simulation-checked (convergence holds)
-6. The Phillips-curve block (inflation)
-Block 3. Blanchard derives the Phillips curve from the labour-market model (Chapter 7) in Chapter 8, then converts it to output space in Chapter 9. The tool follows this chain. The conversion from unemployment to output uses the identity already derived in §5.3.
-6.1 From wage- and price-setting to inflation — Chapter 8
-Wage setting (eq. 7.1) with Blanchard's specific functional form F(u, z) = 1 ? ?u + z:
-W = P? · (1 ? ?u + z)        (eq. 7.1, specific form)
-Price setting (eq. 7.3): firms set price as a markup over the wage:
-P = (1 + m) · W           (eq. 7.3)
-Substituting the wage into the price equation gives the price level in terms of the expected price level, the markup, the wage-push factor, and unemployment:
-P = P? (1 + m)(1 ? ?u + z)   (eq. 8.1)
-Rewritten in inflation terms (derivation in Blanchard's chapter appendix), with time indexes:
-?? = ??? + (m + z) ? ? u?     (eqs. 8.2 / 8.3)
-The two supply-side terms are distinct objects in Blanchard: m is the markup of prices over wages (market power / degree of competition), and z is everything in wage-setting other than unemployment (union bargaining power, unemployment-benefit generosity, employment protection). The tool exposes them as two separate controls accordingly.
-6.2 The natural rate and the Phillips curve — eqs. 8.4–8.5
-The natural rate of unemployment is the rate at which actual inflation equals expected inflation. Setting ?? = ??? in eq. (8.3) and solving:
-u? = (m + z) / ?            (eq. 8.4)
-This is the key cross-block link: m and z move the natural rate, and therefore potential output. A rise in either raises u? and so lowers Y? = L(1 ? u?). They are substitutes (eq. 8.4 depends on m + z), so a markup shock can be offset by a fall in z — e.g. a reduction in union bargaining power restoring potential output. This is a genuine medium-run rebalancing (Y? is restored), not a temporary cancellation of an inflation blip.
-Substituting eq. (8.4) back into eq. (8.3) gives the Phillips curve in unemployment space:
-?? ? ??? = ? ? (u? ? u?)        (eq. 8.5)
-6.3 Conversion to output space — Chapter 9, eq. 9.3
-Applying the unemployment–output identity from §5.3, (u ? u?) = ?(Y ? Y?)/L, to eq. (8.5):
-?? ? ??? = ?? · [?(Y ? Y?)/L] = (?/L)(Y ? Y?)   (eq. 9.3)
-Blanchard's output-space slope is therefore ?/L. The tool normalises the output gap by potential output Y? rather than the labour force L, writing the slope as ?/Y?. Since Y? = L(1 ? u?), the two normalisations are related by:
-?_tool / Y? = ?_struct / L     ?   ?_tool = ?_struct · (Y?/L) = ?_struct · (1 ? u?)
-With a natural rate u? ? 5%, the factor (1 ? u?) ? 0.95: the tool's ? equals Blanchard's structural ? to within about 5%. Normalising by Y? (rather than L) is deliberate, for consistency with the IS and MP blocks, which all use Y? = 100. This factor is the entirety of the “?/L vs ?/Y?” reconciliation flagged earlier; it is a relabelling, not a discrepancy.
-6.4 The ? slider, and why steepness is carried by credibility
-? is exposed as a slider with default 0.3 and a cap of 0.5 (range ~0.1–0.5). This is the empirically supported range for the structural slope. Careful cross-sectional estimates put it around 0.3 (Hazell, Herreño, Nakamura & Steinsson, QJE 2022, find a 1-point rise in unemployment lowers inflation by about 0.34 points, and that the slope was small even in the early 1980s); recent US price-Phillips-curve estimates sit around 0.18–0.26 in normal labour markets. A structural ? near 1.0 is not empirically supported, which is why the slider is capped at 0.5.
-Crucially, this matches Blanchard's own treatment: across the historical mutations of the Phillips curve he holds ? fixed and varies ? (the expectations/de-anchoring parameter), not ?. Eqs. (8.5)?(8.8)?(8.9) walk through this with the same ? throughout: at ? = 0 the original level trade-off (eq. 8.6); at 0 < ? < 1 inflation depends on both the gap and last year's inflation (eq. 8.8); at ? = 1 the accelerationist form ?? ? ???? = ??(u? ? u?) (eq. 8.9), where the gap drives the change in inflation. Blanchard's Figure 8-4 plots estimated ? over time: it rose from the mid-1960s, stayed near 1 until the late 1990s, then fell back toward zero by 2020. The apparent steepening and flattening of the curve over decades is therefore a ? story, not an ? story.
-Design consequence: a steep, spiralling, “slope-looks-like-1” curve is reproduced in the tool by lowering credibility (raising ?_eff toward 1), not by raising ?. The credibility slider carries the steepness; ? stays at its modest structural value. This is faithful to Blanchard and to the empirical evidence, both of which attribute the 1970s steepness to de-anchored expectations rather than a larger structural slope.
-Note also that the ? slider has a genuine medium-run effect beyond the curve's steepness: via the natural-rate relation u? = (m+z)/? (eq. 8.4), a change in ? also moves potential output, so it is not a purely cosmetic control.
-6.5 Inflation expectations and anchoring — eq. 8.7
-Expected inflation is a weighted average of an anchor (the target) and last period's inflation:
-??? = (1 ? ?) ?? + ? ????       (eq. 8.7)
-? is the de-anchoring parameter: ? = 0 gives fully anchored expectations (?? = target, the original Phillips curve of eq. 8.6), ? = 1 gives fully adaptive expectations (?? = last year's inflation). The tool implements this exactly via effective anchoring ?_eff = (max anchoring) × (current credibility): high credibility ? ?_eff low ? anchored; low credibility ? ?_eff high ? de-anchored. This is Blanchard's account of why the Phillips curve mutated across decades, and it is a clean structural match.
-6.6 Supply shocks: two distinct channels — Section 8-3
-Blanchard's Section 8-3 (the Covid and 1970s episodes) establishes that supply shocks come in two forms, and the tool models both:
-• Transitory cost-push pulse (the oil / Covid shock button). Blanchard finds the 2020–22 inflation came largely through the markup m — energy prices and supply-chain shortages raised firms' costs given wages — but that it faded: “when commodity prices started turning around, so did inflation.” This is a temporary m spike that decays (the tool's existing pulse with decay), lifting the PC while active but leaving the natural rate unchanged.
-• Permanent structural shift (the m and z sliders). A lasting change in market power (m) or wage-setting institutions (z) moves the natural rate via eq. (8.4) and therefore relocates potential output Y?. This is the channel the rebalancing scenario uses, and it persists until changed.
-The de-anchoring link ties the two together: Blanchard notes the 1970s oil shock de-anchored expectations (? rose), amplifying a transitory shock into sustained ~17% inflation, whereas the Covid shock did not de-anchor (credibility held) and so faded. With the tool's credibility slider, the same cost-push pulse can be run both ways: credibility high ? fades (Covid-like); credibility low / de-anchoring on ? spirals (1970s-like). The spiral is the accelerationist regime of eq. (8.9): when ?_eff ? 1 the gap drives the change in inflation, so inflation rises period-on-period rather than settling at a higher level. This is a behaviour to verify when the dynamics are tested.
-6.7 Phillips-curve block summary
-ElementBlanchard sourceStatusWage/price ? inflationeqs. 7.1, 7.3, 8.1–8.3Derived in fullNatural rate u? = (m+z)/?eq. (8.4)Drives Y?; m,z as slidersPC ???? = ??(u?u?)eq. (8.5)Converted to output via §5.3Output-space slope ?/Y?eq. (9.3) carries ?/L?_tool = ?_struct(1?u?); ?5%? slider (def. 0.3, cap 0.5)eqs. 8.5–8.9Steepness via ?, not ? (Fig. 8-4)Expectations ??=(1??)??+????eq. (8.7)Exact; credibility = ?_effTransitory cost-push pulseSection 8-3 (Covid m)Decaying pulse; Y? fixedStructural m, z shiftSection 8-3 / eq. 8.4Permanent; moves Y?
-7. The open-economy block (exchange rate and foreign output)
-Block 4 (v19 only). Blanchard's Chapter 19 adds the exchange rate to the IS-LM model: net exports depend on the real exchange rate and on foreign output, and the exchange rate itself is pinned by uncovered interest parity. This block replaces the tool's ad hoc ?100·(??1) term with a coefficient derived from eq. (19.2), and adds a foreign-output channel.
-7.1 Uncovered interest parity — Chapters 17 and 19
-Investors arbitrage between domestic and foreign bonds, equalising expected returns. This is the uncovered interest parity (UIP) condition:
-(1 + i) = (1 + i*) · (E? / E)      (eq. 17.2 / 19.3)
-Solving for the current exchange rate, with the expected future rate E? taken as given:
-*E = E? · (1 + i) / (1 + i)        (eq. 19.5)**
-The tool's UIP relation E = E?·(1+i)/(1+i) is verbatim eq. (19.5) — the cleanest match in the model, no discrepancy. A higher domestic rate appreciates the currency (E rises); a higher foreign rate depreciates it. The approximate form (eq. 17.4), i ? i ? (E? ? E)/E, is the same relation: the domestic rate equals the foreign rate minus the expected appreciation.
-7.2 The open-economy IS with net exports — eq. 19.1 / 19.2
-Net exports are exports minus the value of imports, decreasing in the real exchange rate:
-NX(Y, Y, ?) = X(Y, ?) ? IM(Y, ?)/?     (eq. 19.1)
-The open-economy goods-market equilibrium adds net exports to the closed IS:
-Y = C(Y?T) + I(Y, r) + G + NX(Y, Y*, ?)   (eq. 19.1)
-Blanchard then simplifies (eq. 19.2): choosing P = P* = 1 so that ? = E (real and nominal exchange rates coincide), and — since the price level is fixed in the short run — r = i. The baseline is ? = 1, matching the tool's centring of the exchange-rate term on (? ? 1).
-7.3 Linearising net exports (Marshall–Lerner)
-Following Blanchard's own linear trade system (Ch. 18, Problem 7/8), linearise the components of net exports:
-X = x? Y*        (exports rise with foreign output)
-IM = m? Y       (imports rise with domestic output; ?=1 ? IM/? = IM)
-*NX = x? Y ? m? Y ? n? (? ? 1)**
-Here n? > 0 is the sensitivity of net exports to the real exchange rate. The condition n? > 0 is precisely the Marshall–Lerner condition, which Blanchard assumes holds throughout Chapter 19. Economically, a real appreciation has two opposing effects on net exports: it reduces export volumes and import volumes (quantity effect, lowering NX) but cheapens each imported good in domestic terms (valuation effect, raising NX). Marshall–Lerner is the condition that the volume effects dominate, so that on net a real appreciation worsens net exports — i.e. n? > 0.
-In this linearisation n? is a constant: the response of net exports to ? does not vary with the level of ?. The J-curve (net exports worsening before improving after a depreciation, because volumes adjust more slowly than prices) and any elasticity-dependence of the response are dynamic effects outside the scope of this static linear term; they are not modelled. What is retained is the sign and the constant magnitude, which is what eq. (19.2) requires under Marshall–Lerner.
-7.4 Deriving the reduced-form coefficients
-Substitute the linear net-export terms into the open IS (eq. 19.2), retaining the investment accelerator (§2.2) and with x = 0:
-Y = c? + c?(Y?T) + d? + d?Y ? d?? r + G + x?Y* ? m?Y ? n?(??1)
-Collect the Y terms. The import term ?m?Y now joins the left side, adding to the leakage:
-(1 ? c? ? d? + m?) Y = [autonomous] ? n?(??1) + x?Y*
-Divide through. The open multiplier carries the extra +m? leakage in its denominator:
-k_open = 1 / (1 ? c? ? d? + m?)
-Because m? > 0, k_open is smaller than the closed multiplier 1/(1?c??d?): imports leak out of the multiplier, the algebraic counterpart of Blanchard's “AA is flatter than DD” (Ch. 18). Every demand term — G, T, r, ?, and Y* — passes through this same k_open. The full open IS is:
-Y = Y? + k_open·(G?G?) ? c?·k_open·(T?T?)
-*      ? d??·k_open·(r?r?) ? n?·k_open·(??1) + x?·k_open·(Y?Y?)*
-The reduced-form exchange-rate coefficient is therefore ?Y/?? = ?n?·k_open, exactly parallel to the real-rate coefficient ?Y/?r = ?d??·k_open. Like d??, the value of n? is calibration: Blanchard gives only its sign (Marshall–Lerner), no magnitude. The recommended documentation move is identical to the r coefficient — surface n? as the structural primitive and present the reduced-form ? coefficient as ?n?·k_open, rather than asserting a free-standing number.
-7.5 Numeric check-case (open economy)
-Baseline open-economy parameters: c? = 0.5, d? = 0.1 (as closed), plus m? = 0.3 and x? = 0.3 (Blanchard Ch. 18, Problem 8: IM = 0.3Y, X = 0.3Y*). Net-export–exchange-rate sensitivity n? ? 70.
-CoefficientFormulaValueSource of magnitudeOpen multiplier k_open1/(1?0.5?0.1+0.3)1.43from c?,d?,m??Y/?Gk_open+1.43vs closed +2.5?Y/?T?c?·k_open?0.71c? = 0.5?Y/?r?d??·k_open?286d?? = 200?Y/???n?·k_open??100n? ? 70 (calibration)?Y/?Y*x?·k_open+0.43x? = 0.3
-The headline result: opening the economy cuts the spending multiplier from 2.5 to 1.43 — the import leakage m? = 0.3 makes fiscal policy markedly less powerful, exactly Blanchard's Ch. 18 point. The exchange-rate coefficient ??100 is preserved (via n? ? 70) so v19 behaviour does not jump, but it is now derived as ?n?·k_open rather than asserted.
-7.6 The foreign-output channel
-The term +x?·k_open·(Y ? Y?) gives the spillover from foreign output. A fall in foreign output Y (a foreign recession) reduces domestic exports, cutting demand, amplified through the open multiplier. At x? = 0.3 and k_open = 1.43, a unit drop in Y lowers domestic output by 0.43. Y* is exposed as a control so a student can run a foreign-recession spillover directly.
-This unlocks a genuine three-channel external-shock lesson: a foreign recession (Y* down) and a real appreciation (? up) both reduce net exports and can be compared as substitute sources of an external demand shock; and monetary policy can respond — cutting i depreciates E via UIP (§7.1), partially offsetting a loss of foreign demand. This is the cross-block interaction (goods market, interest rate, exchange rate) that Chapter 19 is built around.
-7.7 Open-economy block summary
-ElementBlanchard sourceStatusUIP E = E?(1+i)/(1+i*)eq. (19.5)Verbatim match? = 1 baseline (P=P*=1)eq. (19.2)ExactOpen IS with NXeq. (19.1)/(19.2)Derived; accelerator keptOpen multiplier k_open=1.43Ch. 18 (import leakage)From c?,d?,m??Y/?? = ?n?·k_openeq. 19.2 + Marshall–Lernern??0 calibration; ??100?Y/?Y* = x?·k_openeq. 19.2 (exports on Y*)x? = 0.3; new controlJ-curve / elasticity dynamics—Out of scope (static linear)
-8. Implementation prompt (applied — retained as the build record)
-Status: this prompt has been applied to both HTML files. All four blocks (IS, LM/MP, PC, open economy) are implemented, and the previously-pending items — interest smoothing and the endogenous-Y? change — have been simulation-reviewed via the regression harness (medium-run convergence holds). The instruction is kept below as the record of what was built and applied as one coordinated update.
-TASK: Update the IS block in both islm_pc_model_v16_Closed_Economy_MediumRun.html
-and islm_pc_model_v19_Open_Economy_Complete_Demo.html to match Blanchard eq. (9.1)
-[closed] and eq. (18.4) [open], retaining the investment accelerator in both.
-STRUCTURAL PRIMITIVES (expose c1 as a slider; hold d1, d1r fixed unless noted):
-c1   = 0.5    propensity to consume        (slider range 0.30-0.80, default 0.50)
-d1   = 0.10   investment accelerator (dI/dY)
-d1r  = 200    investment rate-sensitivity (dI/dr), replaces old b1
-c1 + d1 = 0.60 induced-spending propensity (Blanchard Ch.3 / Ch.18 Q7)
-CLOSED ECONOMY (v16) -- replace isOutput():
-multiplier  k = 1 / (1 - c1 - d1)
-Y = Yn + k(G - G0) - (c1k)(T - T0) - (d1rk)*(r - r0)
-with Yn=100, G0=20, T0=20, r0=0.01.
-Baseline coefficients at c1=0.5,d1=0.1: G->+2.5, T->-1.25, r->-500.
-Component readout: C = c0 + c1(Y - T); I = d0 + d1Y - d1r*r; G exogenous.
-Add an instability flag when (c1 + d1) >= 0.95 (multiplier blow-up).
-OPEN ECONOMY (v19) -- IS gains import leakage, exchange-rate, and foreign-output terms
-(Blanchard eq. 19.1/19.2; trade propensities from Ch.18 Problem 8):
-m1  = 0.30   marginal propensity to import
-x1  = 0.30   export sensitivity to foreign output Y*
-n1  ~ 70     net-export sensitivity to real exchange rate (Marshall-Lerner, n1>0)
-d1r = 200    investment rate-sensitivity (as closed)
-open multiplier  k_o = 1 / (1 - c1 - d1 + m1)   [= 1.43 at baseline]
-Full open IS (ALL terms pass through k_o):
-Y = Yn + k_o(G - G0) - (c1k_o)(T - T0) - (d1rk_o)*(r - r0)
-• (n1k_o)(eps - 1) + (x1k_o)(Ystar - Ystar0)
-Baseline reduced-form: G->+1.43, T->-0.71, r->-286, eps->~-100, Ystar->+0.43.
-KEY FIX: the ad hoc -100(eps-1) becomes -(n1k_o)*(eps-1); n1~70 keeps eps coeff ~-100
-but now derived, not asserted. The OTHER terms must also use k_o=1.43 (not the
-closed 2.5) -- the import leakage rescales the WHOLE IS, not just the eps term.
-UIP unchanged (already verbatim eq. 19.5): E = Ee(1+i)/(1+i).
-Expose Ystar (foreign output) as a control -> foreign-recession spillover scenario.
-Optional slider: m1 in [0.10, 0.50] (Ch.18 Q7 small/large-economy cases).
-Out of scope: J-curve / elasticity-dependent NX response (static linear term only).
-LM / MP BLOCK (both variants):
-Money demand -> use Blanchard's MULTIPLICATIVE form (eq. 5.3):
-M/P = Y  (lambda0 - lambda1  i)     [replaces additive 60 + Y - 2000*i]
-Choose lambda0, lambda1 to match the panel at baseline Y=100; announce values
-when applied. Money-market panel is a CONSEQUENCE display: M/P re-clears when
-the MP rate or output changes. NO money-demand slider.
-MP line: CB sets i directly (flat line). Neutral rate is shock-aware (Option B):
-anchor to the rate that holds Y=Yn given current G/T (and eps in v19), via
-isRateForOutput(Yn, ...); equals r + pi = 3% at baseline.
-Taylor rule (when active): i = I_NEUTRAL + phi(pi - pi) + psi*(Y - Yn)/Yn
-phi > 1 (Taylor principle); psi = 0.25 is Blanchard's -b after the u<->Y
-conversion (u - un) = -(Y - Yn)/L. Keep this output-gap form.
-Interest smoothing rho = 0.75: LEAVE IN for now; flag for simulation review.
-PHILLIPS-CURVE BLOCK (both variants):
-PC (output space, Blanchard eq. 9.3 normalised by Yn):
-pi = pi_e + alpha*(Y - Yn)/Yn + (transitory cost-push pulse)
-alpha: slider, range 0.1-0.5, default 0.3 (structural slope; empirically supported).
-Cap at 0.5 -- a structural alpha ~1 is not supported. Steepness near slope=1 is
-reproduced by LOW credibility (theta_eff -> 1, accelerationist eq. 8.9), NOT high alpha.
-Note alpha_tool = alpha_struct*(1 - un); ~5% from Blanchard's alpha/L.
-Expectations (eq. 8.7): pi_e = (1-theta)pi_bar + thetapi_{t-1};
-theta_eff = max_anchoring * credibility (existing mechanism, keep).
-NATURAL RATE now ENDOGENOUS (eq. 8.4) -- structural change:
-un = (m + z)/alpha ;  Yn = L*(1 - un)   [Yn no longer hard-coded 100]
-Expose m (markup) and z (wage-push) as TWO separate structural sliders.
-Moving m or z relocates Yn (medium-run rebalancing scenario).
-Supply shocks = TWO channels, keep distinct:
-(a) oil/Covid button = TRANSITORY cost-push pulse (existing decay), Yn fixed;
-(b) structural m,z sliders = PERMANENT, move Yn via eq. 8.4.
-De-anchoring demo: same pulse with credibility high (fades, Covid-like) vs
-low/de-anchoring on (spirals, 1970s-like) -- uses existing credibility slider.
-CAUTION: making Yn depend on (m,z) touches the natural-rate anchor used by IS
-and MP. Re-test medium-run convergence after this change.
-UI: live readouts must show the implied multiplier and each reduced-form coefficient
-as c1 (and m1) are dragged, so the derivation stays visible.
-REMAINING (now resolved): interest smoothing (? = 0.8 v16 / 0.75 v19) and the
-endogenous-Y? change both passed the medium-run convergence check in the
-regression harness (verify_v16: 16/16, verify_v19: 23/23).
-After editing, re-run the project's verification harness.
-All four blocks (IS §3–4, LM/MP §5, Phillips curve §6, open economy §7) are derived from Blanchard's equations and have been applied via the §8 prompt. The two items once flagged for simulation review — interest smoothing (? = 0.8 v16 / 0.75 v19, §5.5) and the medium-run convergence behaviour once the natural rate Y? is made endogenous in m and z (§6.6) — have both been checked against the dynamics via the regression harness and hold.
-9. Roadmap (planned work)
-Items not yet implemented, recorded here so scope decisions stay visible. None affects the fidelity of what currently ships.
-9.1 Forward-looking exchange-rate expectations (open economy v2)
-The open economy (v19) uses backward-looking FX expectations: the expected future exchange rate E? is treated as given / adaptive. Under this assumption a permanent open-economy supply shock has no stationary equilibrium, so permanent m/z shocks are deliberately out of scope in v19 (the de-anchoring scenario uses a transitory pulse instead). A faithful treatment of permanent open-economy supply shocks requires forward-looking expectations (Blanchard Ch. 20), where E? is pinned by the expected future path of fundamentals. Planned as a v2 of the open-economy model.
-9.2 Help mode — hover-to-define symbols
-Add a toggleable "help mode" to both model variants. When enabled, hovering over any symbol in the model — in equations, labels, readouts, and slider names (e.g. ?, ?, ??, ?, Y?, c?, d??, m?, k_open, u?) — surfaces a short written definition in a tooltip. The definitions should draw on the correspondence here (symbol meaning, Blanchard equation reference, and role in the tool). Intended as a learning aid so a student can read the model without a separate glossary. Implementation note: a single symbol?definition map shared by both variants, with the tooltip wired to hoverable spans; off by default so it does not clutter normal use.
-9.3 Custom UI skill (de-generic the interface)
-Install / author a skill that lets Claude restyle the model UI so it does not read as the generic default Claude-built interface — a distinct visual identity (typography, colour, layout, control styling) appropriate to an economics teaching tool. The skill should encode the design tokens and styling conventions so future edits stay visually consistent across both variants rather than reverting to defaults.
-9.4 Blanchard equation references in the "Show the equations behind this chart" panels
-Each chart in both variants has a collapsible "Show the equations behind this chart" panel that renders the live equations line by line (consumption, investment, government, the Phillips curve, UIP, etc.), with the symbolic form, the numeric substitution, and the result. Add the Blanchard equation number to each line — just the number (e.g. "3.3", "9.1", "8.7", "19.5") — right-aligned to the edge of the dropdown box, so each line reads as: label · symbolic form · numeric substitution · result … (right-aligned) eq. number. The references are already mapped in this document and can be lifted directly: consumption ? 3.3; investment ? 5.1 / 9.1; the Y = C + I + G identity ? 9.1; the real rate r = i ? ?? ? 6.4; money demand M/P = Y·L(i) ? 5.3 (v16 only); the Taylor rule ? Ch. 23; the Phillips curve ? = ?? + ?(Y?Y?)/Y? + … ? 9.3 (with expectations 8.7 and the natural rate 8.4); UIP E = E?(1+i)/(1+i*) ? 19.5; net exports / open IS ? 19.1 / 19.2. Implementation note: add a right-aligned reference element to each .eq-line (the existing rows already use a label/symbolic/numeric/result layout, so a trailing right-aligned span fits the same flex row); a single line?eq-number map keyed by panel can drive it. Purpose: a student reading the live equations can jump straight to the matching passage in Blanchard.
-Model–Textbook Correspondence   ·   Page 1
-
