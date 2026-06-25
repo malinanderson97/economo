@@ -34,17 +34,14 @@
 //
 // KNOWN GAP (found by running this very check, 18 Jun 2026)
 // ---------------------------------------------------------
-// verify_v19.mjs does NOT catch a wrong value of d1, d1r, c1, or m1: the v19
-// baseline equilibrium is calibrated to Y=100 regardless of those coefficients,
-// so a corrupted multiplier passes the baseline checks. v16 DOES catch the same
-// mutations. The fix belongs in verify_v19.mjs — add a check that pins the open
-// multiplier k_o (≈1.43 at baseline) or ΔY/ΔG directly, the way v16 does — and
-// is a deliberate, human-reviewed engine-side change. Until then, this script
-// sabotages v19's UIP relation instead, which the current verifier does catch,
-// so it confirms what verify_v19.mjs can verify TODAY without papering over the
-// gap. When that check is added to v19, restore a d1/d1r mutation here too.
-// [UPDATE 22 Jun: verify_v19.mjs #15 now pins the open multiplier directly,
-//  so the d1/d1r/c1/m1 mutations are restored and caught! Gap closed.]
+// HISTORICAL NOTE (gap now closed): verify_v19.mjs once did NOT catch a wrong
+// value of d1, d1r, c1, or m1 — the baseline equilibrium calibrated to Y=100
+// regardless, so a corrupted multiplier passed the baseline checks. The retired
+// closed-economy verifier caught those mutations; v19 did not. verify_v19.mjs #15
+// now pins the open multiplier (k_o ≈ 1.43) directly, and the unified engine's
+// closed path is exercised by the closed-multiplier / closed-trade mutations
+// below, so the d1/d1r/c1/m1 mutations are caught. Gap closed; this script now
+// targets the single unified tool.
 
 import fs from 'fs';
 import path from 'path';
@@ -63,15 +60,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // longer be found — the script reports that as a FAILURE (an untested mutation is
 // not a safe mutation), so you'll know to update the target here.
 const MODELS = [
-  {
-    name: 'v16 (closed)',
-    file: 'islm_pc_model_v16_Closed_Economy_MediumRun.html',
-    verifier: 'verify_v16.mjs',
-    mutations: [
-      { label: 'break multiplier (d1 0.10 → 0.40)', from: 'd1  = 0.10', to: 'd1  = 0.40' },
-      { label: 'break interest response (d1r 200 → 20)', from: 'd1r = 200', to: 'd1r = 20' },
-    ],
-  },
   {
     name: 'v19 (open)',
     file: 'islm_pc_model_v19_Open_Economy_Complete_Demo.html',

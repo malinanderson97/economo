@@ -447,8 +447,8 @@ goToStage(4);
   const r_closed2 = isRateForOutput(100, s0.G, s0.T, 1, effectivePiE(s0), s0.c1, s0.m1, s0.Ystar);
   const slopeClosed = Math.abs(r_closed2 - r_closed1) / 10;
 
-  // The spec incorrectly stated that closed is steeper. Mathematically, a larger multiplier (closed) 
-  // means a flatter curve in (Y, i) space, so open is steeper.
+  // A larger multiplier (closed, k=2.5) means a flatter curve in (Y, i) space; the open multiplier
+  // (k_o≈1.43) is smaller, so the open IS is steeper. Hence slopeOpen > slopeClosed.
   check('23 Curve reconciles to engine (closed)', approx(r_curve, eq0.i, 0.001) && slopeOpen > slopeClosed, `r_curve=${r_curve.toFixed(4)}, eq0.i=${eq0.i.toFixed(4)}, slopeClosed=${slopeClosed.toFixed(4)}, slopeOpen=${slopeOpen.toFixed(4)}`);
   
   // Restore
