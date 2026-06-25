@@ -540,7 +540,7 @@
 const TUTORIAL_BLOCKS = ['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'];
 
 const TUTORIAL_STAGES = [
-  { label: 'IS Model',          economy: 'closed', unlocked: ['GOODS', 'ISLM'] },
+  { label: 'IS-LM Model',       economy: 'closed', unlocked: ['GOODS', 'ISLM'] },
   { label: 'IS-LM-UIP Model',   economy: 'open',   unlocked: ['GOODS', 'ISLM', 'UIP'] },
   { label: 'IS-LM-PC Model',    economy: 'closed', unlocked: ['GOODS', 'ISLM', 'UIP', 'PC'] },
   { label: 'Full Model',        economy: 'open',   unlocked: ['GOODS', 'ISLM', 'UIP', 'PC'] },
@@ -788,7 +788,7 @@ function step(s) {
 
 const CURVE_DEFS = {
   'IS':  { meaning: 'goods-market equilibrium', ref: 'Ch. 5', role: 'output where demand equals production at each interest rate' },
-  'MP':  { meaning: 'monetary policy rate',     ref: 'Ch. 5', role: 'the interest rate the central bank sets' },
+  'LM':  { meaning: 'monetary policy rate',     ref: 'Ch. 5', role: 'the interest rate the central bank sets' },
   'UIP': { meaning: 'uncovered interest parity', ref: 'eq. 19.5', role: 'links domestic and foreign returns through the exchange rate' },
   'PC':  { meaning: 'Phillips curve',           ref: 'eq. 9.3', role: 'links inflation to the output gap' }
 };
@@ -1170,7 +1170,7 @@ function drawISMP() {
   const isEndVal = isRateForOutput(o.xMax, state.G, state.T, eq.eps, effectivePiE(state), state.c1, state.m1, state.Ystar);
   { const _t = el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(isEndVal, o) + 12, o), class: 'curve-label label-is' }, svg); _t.textContent = 'IS'; svgTitle(_t, 'IS'); }
 
-  { const _t = el('text', { x: P.l + 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp' }, svg); _t.textContent = 'MP'; svgTitle(_t, 'MP'); }
+  { const _t = el('text', { x: P.l + 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp' }, svg); _t.textContent = 'LM'; svgTitle(_t, 'LM'); }
 
   el('circle', { cx: xScale(eq.Y, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
 
