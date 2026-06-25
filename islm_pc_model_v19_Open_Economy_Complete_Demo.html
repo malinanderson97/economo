@@ -1865,7 +1865,7 @@ function drawEquations(eq) {
     const NX = x1 * s.Ystar - s.m1 * eq.Y - n1 * (eq.eps - 1);
     const Cd = f(C,2), Id = f(I,2), Gd = f(G,2), NXd = f(NX,2);
     
-    const showNX = isUnl('NX');
+    const showNX = openOn();
     const showPC = isUnl('fisher');
     const rateSym = showPC ? 'r' : 'i';
 
@@ -1875,7 +1875,7 @@ function drawEquations(eq) {
     const anchorSym = showNX ? 'Y = C + I + G + NX' : 'Y = C + I + G';
     const totalAddends = showNX ? `${Cd} + ${Id} + ${Gd} + ${NXd}` : `${Cd} + ${Id} + ${Gd}`;
 
-    const nxLine = showNX ?
+    const nxLine = (showNX && isUnl('NX')) ?
         `<span ${lne('NX')}><span class="eq-lbl">NX</span>`
       + `<span class="eq-sym">x₁·Y* − m₁·Y − n₁·(ε−1)</span> = `
       + `<span class="eq-num">${f(x1,2)}(${f(s.Ystar,0)}) − ${f(s.m1,2)}(${f(eq.Y,1)}) − ${n1}(${f(eq.eps,3)}−1)</span> `
@@ -1982,13 +1982,13 @@ function drawEquations(eq) {
         + `<span class="eq-num">${f(s.P,3)}(1 + ${fpc(eq.pi,1)}·${f(s.speed,2)})</span> `
         + `= <span class="eq-res">${f(s.P*(1+eq.pi*s.speed),3)}</span></span>`;
     }
-    if (isUnl('P_star_prime')) {
+    if (isUnl('P_star_prime') && openOn()) {
       html += `<span ${lne('P_star_prime')}><span class="eq-lbl">P*′</span>`
         + `<span class="eq-sym">P*(1 + π*·speed)</span> = `
         + `<span class="eq-num">${f(s.P_star || 1,3)}(1 + ${fpc(PI_TARGET,1)}·${f(s.speed,2)})</span> `
         + `= <span class="eq-res">${f((s.P_star || 1)*(1+PI_TARGET*s.speed),3)}</span> (foreign)</span>`;
     }
-    if (isUnl('Ee_prime')) {
+    if (isUnl('Ee_prime') && openOn()) {
       html += `<span ${lne('Ee_prime')}><span class="eq-lbl">Eᵉ′</span>`
         + `<span class="eq-sym">(1−0.4·sp)Eᵉ + 0.4·sp·E</span> = `
         + `<span class="eq-num">(1−0.4·${f(s.speed,2)})(${f(s.E_e,3)}) + 0.4·${f(s.speed,2)}(${f(eq.E,3)})</span> `
