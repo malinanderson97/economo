@@ -88,6 +88,12 @@ const MODELS = [
       { label: 'break interest response (d1r 200 → 20)', from: 'd1r = 200', to: 'd1r = 20' },
       { label: 'break MPC (c1 0.5 → 0.8)', from: 'c1: 0.5,', to: 'c1: 0.8,' },
       { label: 'break import leakage (m1 0.30 → 0.00)', from: 'm1: 0.30,', to: 'm1: 0.00,' },
+      { label: 'break closed multiplier (force m=0.30)', 
+        from: 'const m  = openOn() ? ((m1 !== undefined) ? m1 : 0.30) : 0;', 
+        to:   'const m  = openOn() ? ((m1 !== undefined) ? m1 : 0.30) : 0.30;' },
+      { label: 'break closed trade terms (force x1*Ys)', 
+        from: 'const trade = openOn() ? x1*Ys - n1*(eps - IS_EPS_BASE) : 0;', 
+        to:   'const trade = openOn() ? x1*Ys - n1*(eps - IS_EPS_BASE) : x1*Ys;' }
     ],
   },
 ];
@@ -118,13 +124,13 @@ function runMutation(model, mut) {
   }
 
   const occurrences = original.split(mut.from).length - 1;
-  if (occurrences !== 1) {
-    console.log(`  AMBIGUOUS TARGET  ${model.name}: "${mut.from}" appears ${occurrences}× (expected 1) — skipping "${mut.label}"`);
+  if (occurrences === 0) {
+    console.log(`  MISSING TARGET  ${model.name}: "${mut.from.split('\\n')[0]}..." not found — cannot test "${mut.label}"`);
     problems++;
     return;
   }
 
-  const mutated = original.replace(mut.from, mut.to);
+  const mutated = original.split(mut.from).join(mut.to);
   const backup = filePath + '.mutation-backup';
 
   try {

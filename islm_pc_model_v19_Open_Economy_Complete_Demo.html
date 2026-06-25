@@ -609,12 +609,17 @@ const IS_D0 = 12;   // d0  (autonomous investment)
 
 // Open-economy IS, structural. k_o = 1/(1 − c1 − d1 + m1) — the import leakage m1 is
 // INSIDE the denominator, so a higher m1 lowers every multiplier (Blanchard Ch. 18).
+function openOn() {
+  return tutorialState.unlocked.has('UIP');
+}
+
 function isOutput(G, T, r, eps, c1, m1, Ystar) {
   const c  = (c1    !== undefined) ? c1    : 0.5;
-  const m  = (m1    !== undefined) ? m1    : 0.30;
+  const m  = openOn() ? ((m1 !== undefined) ? m1 : 0.30) : 0;
   const Ys = (Ystar !== undefined) ? Ystar : YSTAR_BASE;
   const k_o = 1 / (1 - c - d1 + m);
-  const A = IS_C0 - c*T + IS_D0 - d1r*r + G + x1*Ys - n1*(eps - IS_EPS_BASE);
+  const trade = openOn() ? x1*Ys - n1*(eps - IS_EPS_BASE) : 0;
+  const A = IS_C0 - c*T + IS_D0 - d1r*r + G + trade;
   return k_o * A;
 }
 
@@ -622,10 +627,11 @@ function isOutput(G, T, r, eps, c1, m1, Ystar) {
 // Invert the r-channel only; all other terms move to the RHS, scaled by the SAME k_o.
 function isRateForOutput(Y, G, T, eps, pi_e, c1, m1, Ystar) {
   const c  = (c1    !== undefined) ? c1    : 0.5;
-  const m  = (m1    !== undefined) ? m1    : 0.30;
+  const m  = openOn() ? ((m1 !== undefined) ? m1 : 0.30) : 0;
   const Ys = (Ystar !== undefined) ? Ystar : YSTAR_BASE;
   const k_o = 1 / (1 - c - d1 + m);
-  const A_without_r = IS_C0 - c*T + IS_D0 + G + x1*Ys - n1*(eps - IS_EPS_BASE);
+  const trade = openOn() ? x1*Ys - n1*(eps - IS_EPS_BASE) : 0;
+  const A_without_r = IS_C0 - c*T + IS_D0 + G + trade;
   const r = (A_without_r - Y / k_o) / d1r;
   return r + pi_e;
 }

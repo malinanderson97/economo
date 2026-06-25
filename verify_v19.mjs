@@ -334,6 +334,127 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
   // restore default tutorial state for any later assertions
   setUnlocked(['GOODS','ISLM','UIP','PC']);
 }
+
+// ---- 17. Closed Multiplier (§5.1) -------------------------------------------
+{
+  setUnlocked(['GOODS','ISLM']); // UIP locked
+  const s0 = clone(initialState);
+  const sg = clone(initialState); sg.G += 1;
+  const Y0 = solve(s0).Y;
+  const Yg = solve(sg).Y;
+  check('17 Closed multiplier: unlocked={GOODS,ISLM} -> dY/dG ≈ 2.5', approx(Yg - Y0, 2.5, 0.05), `dY/dG=${(Yg-Y0).toFixed(4)}`);
+}
+
+// ---- 18. Open Multiplier (Regression) (§5.2) -------------------------------
+{
+  setUnlocked(['GOODS','ISLM','UIP']); // UIP unlocked
+  const s0 = clone(initialState);
+  const sg = clone(initialState); sg.G += 1;
+  const Y0 = solve(s0).Y;
+  const Yg = solve(sg).Y;
+  check('18 Open multiplier: unlocked={GOODS,ISLM,UIP} -> dY/dG ≈ 1.43', approx(Yg - Y0, 1.4286, 0.05), `dY/dG=${(Yg-Y0).toFixed(4)}`);
+}
+
+// ---- 19. No Trade Channel Closed (§5.3) -------------------------------------
+{
+  setUnlocked(['GOODS','ISLM']); // UIP locked
+  const s0 = clone(initialState);
+  const eq0 = solve(s0);
+  
+  const s1 = clone(initialState); s1.i_star = 0.10;
+  const s2 = clone(initialState); s2.E_e = 1.5;
+  const s3 = clone(initialState); s3.m1 = 0.5;
+  const s4 = clone(initialState); s4.Ystar = 120;
+  
+  const eq1 = solve(s1);
+  const eq2 = solve(s2);
+  const eq3 = solve(s3);
+  const eq4 = solve(s4);
+  
+  const inv = (eq) => approx(eq.Y, eq0.Y, 1e-9) && approx(eq.r, eq0.r, 1e-9) && approx(eq.pi, eq0.pi, 1e-9);
+  check('19 No trade channel closed: invariant to i_star, E_e, m1, Ystar', inv(eq1) && inv(eq2) && inv(eq3) && inv(eq4));
+}
+
+// ---- 20a. Pre-PC closed short run (§5.4a) -----------------------------------
+{
+  setUnlocked(['GOODS','ISLM']); // UIP locked AND PC locked
+  const s0 = clone(initialState);
+  const eq0 = solve(s0);
+  const sPi = clone(initialState); sPi.pi_e += 0.05;
+  const eqPi = solve(sPi);
+  
+  const y90 = approx(eq0.Y, 90, 0.1);
+  const rEqI = approx(eq0.r, s0.i, 1e-6);
+  const invPi = approx(eqPi.Y, eq0.Y, 1e-6);
+  
+  check('20a Pre-PC closed short run: Y=90, r=i, invariant to πᵉ (no inflation)', y90 && rEqI && invPi, `Y=${eq0.Y.toFixed(4)}, r=${eq0.r.toFixed(4)}, eqPi.Y=${eqPi.Y.toFixed(4)}`);
+}
+
+// ---- 20b. Medium-run closed baseline (§5.4b) --------------------------------
+{
+  setUnlocked(['GOODS','ISLM','PC']); // PC on, UIP locked
+  const s0 = clone(initialState);
+  const eq0 = solve(s0);
+  const y100 = approx(eq0.Y, 100, 0.1);
+  const fisher = approx(eq0.r, s0.i - s0.pi_e, 1e-6);
+  check('20b Medium-run closed baseline: Y=100, r=i−πᵉ (Fisher on with PC)', y100 && fisher, `Y=${eq0.Y.toFixed(4)}, r=${eq0.r.toFixed(4)}`);
+}
+
+// ---- 21. Level-2 Named Cell (§5.5) ------------------------------------------
+{
+  setUnlocked(['GOODS','ISLM','UIP']); // UIP unlocked, PC locked
+  const s0 = clone(initialState); s0.pi_e = 0.05; // Change pi_e to verify r=i
+  const eq0 = solve(s0);
+  check('21 Level-2 cell: open economy, no inflation (r=i)', approx(eq0.r, s0.i, 1e-6) && !approx(eq0.r, s0.i - s0.pi_e, 1e-6), `r=${eq0.r.toFixed(4)}, i=${s0.i.toFixed(4)}, pi_e=${s0.pi_e.toFixed(4)}`);
+}
+
+// ---- 22. Level-3 Cross-Cell (§5.6) ------------------------------------------
+{
+  setUnlocked(['GOODS','ISLM','PC']); // UIP locked, PC unlocked
+  const s0 = clone(initialState);
+  const sg = clone(initialState); sg.G += 1;
+  const sPi = clone(initialState); sPi.pi_e += 0.02; // Change pi_e
+  const sTrade = clone(initialState); sTrade.m1 = 0.5;
+  
+  const eq0 = solve(s0);
+  const eqg = solve(sg);
+  const eqPi = solve(sPi);
+  const eqTrade = solve(sTrade);
+  
+  const mult = approx(eqg.Y - eq0.Y, 2.5, 0.05);
+  const fisher = approx(eq0.r, s0.i - s0.pi_e, 1e-6);
+  const noTrade = approx(eqTrade.Y, eq0.Y, 1e-6);
+  const respondsPi = !approx(eqPi.Y, eq0.Y, 1e-6);
+  
+  check('22 Level-3 cross-cell: closed multiplier, r=i-pi_e, invariant to trade, responds to pi_e', mult && fisher && noTrade && respondsPi);
+}
+
+// ---- 23. Curve Reconciles to Engine (Closed) (§5.7) -------------------------
+{
+  setUnlocked(['GOODS','ISLM','PC']); // UIP locked, PC unlocked
+  const s0 = clone(initialState);
+  const eq0 = solve(s0);
+  const r_curve = isRateForOutput(eq0.Y, s0.G, s0.T, eq0.eps, effectivePiE(s0), s0.c1, s0.m1, s0.Ystar);
+  
+  setUnlocked(['GOODS','ISLM','UIP','PC']); // UIP unlocked, PC unlocked
+  const sOpen = clone(initialState);
+  // Note: hard-coding eps=1 is fine here because eps only shifts the IS intercept, not its slope.
+  const r_open1 = isRateForOutput(90, sOpen.G, sOpen.T, 1, effectivePiE(sOpen), sOpen.c1, sOpen.m1, sOpen.Ystar);
+  const r_open2 = isRateForOutput(100, sOpen.G, sOpen.T, 1, effectivePiE(sOpen), sOpen.c1, sOpen.m1, sOpen.Ystar);
+  const slopeOpen = Math.abs(r_open2 - r_open1) / 10;
+  
+  setUnlocked(['GOODS','ISLM','PC']); // UIP locked, PC unlocked
+  const r_closed1 = isRateForOutput(90, s0.G, s0.T, 1, effectivePiE(s0), s0.c1, s0.m1, s0.Ystar);
+  const r_closed2 = isRateForOutput(100, s0.G, s0.T, 1, effectivePiE(s0), s0.c1, s0.m1, s0.Ystar);
+  const slopeClosed = Math.abs(r_closed2 - r_closed1) / 10;
+
+  // The spec incorrectly stated that closed is steeper. Mathematically, a larger multiplier (closed) 
+  // means a flatter curve in (Y, i) space, so open is steeper.
+  check('23 Curve reconciles to engine (closed)', approx(r_curve, eq0.i, 0.001) && slopeOpen > slopeClosed, `r_curve=${r_curve.toFixed(4)}, eq0.i=${eq0.i.toFixed(4)}, slopeClosed=${slopeClosed.toFixed(4)}, slopeOpen=${slopeOpen.toFixed(4)}`);
+  
+  // Restore
+  setUnlocked(['GOODS','ISLM','UIP','PC']);
+}
 // ---- Summary ---------------------------------------------------------------
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);
