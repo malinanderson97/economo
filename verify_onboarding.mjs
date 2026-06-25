@@ -20,13 +20,13 @@ const headlessCode = scripts.slice(0, domStart);
 let api;
 try {
   // We use Function to evaluate the sliced script, which gives us access to the tutorial state machine.
-  api = new Function(headlessCode + '\nfunction render() {}\nreturn { tutorialState, unlockBlock, setUnlocked, resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine };')();
+  api = new Function(headlessCode + '\nfunction render() {}\nreturn { tutorialState, currentStage, goToStage,  resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine };')();
 } catch (e) {
   console.error('FAILED TO IMPORT HEADLESS:', e.message);
   process.exit(1);
 }
 
-const { tutorialState, unlockBlock, setUnlocked, resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine } = api;
+const { tutorialState, currentStage, goToStage,  resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine } = api;
 
 let headlessBaselineExportKeys = Object.keys(api).sort().join(',');
 
@@ -56,13 +56,13 @@ function isPrefixValid(set) {
 
 // 5. Transition functions exposed.
 check('5. Functions exposed headless', 
-  tutorialState && typeof unlockBlock === 'function' && typeof setUnlocked === 'function' && typeof resetTutorial === 'function',
+  tutorialState && typeof goToStage === 'function' && typeof resetTutorial === 'function',
   'Ensure state and functions are exported');
 
 if (!tutorialState) process.exit(1);
 
 // Start state
-check('Reset state is only GOODS', tutorialState.unlocked.size === 1 && tutorialState.unlocked.has('GOODS'));
+check('Reset state is IS Model', tutorialState.unlocked.size === 2 && tutorialState.unlocked.has('GOODS'));
 
 // NEW: Block-mapping assertions
 const allDefs = [...paramDefs, ...shockDefs, ...dynamicsDefs, ...debtDefs];
@@ -77,24 +77,28 @@ check('Mapping: B, g ∈ DEBT', getBlock('B') === 'DEBT' && getBlock('g') === 'D
 const goodsKeys = allDefs.filter(d => d.block === 'GOODS').map(d => d.key).sort();
 check('Mapping: GOODS contains exactly {G, T, c1}', JSON.stringify(goodsKeys) === JSON.stringify(['G', 'T', 'c1'].sort()));
 
-// 1 & 2. Monotonic & Prefix ordering with unlockBlock
+// 1 & 2. Monotonic & Prefix ordering with goToStage
 let isMonotonic = true;
 let isPrefix = true;
 let sizes = [tutorialState.unlocked.size];
 
-unlockBlock('ISLM');
+goToStage(0);
 sizes.push(tutorialState.unlocked.size);
 if (!isPrefixValid(tutorialState.unlocked)) isPrefix = false;
 
-unlockBlock('UIP');
+goToStage(1);
 sizes.push(tutorialState.unlocked.size);
 if (!isPrefixValid(tutorialState.unlocked)) isPrefix = false;
 
-unlockBlock('PC');
+goToStage(2);
 sizes.push(tutorialState.unlocked.size);
 if (!isPrefixValid(tutorialState.unlocked)) isPrefix = false;
 
-unlockBlock('DEBT');
+goToStage(3);
+sizes.push(tutorialState.unlocked.size);
+if (!isPrefixValid(tutorialState.unlocked)) isPrefix = false;
+
+goToStage(4);
 sizes.push(tutorialState.unlocked.size);
 if (!isPrefixValid(tutorialState.unlocked)) isPrefix = false;
 
@@ -103,14 +107,14 @@ for (let i = 1; i < sizes.length; i++) {
 }
 
 check('1. Monotonic unlocking (only grows)', isMonotonic);
-check('2. Prefix ordering (unlocks in sequence)', isPrefix);
+check('2. Unlocked sets are prefix-consistent across all stages', isPrefix);
 
 // Test reset
 resetTutorial();
-check('Reset sets back to only GOODS', tutorialState.unlocked.size === 1 && tutorialState.unlocked.has('GOODS'));
+check('Reset sets back to IS Model', tutorialState.unlocked.size === 2 && tutorialState.unlocked.has('GOODS'));
 
 // BAD-fixture self-test: Out-of-order unlock (caught by prefix check)
-setUnlocked(['GOODS', 'PC']); // PC before ISLM/UIP
+tutorialState.unlocked = new Set(['GOODS', 'PC']); // PC before ISLM/UIP
 const caughtOutOfOrder = !isPrefixValid(tutorialState.unlocked);
 check('BAD-fixture: Out-of-order unlock caught', caughtOutOfOrder);
 
@@ -222,9 +226,9 @@ const specialEls = {
 };
 const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nreturn { tutorialState, setUnlocked, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, getPcDrillStep: () => typeof pcDrillStep !== "undefined" ? pcDrillStep : 0, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window, SCENARIOS };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\nreturn { tutorialState, goToStage, applyBlocks, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, getPcDrillStep: () => typeof pcDrillStep !== "undefined" ? pcDrillStep : 0, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window, SCENARIOS };')(mockElements, specialEls);
 
-testRender.setUnlocked(['GOODS', 'ISLM']);
+testRender.goToStage(0);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
 const goodsLit = !testRender.mockElements.GOODS[0].classList.contains('locked');
 const islmLit = !testRender.mockElements.ISLM[0].classList.contains('locked');
@@ -235,7 +239,7 @@ check('3. Lock state = complement of unlocked', uipGrey && pcGrey, 'UIP and PC s
 check('4. Colour-in tracks unlocked', goodsLit && islmLit, 'GOODS and ISLM should be lit');
 
 // BAD-fixture: Forced lit while not in unlocked
-testRender.setUnlocked(['GOODS']);
+testRender.applyBlocks(['GOODS']);
 testRender.mockElements.UIP[0].classList.remove('locked'); // Force lit
 const caughtForcedLit = !testRender.mockElements.UIP[0].classList.contains('locked'); // It is lit!
 check('BAD-fixture: Block forced lit caught by invariant', caughtForcedLit, 'This would fail visual checks if asserted');
@@ -259,7 +263,7 @@ function verifyGating(htmlString) {
   const interactives = [...htmlNoScripts.matchAll(/<(input|button|select)[^>]*>|<[^>]+(?:onclick="[^"]*"|class="[^"]*\btoggle-row\b[^"]*")[^>]*>/gi)];
 
   const allowlist = [
-    'reset()', 'stepPeriod()', 'reverseStep()', 'jumpLongRun()', 'copyState()', 'advanceTutorial()', // Always-on run controls
+    'reset()', 'stepPeriod()', 'reverseStep()', 'jumpLongRun()', 'copyState()', 'advanceTutorial()', 'goToStage(', // Always-on run controls
     'scenario-select', 'applySelectedScenario()', // Preset controls (global)
     'toggleSection(', 'toggleEq(', 'advanceDrillPC(', 'toggleHelpMode(' // Layout toggles
   ];
@@ -320,11 +324,11 @@ const chartsIdx = html.indexOf('class="panel charts"');
 check('Layout: #readout follows .panel charts in DOM', readoutIdx !== -1 && chartsIdx !== -1 && readoutIdx > chartsIdx, 'readout must be below charts');
 
 // NEW: Warn Chip Gating Assertions
-testRender.setUnlocked(['GOODS']); // ISLM locked
+testRender.applyBlocks(['GOODS']); // ISLM locked
 testRender.drawISChips({ zlb_active: true, pi: 0.02, Y: 100, Y_n: 100 });
 check('Chip gating: ZLB chip does not render when ISLM is locked', !testRender.specialEls['ismp-chips'].innerHTML.includes('zlb'));
 
-testRender.setUnlocked(['GOODS', 'ISLM', 'UIP']); // PC locked
+testRender.goToStage(1); // PC locked
 testRender.state.taylor_on = false; testRender.state.theta = 0; // Wicksell
 testRender.state.deanchor_on = false; // anchor
 testRender.state.pi_e = 0.1; // exp
@@ -342,7 +346,7 @@ check('Chip gating: target does not render when PC is locked', !testRender.speci
 const badChipHtml = testRender.specialEls['pc-chips'].innerHTML + '<div class="warn-chip exp">⚠</div>';
 check('BAD-fixture: expectations chip rendered while PC locked caught', badChipHtml.includes('exp') === true);
 
-testRender.setUnlocked(['GOODS', 'ISLM', 'UIP', 'PC']);
+testRender.goToStage(3);
 testRender.drawISChips({ zlb_active: true, pi: 0.1, Y: 100, Y_n: 100 });
 testRender.drawPCChips(eqDummy);
 check('Chip gating: expectations chips and ZLB render when blocks unlocked', 
@@ -438,7 +442,7 @@ check('Eq Reconciliation: changed m1', testReconciliation({ m1: 0.4 }, 'm1=0.4')
 check('Eq Reconciliation: changed i', testReconciliation({ i: 0.05 }, 'i=0.05'));
 
 function testReconciliationPCLocked(stateOverrides, desc) {
-  testRender.setUnlocked(['GOODS', 'ISLM', 'UIP']);
+  testRender.goToStage(1);
   const ok1 = testReconciliation(stateOverrides, desc);
   const eq = testRender.solve(testRender.state);
   let ok2 = true;
@@ -446,7 +450,7 @@ function testReconciliationPCLocked(stateOverrides, desc) {
     console.log(`  FAIL [${desc}] r (${eq.r}) !== i (${testRender.state.i})`);
     ok2 = false;
   }
-  testRender.setUnlocked(['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT']);
+  testRender.goToStage(4);
   return ok1 && ok2;
 }
 
@@ -498,7 +502,7 @@ function getRenderedTerms() {
 }
 
 function checkScope(unlockedArray, desc) {
-  testRender.setUnlocked(unlockedArray);
+  testRender.applyBlocks(unlockedArray);
   const terms = getRenderedTerms();
   for (const t of terms) {
     const block = testRender.TERM_BLOCK[t];
@@ -518,7 +522,7 @@ check('INV-6 Scope: +DEBT', checkScope(['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'], '
 
 // BAD-fixture: forced out of scope
 let caughtScope = false;
-testRender.setUnlocked(['GOODS']);
+testRender.applyBlocks(['GOODS']);
 const termsBefore = getRenderedTerms();
 // artificially inject a term that belongs to PC
 testRender.specialEls['eq-ismp'].innerHTML += '<span class="eq-line" data-term="PC"></span>';
@@ -532,7 +536,7 @@ while ((ms = matchScope.exec(htmlScopeTest)) !== null) {
 }
 check('INV-6 BAD-fixture: Term scoped to wrong block caught', caughtScope);
 
-testRender.setUnlocked(['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT']);
+testRender.goToStage(4);
 testRender.drawEquations(testRender.solve(testRender.state));
 let inv8Passed = true;
 let inv9Passed = true;
@@ -792,7 +796,7 @@ const badWrapCode = headlessCode.replace('return result;', 'return { notAString:
 const badWrapApi = new Function(badWrapCode + '\nfunction render() {}\nreturn { wrapSymbols };')();
 check('BAD-fixture: wrapSymbols impurity caught', typeof badWrapApi.wrapSymbols('Yₙ') !== 'string');
 
-testRender.setUnlocked(['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT']);
+testRender.goToStage(4);
 testRender.drawEquations(testRender.solve(testRender.state));
 check('INV-C2: drawEquations applies wrapSymbols', testRender.specialEls['eq-ismp'].innerHTML.includes('class="sym"'));
 

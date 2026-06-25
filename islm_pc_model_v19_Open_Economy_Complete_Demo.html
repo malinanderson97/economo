@@ -331,7 +331,8 @@
   <h1>ISLM-UIP-PC interactive model<span class="tier-badge">open economy</span><span id="period-label" style="margin-left:8px">period 0</span></h1>
   <div class="run-controls">
     <button onclick="toggleHelpMode()" id="btn-help-mode" title="Hover over any symbol to see its definition.">❓ Help Mode: OFF</button>
-    <button onclick="advanceTutorial()" id="btn-advance" class="primary">Unlock Next Block</button>
+      <select id="stage-dropdown" onchange="goToStage(parseInt(this.value))" style="font-size:1em; font-weight:bold;"></select>
+      <button onclick="advanceTutorial()" id="btn-advance" class="primary">Next</button>
     <button onclick="reset()">↺ Reset</button>
     <button class="reverse" id="reverse-btn" onclick="reverseStep()" disabled>← Reverse</button>
     <button onclick="stepPeriod()">→ Step one period</button>
@@ -537,24 +538,36 @@
 // Tutorial State & Machine
 // -------------------------------------------------------------------------
 const TUTORIAL_BLOCKS = ['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'];
+
+const TUTORIAL_STAGES = [
+  { label: 'IS Model',          economy: 'closed', unlocked: ['GOODS', 'ISLM'] },
+  { label: 'IS-LM-UIP Model',   economy: 'open',   unlocked: ['GOODS', 'ISLM', 'UIP'] },
+  { label: 'IS-LM-PC Model',    economy: 'closed', unlocked: ['GOODS', 'ISLM', 'UIP', 'PC'] },
+  { label: 'Full Model',        economy: 'open',   unlocked: ['GOODS', 'ISLM', 'UIP', 'PC'] },
+  { label: '+ Government Debt', economy: 'open',   unlocked: ['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'] }
+];
+
 let tutorialState = {
-  unlocked: new Set(['GOODS'])
+  stage: 0,
+  unlocked: new Set(['GOODS', 'ISLM'])
 };
 let renderTutorial = () => {}; // Replaced later with DOM-dependent function
 
-function unlockBlock(block) {
-  tutorialState.unlocked.add(block);
-  render();
+function currentStage() {
+  return TUTORIAL_STAGES[tutorialState.stage];
 }
 
-function setUnlocked(blocks) {
-  tutorialState.unlocked = new Set(blocks);
-  renderTutorial();
+function goToStage(i) {
+  if (i < 0 || i >= TUTORIAL_STAGES.length) return;
+  tutorialState.stage = i;
+  tutorialState.unlocked = new Set(TUTORIAL_STAGES[i].unlocked);
+  if (typeof render === 'function') render(); else renderTutorial();
 }
+
+
 
 function resetTutorial() {
-  tutorialState.unlocked = new Set(['GOODS']);
-  renderTutorial();
+  goToStage(0);
 }
 
 // -------------------------------------------------------------------------
@@ -610,7 +623,7 @@ const IS_D0 = 12;   // d0  (autonomous investment)
 // Open-economy IS, structural. k_o = 1/(1 − c1 − d1 + m1) — the import leakage m1 is
 // INSIDE the denominator, so a higher m1 lowers every multiplier (Blanchard Ch. 18).
 function openOn() {
-  return tutorialState.unlocked.has('UIP');
+  return currentStage().economy === 'open';
 }
 
 function isOutput(G, T, r, eps, c1, m1, Ystar) {
@@ -1653,7 +1666,12 @@ window.addEventListener('resize', () => requestAnimationFrame(fitCharts));
 
 function toggleEq(boxId) {
   const box = document.getElementById(boxId);
-  if (box) box.classList.toggle('open');
+  if (box) {
+    box.classList.toggle('open');
+    if (box.classList.contains('open') && typeof drawEquations === 'function' && typeof solve === 'function') {
+      drawEquations(solve(state));
+    }
+  }
   
   const anyOpen = document.querySelectorAll('.eq-box.open').length > 0;
   const rightCol = document.getElementById('right-col');
@@ -2066,16 +2084,14 @@ function jumpLongRun() {
 }
 
 function advanceTutorial() {
-  for (const b of TUTORIAL_BLOCKS) {
-    if (!tutorialState.unlocked.has(b)) {
-      unlockBlock(b);
-      break;
-    }
+  if (tutorialState.stage < TUTORIAL_STAGES.length - 1) {
+    goToStage(tutorialState.stage + 1);
   }
 }
 
 renderTutorial = function() {
   const isUnlocked = b => tutorialState.unlocked.has(b);
+  const uipActive = openOn();
   
   const setLocked = (selector, condition) => {
     document.querySelectorAll(selector).forEach(el => {
@@ -2084,16 +2100,23 @@ renderTutorial = function() {
     });
   };
 
-  // UI button state
+  // UI button and dropdown state
   const btnAdv = document.getElementById('btn-advance');
   if (btnAdv) {
-    if (tutorialState.unlocked.size >= TUTORIAL_BLOCKS.length) {
-      btnAdv.disabled = true;
-      btnAdv.textContent = 'All Blocks Unlocked';
-    } else {
-      btnAdv.disabled = false;
-      btnAdv.textContent = 'Unlock Next Block';
+    btnAdv.disabled = tutorialState.stage >= TUTORIAL_STAGES.length - 1;
+  }
+
+  const stageDropdown = document.getElementById('stage-dropdown');
+  if (stageDropdown && stageDropdown.options) {
+    if (stageDropdown.options.length === 0) {
+      TUTORIAL_STAGES.forEach((st, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = st.label;
+        stageDropdown.appendChild(opt);
+      });
     }
+    stageDropdown.value = tutorialState.stage;
   }
 
   // Visual lock/grey/colour-in for each block
@@ -2105,13 +2128,12 @@ renderTutorial = function() {
   setLocked('.control[data-block="ISLM"]', islmOn);
   setLocked('.curve-mp, .curve-real, .label-mp, .handle[data-handle="mp"]', islmOn);
 
-  const uipOn = isUnlocked('UIP');
-  setLocked('.control[data-block="UIP"]', uipOn);
-  setLocked('#chart-box-uip', uipOn);
+  setLocked('.control[data-block="UIP"]', uipActive);
+  setLocked('#chart-box-uip, .curve-uip, .label-uip, .handle[data-handle="uip"], #drill-uip', uipActive);
 
   const pcOn = isUnlocked('PC');
   setLocked('.control[data-block="PC"]', pcOn);
-  setLocked('#chart-box-pc', pcOn);
+  setLocked('#chart-box-pc, .curve-pc, .label-pc', pcOn);
   setLocked('#sec-dynamics .side-body', pcOn);
   setLocked('#sec-shocks .side-body', pcOn);
 
@@ -2121,7 +2143,7 @@ renderTutorial = function() {
 
   // Drill triggers gating (INV-S3-C)
   setLocked('.drill-trigger[data-block="ISLM"]', islmOn);
-  setLocked('.drill-trigger[data-block="UIP"]', uipOn);
+  setLocked('.drill-trigger[data-block="UIP"]', uipActive);
   setLocked('.drill-trigger[data-block="PC"]', pcOn);
 };
 

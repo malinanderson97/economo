@@ -31,14 +31,13 @@ const stub = `var document={getElementById:()=>fakeEl(),createElement:()=>fakeEl
 
 let api;
 try {
-fs.writeFileSync('eval_dump.js', stub + scripts);
   api = new Function(stub + scripts +
-    '\nreturn {solve,step,clone,initialState,effectiveTheta,nextCredibility,SCENARIOS,PI_TARGET,IS_R_BASE,isOutput,isRateForOutput,effectivePiE,setUnlocked};')();
+    '\nreturn {solve,step,clone,initialState,effectiveTheta,nextCredibility,SCENARIOS,PI_TARGET,IS_R_BASE,isOutput,isRateForOutput,effectivePiE,tutorialState,currentStage,goToStage};')();
 } catch (e) {
   console.error('FAILED TO LOAD ENGINE:', e.stack);
   process.exit(1);
 }
-const { solve, step, clone, initialState, effectiveTheta, nextCredibility, SCENARIOS, PI_TARGET, IS_R_BASE, isOutput, isRateForOutput, effectivePiE, setUnlocked } = api;
+const { solve, step, clone, initialState, effectiveTheta, nextCredibility, SCENARIOS, PI_TARGET, IS_R_BASE, isOutput, isRateForOutput, effectivePiE, tutorialState,currentStage, goToStage } = api;
 
 // ---- Tiny test harness -----------------------------------------------------
 let passed = 0, failed = 0;
@@ -61,7 +60,7 @@ function preset(id) {
 }
 
 console.log('Verifying islm_pc_model_v19 (open economy) …\n');
-setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
+goToStage(4);
 
 // 1. Baseline equilibrium: at i = I_NEUTRAL with πᵉ on target, Y must equal 100.
 {
@@ -303,7 +302,7 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
 // ---- 16. πᵉ gating -----------------------------------------------------------
 {
   // PC LOCKED: r = i, so moving πᵉ must not move Y.
-  setUnlocked(['GOODS','ISLM','UIP']);            // PC NOT in the set
+  goToStage(1);            // PC NOT in the set
   const sA = clone(initialState); sA.pi_e = 0.02;
   const sB = clone(initialState); sB.pi_e = 0.10; // large πᵉ change
   const Ya = solve(sA).Y, Yb = solve(sB).Y;
@@ -313,7 +312,7 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
         `r=${solve(sB).r.toFixed(4)} i=${sB.i.toFixed(4)}`);
 
   // PC UNLOCKED: r = i − πᵉ, so a higher πᵉ lowers r, raising Y.
-  setUnlocked(['GOODS','ISLM','UIP','PC']);
+  goToStage(3);
   const Yc = solve(sB).Y;                          // same sB, now PC unlocked
   check('16 PC-unlocked: higher πᵉ raises Y (real-rate channel live)', Yc > Ya + 0.5,
         `Y(πᵉ=10%, PC on)=${Yc.toFixed(4)} vs locked baseline ${Ya.toFixed(4)}`);
@@ -332,12 +331,12 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
   check('16 SELF-TEST analyzer BAD fixture fails', !approx(ya_ungated, yb_ungated, 1e-9));
 
   // restore default tutorial state for any later assertions
-  setUnlocked(['GOODS','ISLM','UIP','PC']);
+  goToStage(3);
 }
 
 // ---- 17. Closed Multiplier (§5.1) -------------------------------------------
 {
-  setUnlocked(['GOODS','ISLM']); // UIP locked
+  goToStage(0); // IS Model (closed)
   const s0 = clone(initialState);
   const sg = clone(initialState); sg.G += 1;
   const Y0 = solve(s0).Y;
@@ -347,7 +346,7 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
 
 // ---- 18. Open Multiplier (Regression) (§5.2) -------------------------------
 {
-  setUnlocked(['GOODS','ISLM','UIP']); // UIP unlocked
+  goToStage(1); // IS-LM-UIP Model (open)
   const s0 = clone(initialState);
   const sg = clone(initialState); sg.G += 1;
   const Y0 = solve(s0).Y;
@@ -357,7 +356,7 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
 
 // ---- 19. No Trade Channel Closed (§5.3) -------------------------------------
 {
-  setUnlocked(['GOODS','ISLM']); // UIP locked
+  goToStage(0); // IS Model (closed)
   const s0 = clone(initialState);
   const eq0 = solve(s0);
   
@@ -377,7 +376,7 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
 
 // ---- 20a. Pre-PC closed short run (§5.4a) -----------------------------------
 {
-  setUnlocked(['GOODS','ISLM']); // UIP locked AND PC locked
+  goToStage(0); // IS Model (closed, no PC)
   const s0 = clone(initialState);
   const eq0 = solve(s0);
   const sPi = clone(initialState); sPi.pi_e += 0.05;
@@ -392,7 +391,7 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
 
 // ---- 20b. Medium-run closed baseline (§5.4b) --------------------------------
 {
-  setUnlocked(['GOODS','ISLM','PC']); // PC on, UIP locked
+  goToStage(2); // IS-LM-PC Model (closed, PC)
   const s0 = clone(initialState);
   const eq0 = solve(s0);
   const y100 = approx(eq0.Y, 100, 0.1);
@@ -402,7 +401,7 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
 
 // ---- 21. Level-2 Named Cell (§5.5) ------------------------------------------
 {
-  setUnlocked(['GOODS','ISLM','UIP']); // UIP unlocked, PC locked
+  goToStage(1); // IS-LM-UIP Model (open, PC locked)
   const s0 = clone(initialState); s0.pi_e = 0.05; // Change pi_e to verify r=i
   const eq0 = solve(s0);
   check('21 Level-2 cell: open economy, no inflation (r=i)', approx(eq0.r, s0.i, 1e-6) && !approx(eq0.r, s0.i - s0.pi_e, 1e-6), `r=${eq0.r.toFixed(4)}, i=${s0.i.toFixed(4)}, pi_e=${s0.pi_e.toFixed(4)}`);
@@ -410,7 +409,7 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
 
 // ---- 22. Level-3 Cross-Cell (§5.6) ------------------------------------------
 {
-  setUnlocked(['GOODS','ISLM','PC']); // UIP locked, PC unlocked
+  goToStage(2); // IS-LM-PC Model (closed, PC unlocked)
   const s0 = clone(initialState);
   const sg = clone(initialState); sg.G += 1;
   const sPi = clone(initialState); sPi.pi_e += 0.02; // Change pi_e
@@ -431,19 +430,19 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
 
 // ---- 23. Curve Reconciles to Engine (Closed) (§5.7) -------------------------
 {
-  setUnlocked(['GOODS','ISLM','PC']); // UIP locked, PC unlocked
+  goToStage(2); // IS-LM-PC Model (closed, PC unlocked)
   const s0 = clone(initialState);
   const eq0 = solve(s0);
   const r_curve = isRateForOutput(eq0.Y, s0.G, s0.T, eq0.eps, effectivePiE(s0), s0.c1, s0.m1, s0.Ystar);
   
-  setUnlocked(['GOODS','ISLM','UIP','PC']); // UIP unlocked, PC unlocked
+  goToStage(3); // Full Model (open, PC unlocked)
   const sOpen = clone(initialState);
   // Note: hard-coding eps=1 is fine here because eps only shifts the IS intercept, not its slope.
   const r_open1 = isRateForOutput(90, sOpen.G, sOpen.T, 1, effectivePiE(sOpen), sOpen.c1, sOpen.m1, sOpen.Ystar);
   const r_open2 = isRateForOutput(100, sOpen.G, sOpen.T, 1, effectivePiE(sOpen), sOpen.c1, sOpen.m1, sOpen.Ystar);
   const slopeOpen = Math.abs(r_open2 - r_open1) / 10;
   
-  setUnlocked(['GOODS','ISLM','PC']); // UIP locked, PC unlocked
+  goToStage(2); // IS-LM-PC Model (closed, PC unlocked)
   const r_closed1 = isRateForOutput(90, s0.G, s0.T, 1, effectivePiE(s0), s0.c1, s0.m1, s0.Ystar);
   const r_closed2 = isRateForOutput(100, s0.G, s0.T, 1, effectivePiE(s0), s0.c1, s0.m1, s0.Ystar);
   const slopeClosed = Math.abs(r_closed2 - r_closed1) / 10;
@@ -453,8 +452,68 @@ setUnlocked(['GOODS','ISLM','UIP','PC','DEBT']);
   check('23 Curve reconciles to engine (closed)', approx(r_curve, eq0.i, 0.001) && slopeOpen > slopeClosed, `r_curve=${r_curve.toFixed(4)}, eq0.i=${eq0.i.toFixed(4)}, slopeClosed=${slopeClosed.toFixed(4)}, slopeOpen=${slopeOpen.toFixed(4)}`);
   
   // Restore
-  setUnlocked(['GOODS','ISLM','UIP','PC']);
+  goToStage(3);
 }
+
+// ---- 24. Stage->Economy Mapping (§6.1) ---------------------------------------
+{
+  // Stage 1 -> open
+  goToStage(1);
+  const eq1 = solve(clone(initialState));
+  const multOpen1 = approx(solve({...initialState, G: initialState.G+1}).Y - eq1.Y, 1.43, 0.05);
+  
+  // Stage 2 -> closed
+  goToStage(2);
+  const eq2 = solve(clone(initialState));
+  const multClosed = approx(solve({...initialState, G: initialState.G+1}).Y - eq2.Y, 2.5, 0.05);
+  
+  // Stage 3 -> open
+  goToStage(3);
+  const eq3 = solve(clone(initialState));
+  const multOpen3 = approx(solve({...initialState, G: initialState.G+1}).Y - eq3.Y, 1.43, 0.05);
+
+  check('24 Stage->economy mapping (open/closed toggles correctly)', multOpen1 && multClosed && multOpen3);
+}
+
+// ---- 25. UIP Re-opens at Full (§6.3) ----------------------------------------
+{
+  // Stage 2 (IS-LM-PC) -> closed
+  goToStage(2);
+  const eqClosed = solve(clone(initialState));
+  const sOpen1 = clone(initialState); sOpen1.i_star = 0.10;
+  const invClosed = approx(solve(sOpen1).Y, eqClosed.Y, 1e-6); // Trade channel dead
+
+  // Stage 3 (Full) -> open
+  goToStage(3);
+  const eqOpen = solve(clone(initialState));
+  const openTrade = !approx(solve(sOpen1).Y, eqOpen.Y, 1e-6); // Trade channel alive
+  
+  check('25 UIP re-opens at Full Model (trade channel turns back on)', invClosed && openTrade);
+}
+
+// ---- 26. Dropdown Jump = Next-walk (§6.5) -----------------------------------
+{
+  // Walk 0->1->2->3
+  goToStage(0);
+  goToStage(1);
+  goToStage(2);
+  goToStage(3);
+  const eqWalk = solve(clone(initialState));
+  
+  // Jump 0->3
+  goToStage(0);
+  goToStage(3);
+  const eqJump = solve(clone(initialState));
+  
+  check('26 Dropdown jump = Next-walk (no path dependence)', approx(eqWalk.Y, eqJump.Y, 1e-6) && approx(eqWalk.r, eqJump.r, 1e-6));
+}
+// ---- 27. Consistent Stage/Unlocked (§6.2) -----------------------------------
+{
+  goToStage(2);
+  const ok = tutorialState.unlocked.size === currentStage().unlocked.length && currentStage().unlocked.every(b => tutorialState.unlocked.has(b));
+  check('27 Stage and unlocked set must remain consistent', ok);
+}
+
 // ---- Summary ---------------------------------------------------------------
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);
