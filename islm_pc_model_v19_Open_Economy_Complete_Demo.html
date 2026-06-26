@@ -650,33 +650,33 @@ function isRateForOutput(Y, G, T, eps, pi_e, c1, m1, Ystar) {
 // Parameter definitions
 // -------------------------------------------------------------------------
 const paramDefs = [
-  { key: 'G',        block: 'GOODS', label: 'Govt spending , G',         min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
-  { key: 'T',        block: 'GOODS', label: 'Taxes , T',                 min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
-  { key: 'i_target', block: 'ISLM',  label: 'Policy rate (target) , i',  min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
-  { key: 'i_star',   block: 'UIP',   label: 'Foreign rate , i*',         min: 0,     max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
-  { key: 'E_e',      block: 'UIP',   label: 'Expected ex. rate , Eᵉ',    min: 0.7,   max: 1.3,  step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'pi_e',     block: 'PC',    label: 'Expected inflation , πᵉ',   min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
-  { key: 'alpha',    block: 'PC',    label: 'PC slope , α',              min: 0.05, max: 0.5,  step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'c1',       block: 'GOODS', label: 'MPC , c₁',                min: 0.30, max: 0.80, step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'm1',       block: 'UIP',   label: 'Import prop. , m₁',       min: 0.05, max: 0.60, step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'Ystar',    block: 'UIP',   label: 'Foreign output , Y*',       min: 80,   max: 120,  step: 1,      fmt: v => v.toFixed(0) },
-  { key: 'm_struct', block: 'PC',    label: 'Markup , m', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Price-setting markup (shifts natural rate)' },
-  { key: 'z_struct', block: 'PC',    label: 'Wage push , z', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Structural wage-push (shifts natural rate)' }
+  { key: 'G',        block: 'GOODS', label: 'Govt spending, G',         min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
+  { key: 'T',        block: 'GOODS', label: 'Taxes, T',                 min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
+  { key: 'i_target', block: 'ISLM',  label: 'Policy rate (target), i',  min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
+  { key: 'i_star',   block: 'UIP',   label: 'Foreign rate, i*',         min: 0,     max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
+  { key: 'E_e',      block: 'UIP',   label: 'Expected ex. rate, Eᵉ',    min: 0.7,   max: 1.3,  step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'pi_e',     block: 'PC',    label: 'Expected inflation, πᵉ',   min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
+  { key: 'alpha',    block: 'PC',    label: 'PC slope, α',              min: 0.05, max: 0.5,  step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'c1',       block: 'GOODS', label: 'MPC, c₁',                min: 0.30, max: 0.80, step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'm1',       block: 'UIP',   label: 'Import prop., m₁',       min: 0.05, max: 0.60, step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'Ystar',    block: 'UIP',   label: 'Foreign output, Y*',       min: 80,   max: 120,  step: 1,      fmt: v => v.toFixed(0) },
+  { key: 'm_struct', block: 'PC',    label: 'Markup, m', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Price-setting markup (shifts natural rate)' },
+  { key: 'z_struct', block: 'PC',    label: 'Wage push, z', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Structural wage-push (shifts natural rate)' }
 ];
 
 const shockDefs = [
-  { key: 'z',        block: 'PC',    label: 'Cost-push (PC shift) , z',  min: -0.03, max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%' }
+  { key: 'z',        block: 'PC',    label: 'Cost-push (PC shift), z',  min: -0.03, max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%' }
 ];
 
 const dynamicsDefs = [
-  { key: 'theta',    block: 'PC', label: 'Max anchoring (ceiling) , θ',  min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2) },
+  { key: 'theta',    block: 'PC', label: 'Max anchoring (ceiling), θ',  min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2) },
   { key: 'cred',     block: 'PC', label: 'Current credibility',        min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2), meter: 'cred' },
-  { key: 'phi',      block: 'PC', label: 'Taylor response , φ',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
+  { key: 'phi',      block: 'PC', label: 'Taylor response, φ',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
 ];
 
 const debtDefs = [
-  { key: 'B', block: 'DEBT', label: 'Initial govt debt d=B/Y , d', min: 0, max: 150, step: 1, fmt: v => v.toFixed(0) },
-  { key: 'g', block: 'DEBT', label: 'Trend growth (debt accounting) , g', min: -0.02, max: 0.06, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' }
+  { key: 'B', block: 'DEBT', label: 'Initial govt debt d=B/Y, d', min: 0, max: 150, step: 1, fmt: v => v.toFixed(0) },
+  { key: 'g', block: 'DEBT', label: 'Trend growth (debt accounting), g', min: -0.02, max: 0.06, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' }
 ];
 
 const initialState = {
@@ -945,7 +945,7 @@ function buildSliders(root, defs) {
     let symHtml = splitIdx !== -1 ? labelHtml.substring(splitIdx).trim() : '';
 
     wrap.innerHTML = `
-      <label><span class="ctl-desc">${descHtml}</span> <span class="ctl-sym">${symHtml} <span><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(state[p.key])}">${suffix}</span></span></label>
+      <label><span class="ctl-desc">${descHtml} <span class="ctl-sym">${symHtml}</span></span> <span class="val-container"><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(state[p.key])}">${suffix}</span></label>
       <input type="range" id="ctl-${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${state[p.key]}">
       ${meter}
     `;
