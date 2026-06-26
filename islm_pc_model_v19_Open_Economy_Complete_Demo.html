@@ -344,6 +344,7 @@
 <div class="layout">
 
   <div id="left-panel">
+    <div id="sidebar-group-toggle" class="side-head" style="background:#e8f0fe; color:#185fa5; margin-bottom:10px; cursor:pointer;" onclick="toggleSidebarGroup()">Group by: <span id="sidebar-group-label">Function ▸</span></div>
     <div class="side-section open" id="sec-presets">
       <div class="side-head" onclick="toggleSection('sec-presets')"><span class="side-arrow">▶</span>Preset scenarios</div>
       <div class="side-body">
@@ -364,8 +365,8 @@
       <div class="side-head" onclick="toggleSection('sec-dynamics')"><span class="side-arrow">▶</span>Adjustment dynamics</div>
       <div class="side-body">
         <div id="dynamics-controls"></div>
-        <div class="control">
-          <label>Price flex (medium-run speed) <span class="val" id="speed-val">0.5</span></label>
+        <div class="control" id="speed-wrap">
+          <label>Price flex (medium-run speed) <span class="info-icon" title="How quickly prices adjust to output gaps. High flex = fast return to natural rate; low flex = persistent gaps.">ℹ</span> <span class="val" id="speed-val">0.5</span></label>
           <input type="range" id="speed" min="0.05" max="1" step="0.05" value="0.5">
         </div>
         <div class="toggle-row" id="taylor-toggle" onclick="toggleTaylor()">
@@ -376,7 +377,7 @@
           <div class="sw"></div>
           <span>Allow expectations to de-anchor</span>
         </div>
-        <div class="hint">
+        <div class="hint" id="hint-dynamics">
           π* = 2% target. Expectations are anchored by the product of two sliders:
           <strong>Max anchoring θ</strong> is the ceiling (how credible this central bank can ever be),
           and <strong>Current credibility</strong> is where anchoring sits right now (0–100% of that ceiling).
@@ -400,7 +401,7 @@
       <div class="side-head" onclick="toggleSection('sec-shocks')"><span class="side-arrow">▶</span>Supply shocks</div>
       <div class="side-body">
         <div id="shock-controls"></div>
-        <button class="shock-btn" onclick="applyOilShock()">⚡ Apply oil shock (+5%)</button>
+        <button class="shock-btn" id="oil-shock-btn" onclick="applyOilShock()">⚡ Apply oil shock (+5%)</button>
         <div class="shock-indicator" id="shock-indicator">no active pulse</div>
       </div>
     </div>
@@ -410,7 +411,7 @@
       <div class="side-body">
         <div id="debt-controls"></div>
         <div class="debt-cue" id="debt-cue"></div>
-        <div class="hint">
+        <div class="hint" id="hint-debt">
           Set a starting debt ratio d = B/Y and a trend growth rate g, then create a primary
           deficit by raising G above T (or a surplus to pay debt down). The debt ratio evolves by
           Δd = (r − g)·d − s, where s = (T−G)/Y is the primary surplus. When r &gt; g the ratio
@@ -493,20 +494,16 @@
               <div class="sub">Labour market (WS-PS)</div>
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-a" viewBox="0 0 160 140"></svg></div>
             </div>
-            <div class="drill-col" id="drill-pc-okun" style="display:none">
-              <div class="drill-eq" id="drill-eq-okun">Yₙ = L(1−uₙ) <span class="ref">(Blanchard eq. 8.4)</span></div>
+            <div class="drill-col" id="drill-pc-okun">
+              <div class="drill-eq" id="drill-eq-okun">Yₙ = L(1−uₙ) <span class="ref">(Blanchard eqs. 9.2–9.3)</span></div>
               <div class="sub">Okun's bridge</div>
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-b" viewBox="0 0 160 140"></svg></div>
             </div>
-            <div class="drill-col" id="drill-pc-phillips" style="display:none">
+            <div class="drill-col" id="drill-pc-phillips">
               <div class="drill-eq" id="drill-eq-phillips">π = πᵉ + (α/Yₙ)(Y−Yₙ) + z <span class="ref">(Blanchard eq. 9.3)</span></div>
               <div class="sub">Phillips curve</div>
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-c" viewBox="0 0 160 140"></svg></div>
             </div>
-          </div>
-          <div class="drill-btn-row">
-            <button onclick="advanceDrillPC(-1)" id="drill-pc-prev" disabled>← Previous</button>
-            <button onclick="advanceDrillPC(1)" id="drill-pc-next">Next step →</button>
           </div>
         </div>
         <div class="eq-box" id="box-eq-pc"><div class="eq-toggle" onclick="toggleEq('box-eq-pc')"><span class="eq-arrow">▶</span><span>Show the equations behind this chart</span></div><div class="eq-body" id="eq-pc"></div></div>
@@ -653,33 +650,33 @@ function isRateForOutput(Y, G, T, eps, pi_e, c1, m1, Ystar) {
 // Parameter definitions
 // -------------------------------------------------------------------------
 const paramDefs = [
-  { key: 'G',        block: 'GOODS', label: 'Govt spending G',         min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
-  { key: 'T',        block: 'GOODS', label: 'Taxes T',                 min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
-  { key: 'i_target', block: 'ISLM',  label: 'Policy rate i (target)',  min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
-  { key: 'i_star',   block: 'UIP',   label: 'Foreign rate i*',         min: 0,     max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
-  { key: 'E_e',      block: 'UIP',   label: 'Expected ex. rate Eᵉ',    min: 0.7,   max: 1.3,  step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'pi_e',     block: 'PC',    label: 'Expected inflation πᵉ',   min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
-  { key: 'alpha',    block: 'PC',    label: 'PC slope α',              min: 0.05, max: 0.5,  step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'c1',       block: 'GOODS', label: 'MPC (c₁)',                min: 0.30, max: 0.80, step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'm1',       block: 'UIP',   label: 'Import prop. (m₁)',       min: 0.05, max: 0.60, step: 0.01,   fmt: v => v.toFixed(2) },
-  { key: 'Ystar',    block: 'UIP',   label: 'Foreign output Y*',       min: 80,   max: 120,  step: 1,      fmt: v => v.toFixed(0) },
-  { key: 'm_struct', block: 'PC',    label: 'Markup m', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Price-setting markup (shifts natural rate)' },
-  { key: 'z_struct', block: 'PC',    label: 'Wage push z', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Structural wage-push (shifts natural rate)' }
+  { key: 'G',        block: 'GOODS', label: 'Govt spending , G',         min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
+  { key: 'T',        block: 'GOODS', label: 'Taxes , T',                 min: 10,    max: 35,   step: 1,      fmt: v => v.toFixed(0) },
+  { key: 'i_target', block: 'ISLM',  label: 'Policy rate (target) , i',  min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
+  { key: 'i_star',   block: 'UIP',   label: 'Foreign rate , i*',         min: 0,     max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
+  { key: 'E_e',      block: 'UIP',   label: 'Expected ex. rate , Eᵉ',    min: 0.7,   max: 1.3,  step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'pi_e',     block: 'PC',    label: 'Expected inflation , πᵉ',   min: -0.02, max: 0.15, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' },
+  { key: 'alpha',    block: 'PC',    label: 'PC slope , α',              min: 0.05, max: 0.5,  step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'c1',       block: 'GOODS', label: 'MPC , c₁',                min: 0.30, max: 0.80, step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'm1',       block: 'UIP',   label: 'Import prop. , m₁',       min: 0.05, max: 0.60, step: 0.01,   fmt: v => v.toFixed(2) },
+  { key: 'Ystar',    block: 'UIP',   label: 'Foreign output , Y*',       min: 80,   max: 120,  step: 1,      fmt: v => v.toFixed(0) },
+  { key: 'm_struct', block: 'PC',    label: 'Markup , m', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Price-setting markup (shifts natural rate)' },
+  { key: 'z_struct', block: 'PC',    label: 'Wage push , z', min: 0.01, max: 0.30, step: 0.005, fmt: v => v.toFixed(3), infoText: 'Structural wage-push (shifts natural rate)' }
 ];
 
 const shockDefs = [
-  { key: 'z',        block: 'PC',    label: 'Cost-push z (PC shift)',  min: -0.03, max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%' }
+  { key: 'z',        block: 'PC',    label: 'Cost-push (PC shift) , z',  min: -0.03, max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%' }
 ];
 
 const dynamicsDefs = [
-  { key: 'theta',    block: 'PC', label: 'Max anchoring θ (ceiling)',  min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2) },
+  { key: 'theta',    block: 'PC', label: 'Max anchoring (ceiling) , θ',  min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2) },
   { key: 'cred',     block: 'PC', label: 'Current credibility',        min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2), meter: 'cred' },
-  { key: 'phi',      block: 'PC', label: 'Taylor φ (response to π)',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
+  { key: 'phi',      block: 'PC', label: 'Taylor response , φ',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
 ];
 
 const debtDefs = [
-  { key: 'B', block: 'DEBT', label: 'Initial govt debt d = B/Y (% of Y)', min: 0, max: 150, step: 1, fmt: v => v.toFixed(0) },
-  { key: 'g', block: 'DEBT', label: 'Trend growth g (debt accounting)', min: -0.02, max: 0.06, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' }
+  { key: 'B', block: 'DEBT', label: 'Initial govt debt d=B/Y , d', min: 0, max: 150, step: 1, fmt: v => v.toFixed(0) },
+  { key: 'g', block: 'DEBT', label: 'Trend growth (debt accounting) , g', min: -0.02, max: 0.06, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' }
 ];
 
 const initialState = {
@@ -694,7 +691,7 @@ const initialState = {
   Ystar: 100,
   m_struct: 0.05,
   z_struct: 0.10,
-  z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, history: []
+  z: 0, z_pulse: 0, theta: 1.0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, history: []
 };
 
 let state = clone(initialState);
@@ -790,7 +787,9 @@ const CURVE_DEFS = {
   'IS':  { meaning: 'goods-market equilibrium', ref: 'Ch. 5', role: 'output where demand equals production at each interest rate' },
   'LM':  { meaning: 'monetary policy rate',     ref: 'Ch. 5', role: 'the interest rate the central bank sets' },
   'UIP': { meaning: 'uncovered interest parity', ref: 'eq. 19.5', role: 'links domestic and foreign returns through the exchange rate' },
-  'PC':  { meaning: 'Phillips curve',           ref: 'eq. 9.3', role: 'links inflation to the output gap' }
+  'PC':  { meaning: 'Phillips curve',           ref: 'eq. 9.3', role: 'links inflation to the output gap' },
+  'WS':  { meaning: 'wage-setting relation',    ref: 'eq. 7.1', role: 'real wage demanded by workers given unemployment' },
+  'PS':  { meaning: 'price-setting relation',   ref: 'eq. 7.3', role: 'real wage implied by firms\' price markup' }
 };
 
 const SYMBOL_DEFS = {
@@ -804,7 +803,12 @@ const SYMBOL_DEFS = {
   'd₁ᵣ': { meaning: 'interest sensitivity of investment', ref: 'eq. 5.1', role: 'slope of the IS curve' },
   'm₁': { meaning: 'marginal propensity to import', ref: 'eq. 19.1', role: 'open-economy leakage' },
   'k_open': { meaning: 'open economy multiplier', ref: 'eq. 19.2', role: 'magnifies autonomous spending' },
+  'm': { meaning: 'price-setting markup', ref: 'eq. 8.4 (price-setting 7.3)', role: 'firms\' markup of price over wage; raises the natural rate uₙ, lowering Yₙ' },
+  'Wage push z': { meaning: 'structural wage-push factor', ref: 'eq. 8.4', role: 'everything in wage-setting other than unemployment; raises uₙ, lowering Yₙ' },
+  'Cost-push z': { meaning: 'transitory cost-push shock', ref: 'eq. 9.3', role: 'temporary supply disturbance that shifts the Phillips curve; does NOT move Yₙ' },
+  'z': { meaning: 'catch-all structural or supply shift', ref: 'Ch. 8/9', role: 'moves the PC or natural rate' },
   'uₙ': { meaning: 'natural rate of unemployment', ref: 'eq. 8.4', role: 'unemployment rate where π = πᵉ' },
+  'u': { meaning: 'unemployment rate', ref: 'eq. 7.1', role: 'fraction of labour force without a job' },
   'c₀': { meaning: 'autonomous consumption', ref: 'eq. 3.3', role: 'consumption when disposable income is zero' },
   'd₀': { meaning: 'autonomous investment', ref: 'eq. 5.1', role: 'investment independent of Y and r' },
   'd₁': { meaning: 'output sensitivity of investment', ref: 'eq. 5.1', role: 'accelerator effect' },
@@ -990,6 +994,94 @@ function buildControls() {
 function toggleSection(id) {
   const sec = document.getElementById(id);
   if (sec) sec.classList.toggle('open');
+}
+
+let sidebarGroupByGraph = false;
+
+function toggleSidebarGroup() {
+  sidebarGroupByGraph = !sidebarGroupByGraph;
+  document.getElementById('sidebar-group-label').textContent = sidebarGroupByGraph ? 'Graph ▸' : 'Function ▸';
+  
+  const leftPanel = document.getElementById('left-panel');
+  const functionSections = ['sec-policy', 'sec-dynamics', 'sec-shocks', 'sec-debt'];
+  
+  if (sidebarGroupByGraph) {
+    functionSections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    
+    const blocks = ['GOODS', 'ISLM', 'PC', 'UIP', 'DEBT'];
+    const blockNames = { 'GOODS': 'IS curve (goods)', 'ISLM': 'LM/MP curve (policy)', 'PC': 'Phillips curve & supply side', 'UIP': 'UIP curve (FX)', 'DEBT': 'Government debt' };
+    
+    blocks.forEach(b => {
+      let sec = document.getElementById('sec-graph-' + b);
+      if (!sec) {
+        sec = document.createElement('div');
+        sec.className = 'side-section open';
+        sec.id = 'sec-graph-' + b;
+        sec.innerHTML = `<div class="side-head" onclick="toggleSection('sec-graph-${b}')"><span class="side-arrow">▶</span>${blockNames[b]}</div><div class="side-body" id="body-graph-${b}"></div>`;
+        leftPanel.appendChild(sec);
+      }
+      sec.style.display = 'block';
+    });
+
+    document.querySelectorAll('.control[data-block]').forEach(ctrl => {
+      if (!ctrl._originalParent) ctrl._originalParent = ctrl.parentNode;
+      const b = ctrl.getAttribute('data-block');
+      const body = document.getElementById('body-graph-' + b);
+      if (body) body.appendChild(ctrl);
+    });
+
+    const pcBody = document.getElementById('body-graph-PC');
+    const debtBody = document.getElementById('body-graph-DEBT');
+    
+    const move = (id, targetBody) => {
+      const el = document.getElementById(id);
+      if (el && targetBody) { 
+        if (!el._originalParent) el._originalParent = el.parentNode; 
+        targetBody.appendChild(el); 
+      }
+    };
+    
+    move('speed-wrap', pcBody);
+    move('taylor-toggle', pcBody);
+    move('deanchor-toggle', pcBody);
+    move('hint-dynamics', pcBody);
+    move('oil-shock-btn', pcBody);
+    move('shock-indicator', pcBody);
+    
+    move('debt-cue', debtBody);
+    move('hint-debt', debtBody);
+
+  } else {
+    const restore = (selector) => {
+      document.querySelectorAll(selector).forEach(el => {
+        if (el._originalParent) {
+          el._originalParent.appendChild(el);
+        }
+      });
+    };
+    
+    restore('.control[data-block]');
+    ['speed-wrap', 'taylor-toggle', 'deanchor-toggle', 'hint-dynamics', 'oil-shock-btn', 'shock-indicator', 'debt-cue', 'hint-debt'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el._originalParent) el._originalParent.appendChild(el);
+    });
+
+    functionSections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'block';
+    });
+
+    const blocks = ['GOODS', 'ISLM', 'PC', 'UIP', 'DEBT'];
+    blocks.forEach(b => {
+      const sec = document.getElementById('sec-graph-' + b);
+      if (sec) sec.style.display = 'none';
+    });
+  }
+  
+  if (typeof renderTutorial === 'function') renderTutorial();
 }
 
 function syncControls() {
@@ -1379,29 +1471,13 @@ function toggleDrill(id) {
     if (id === 'drill-is') drawDrillIS();
     if (id === 'drill-mp') drawDrillMP();
     if (id === 'drill-pc') {
-      pcDrillStep = 0;
-      updateDrillPCVis();
       drawDrillPCChain();
     }
   }
   fitCharts();
 }
 
-function advanceDrillPC(dir) {
-  pcDrillStep = clamp(pcDrillStep + dir, 0, 2);
-  updateDrillPCVis();
-  drawDrillPCChain();
-}
 
-function updateDrillPCVis() {
-  document.getElementById('drill-pc-wsps').style.display = 'block';
-  document.getElementById('drill-pc-okun').style.display = pcDrillStep >= 1 ? 'block' : 'none';
-  document.getElementById('drill-pc-phillips').style.display = pcDrillStep >= 2 ? 'block' : 'none';
-  const prev = document.getElementById('drill-pc-prev');
-  const next = document.getElementById('drill-pc-next');
-  if (prev) prev.disabled = (pcDrillStep === 0);
-  if (next) next.disabled = (pcDrillStep === 2);
-}
 
 function drawDrillIS() {
   const eq = solve(state);
@@ -1424,7 +1500,9 @@ function drawDrillIS() {
     const Y = isOutput(state.G, state.T, r, eq.eps, state.c1, state.m1, state.Ystar);
     isPts.push([Y, r]);
   }
-  drawLine(svg, isPts, o, 'curve-is');
+  const d_is = isPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], o).toFixed(2) + ',' + yScale(p[1], o).toFixed(2)).join(' ');
+  el('path', { d: d_is, class: 'curve curve-is', 'stroke-width': '1.4', 'clip-path': `url(#${o.clipId})` }, svg);
+  { const endX = xScale(130, o); const endY = yScale(isPts[isPts.length - 1][1], o); const _t = el('text', { x: endX - 4, y: endY - 6, class: 'curve-label', 'text-anchor': 'end', fill: '#0a6332', 'pointer-events': 'none' }, svg); _t.textContent = 'IS'; }
   
   el('circle', { cx: xScale(eq.Y, o), cy: yScale(eq.r, o), r: 4.5, class: 'eq-point' }, svg);
   
@@ -1449,12 +1527,12 @@ function drawDrillMP() {
   };
   drawAxes(svg, o);
 
-  el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.i, o), y2: yScale(eq.i, o), class: 'curve curve-mp' }, svg);
-  { const _t = el('text', { x: W - P.r - 4, y: yScale(eq.i, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end' }, svg); _t.textContent = 'i (nominal)'; svgTitle(_t, 'i (nominal)'); }
+  el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.i, o), y2: yScale(eq.i, o), class: 'curve curve-mp', 'stroke-width': '1.4' }, svg);
+  { const _t = el('text', { x: W - P.r - 4, y: yScale(eq.i, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end', 'pointer-events': 'none' }, svg); _t.textContent = 'i (nominal)'; svgTitle(_t, 'i (nominal)'); }
 
   if (tutorialState.unlocked.has('PC')) {
-    el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.r, o), y2: yScale(eq.r, o), class: 'curve curve-real' }, svg);
-    { const _t = el('text', { x: W - P.r - 4, y: yScale(eq.r, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end', fill: '#185fa5' }, svg); _t.textContent = 'r (real)'; svgTitle(_t, 'r (real)'); }
+    el('line', { x1: P.l, x2: W - P.r, y1: yScale(eq.r, o), y2: yScale(eq.r, o), class: 'curve curve-real', 'stroke-width': '1.4' }, svg);
+    { const _t = el('text', { x: W - P.r - 4, y: yScale(eq.r, o) - 6, class: 'curve-label label-mp', 'text-anchor': 'end', fill: '#185fa5', 'pointer-events': 'none' }, svg); _t.textContent = 'r (real)'; svgTitle(_t, 'r (real)'); }
   }
 }
 
@@ -1464,96 +1542,96 @@ function drawDrillPCChain() {
   const un = (state.m_struct + state.z_struct) / ALPHA_WS;
   const Y_n = computeYn(state);
 
-  if (pcDrillStep >= 0) {
-    const svgA = document.getElementById('svg-drill-pc-a');
-    if (svgA) {
-      svgA.innerHTML = '';
-      const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
-      const oA = { W, H, P, clipId: 'clip-drill-pc-a',
-        xMin: 0, xMax: 0.10, yMin: 0, yMax: 0.40,
-        xLabel: 'unemploy u', yLabel: 'W/P',
-        xTicks: [0, 0.05, 0.10], yTicks: [0, 0.20, 0.40],
-        xFmt: v => (v * 100).toFixed(0) + '%', yFmt: v => v.toFixed(1)
-      };
-      drawAxes(svgA, oA);
-      const psY = 0.20;
-      el('line', { x1: P.l, x2: W - P.r, y1: yScale(psY, oA), y2: yScale(psY, oA), class: 'curve', stroke: pcDrillStep === 0 ? EQ_COL.PC : '#1a1a1a', 'stroke-width': '2.2' }, svgA);
-      
-      const wsPts = [];
-      for (let u = oA.xMin; u <= oA.xMax; u += 0.01) {
-        wsPts.push([u, psY - (u - un) * ALPHA_WS * 0.1]);
-      }
-      const d = wsPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oA).toFixed(2) + ',' + yScale(p[1], oA).toFixed(2)).join(' ');
-      el('path', { d, class: 'curve', stroke: pcDrillStep === 0 ? EQ_COL.PC : '#1a1a1a', 'stroke-width': '2.2', 'clip-path': `url(#${oA.clipId})` }, svgA);
-
-      const un_x = xScale(un, oA);
-      el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgA);
-      { const _t = el('text', { x: un_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgA); _t.textContent = 'uₙ'; svgTitle(_t, 'uₙ'); }
+  const svgA = document.getElementById('svg-drill-pc-a');
+  if (svgA) {
+    svgA.innerHTML = '';
+    const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
+    const oA = { W, H, P, clipId: 'clip-drill-pc-a',
+      xMin: 0, xMax: 0.10, yMin: 0, yMax: 0.40,
+      xLabel: 'u', yLabel: 'W/P',
+      xTicks: [0, 0.05, 0.10], yTicks: [0, 0.20, 0.40],
+      xFmt: v => (v * 100).toFixed(0) + '%', yFmt: v => v.toFixed(1)
+    };
+    drawAxes(svgA, oA);
+    const psY = 0.20;
+    el('line', { x1: P.l, x2: W - P.r, y1: yScale(psY, oA), y2: yScale(psY, oA), class: 'curve', stroke: EQ_COL.PC, 'stroke-width': '1.4' }, svgA);
+    { const _t = el('text', { x: W - P.r - 2, y: yScale(psY, oA) - 4, class: 'curve-label', 'text-anchor': 'end', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgA); _t.textContent = 'PS'; svgTitle(_t, 'PS'); }
+    
+    const wsPts = [];
+    for (let u = oA.xMin; u <= oA.xMax; u += 0.01) {
+      wsPts.push([u, psY - (u - un) * ALPHA_WS * 0.1]);
     }
+    const d = wsPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oA).toFixed(2) + ',' + yScale(p[1], oA).toFixed(2)).join(' ');
+    el('path', { d, class: 'curve', stroke: EQ_COL.PC, 'stroke-width': '1.4', 'clip-path': `url(#${oA.clipId})` }, svgA);
+    { const endX = xScale(0.10, oA); const endY = yScale(psY - (0.10 - un) * ALPHA_WS * 0.1, oA); const _t = el('text', { x: endX + 2, y: endY, class: 'curve-label', 'text-anchor': 'start', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgA); _t.textContent = 'WS'; svgTitle(_t, 'WS'); }
+
+    const un_x = xScale(un, oA);
+    el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgA);
+    { const _t = el('text', { x: un_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgA); _t.textContent = 'uₙ'; svgTitle(_t, 'uₙ'); }
   }
 
-  if (pcDrillStep >= 1) {
-    const svgB = document.getElementById('svg-drill-pc-b');
-    if (svgB) {
-      svgB.innerHTML = '';
-      const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
-      const oB = { W, H, P, clipId: 'clip-drill-pc-b',
-        xMin: 0, xMax: 0.10, yMin: 80, yMax: 120,
-        xLabel: 'unemploy u', yLabel: 'output Y',
-        xTicks: [0, 0.05, 0.10], yTicks: [80, 100, 120],
-        xFmt: v => (v * 100).toFixed(0) + '%', yFmt: v => v.toFixed(0)
-      };
-      drawAxes(svgB, oB);
-      const okunPts = [];
-      for (let u = oB.xMin; u <= oB.xMax; u += 0.01) {
-        okunPts.push([u, L_LABOR * (1 - u)]);
-      }
-      const d = okunPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oB).toFixed(2) + ',' + yScale(p[1], oB).toFixed(2)).join(' ');
-      el('path', { d, class: 'curve', stroke: pcDrillStep === 1 ? EQ_COL.PC : '#1a1a1a', 'stroke-width': '2.2', 'clip-path': `url(#${oB.clipId})` }, svgB);
-
-      const un_x = xScale(un, oB);
-      el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgB);
-      el('circle', { cx: xScale(un, oB), cy: yScale(Y_n, oB), r: 3, class: 'eq-point' }, svgB);
-      
-      const yn_y = yScale(Y_n, oB);
-      el('line', { x1: P.l, x2: W - P.r, y1: yn_y, y2: yn_y, class: 'curve-natural' }, svgB);
-      { const _t = el('text', { x: P.l + 4, y: yn_y - 4, class: 'axis-label', fill: '#666' }, svgB); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
+  const svgB = document.getElementById('svg-drill-pc-b');
+  if (svgB) {
+    svgB.innerHTML = '';
+    const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
+    const oB = { W, H, P, clipId: 'clip-drill-pc-b',
+      xMin: 0, xMax: 0.10, yMin: 80, yMax: 120,
+      xLabel: 'u', yLabel: 'output Y',
+      xTicks: [0, 0.05, 0.10], yTicks: [80, 100, 120],
+      xFmt: v => (v * 100).toFixed(0) + '%', yFmt: v => v.toFixed(0)
+    };
+    drawAxes(svgB, oB);
+    const okunPts = [];
+    for (let u = oB.xMin; u <= oB.xMax; u += 0.01) {
+      okunPts.push([u, L_LABOR * (1 - u)]);
     }
+    const d = okunPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oB).toFixed(2) + ',' + yScale(p[1], oB).toFixed(2)).join(' ');
+    el('path', { d, class: 'curve', stroke: EQ_COL.PC, 'stroke-width': '1.4', 'clip-path': `url(#${oB.clipId})` }, svgB);
+    { const lblU = 0.085; const lblX = xScale(lblU, oB); const lblY = yScale(L_LABOR * (1 - lblU), oB) - 5; const _t = el('text', { x: lblX, y: lblY, class: 'curve-label', 'text-anchor': 'middle', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgB); _t.textContent = 'Y(u)'; svgTitle(_t, 'Y = L(1−u)'); }
+
+    const un_x = xScale(un, oB);
+    el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgB);
+    el('circle', { cx: xScale(un, oB), cy: yScale(Y_n, oB), r: 3, class: 'eq-point' }, svgB);
+    
+    const yn_y = yScale(Y_n, oB);
+    el('line', { x1: P.l, x2: W - P.r, y1: yn_y, y2: yn_y, class: 'curve-natural' }, svgB);
+    { const _t = el('text', { x: P.l + 4, y: yn_y - 4, class: 'axis-label', fill: '#666' }, svgB); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
   }
 
-  if (pcDrillStep >= 2) {
-    const svgC = document.getElementById('svg-drill-pc-c');
-    if (svgC) {
-      svgC.innerHTML = '';
-      const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
-      const oC = { W, H, P, clipId: 'clip-drill-pc-c',
-        xMin: 85, xMax: 115, yMin: -0.02, yMax: 0.10,
-        xLabel: 'output Y', yLabel: 'π',
-        xTicks: [85, 100, 115], yTicks: [-0.02, 0.04, 0.10],
-        xFmt: v => v.toFixed(0), yFmt: v => (v * 100).toFixed(0) + '%'
-      };
-      drawAxes(svgC, oC);
+  const svgC = document.getElementById('svg-drill-pc-c');
+  if (svgC) {
+    svgC.innerHTML = '';
+    const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
+    const oC = { W, H, P, clipId: 'clip-drill-pc-c',
+      xMin: 85, xMax: 115, yMin: -0.02, yMax: 0.10,
+      xLabel: 'output Y', yLabel: 'π',
+      xTicks: [85, 100, 115], yTicks: [-0.02, 0.04, 0.10],
+      xFmt: v => (v * 100).toFixed(0) + '%' // Modified: using percentage format as requested in the oC struct but wait, original had xFmt as toFixed(0) and yFmt as (v*100).toFixed(0)+'%'. Let me preserve exactly original.
+    };
+    oC.xFmt = v => v.toFixed(0);
+    oC.yFmt = v => (v * 100).toFixed(0) + '%';
+    drawAxes(svgC, oC);
 
-      const pcPts = [];
-      for (let Y = oC.xMin; Y <= oC.xMax; Y += 1) {
-        pcPts.push([Y, state.pi_e + state.alpha * (Y - Y_n) / Y_n + z_eff]);
-      }
-      const d = pcPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oC).toFixed(2) + ',' + yScale(p[1], oC).toFixed(2)).join(' ');
-      el('path', { d, class: 'curve', stroke: pcDrillStep === 2 ? EQ_COL.PC : '#1a1a1a', 'stroke-width': '2.2', 'clip-path': `url(#${oC.clipId})` }, svgC);
-
-      const yn_x = xScale(Y_n, oC);
-      el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgC);
-      { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgC); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
-      el('circle', { cx: xScale(eq.Y, oC), cy: yScale(eq.pi, oC), r: 3, class: 'eq-point' }, svgC);
+    const pcPts = [];
+    for (let Y = oC.xMin; Y <= oC.xMax; Y += 1) {
+      pcPts.push([Y, state.pi_e + state.alpha * (Y - Y_n) / Y_n + z_eff]);
     }
+    const d = pcPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oC).toFixed(2) + ',' + yScale(p[1], oC).toFixed(2)).join(' ');
+    el('path', { d, class: 'curve', stroke: EQ_COL.PC, 'stroke-width': '1.4', 'clip-path': `url(#${oC.clipId})` }, svgC);
+    { const endX = xScale(115, oC); const endY = yScale(state.pi_e + state.alpha * (115 - Y_n) / Y_n + z_eff, oC); const _t = el('text', { x: endX - 2, y: endY - 6, class: 'curve-label', 'text-anchor': 'end', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgC); _t.textContent = 'PC'; svgTitle(_t, 'PC'); }
+
+    const yn_x = xScale(Y_n, oC);
+    el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgC);
+    { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgC); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
+    el('circle', { cx: xScale(eq.Y, oC), cy: yScale(eq.pi, oC), r: 3, class: 'eq-point' }, svgC);
   }
 
   const pcWSEq = document.getElementById('drill-eq-wsps');
   const pcOkunEq = document.getElementById('drill-eq-okun');
   const pcPhillEq = document.getElementById('drill-eq-phillips');
-  if (pcWSEq) pcWSEq.style.color = pcDrillStep === 0 ? EQ_COL.PC : '#1a1a1a';
-  if (pcOkunEq) pcOkunEq.style.color = pcDrillStep === 1 ? EQ_COL.PC : '#1a1a1a';
-  if (pcPhillEq) pcPhillEq.style.color = pcDrillStep === 2 ? EQ_COL.PC : '#1a1a1a';
+  if (pcWSEq) pcWSEq.style.color = EQ_COL.PC;
+  if (pcOkunEq) pcOkunEq.style.color = EQ_COL.PC;
+  if (pcPhillEq) pcPhillEq.style.color = EQ_COL.PC;
 }
 
 // -------------------------------------------------------------------------
@@ -1949,8 +2027,17 @@ function drawEquations(eq) {
   if (pcEl) {
     if (isUnl('PC')) {
       const gap = (eq.Y - eq.Y_n) / eq.Y_n;
+      const un = (s.m_struct + s.z_struct) / ALPHA_WS;
       pcEl.innerHTML = wrapSymbols(
-        `<span ${lne('PC')}><span class="eq-lbl">PC</span>`
+        `<span ${lne('PC')}><span class="eq-lbl">uₙ</span>`
+        + `<span class="eq-sym">(m+z)/α_WS</span> = `
+        + `<span class="eq-num">(${f(s.m_struct,2)} + ${f(s.z_struct,2)})/${ALPHA_WS}</span> `
+        + `= <span class="eq-res">${fpc(un,1)}</span>${endLine('PC')}</span>`
+        + `<span ${lne('PC')}><span class="eq-lbl">Yₙ</span>`
+        + `<span class="eq-sym">L(1−uₙ)</span> = `
+        + `<span class="eq-num">${L_LABOR}(1−${fpc(un,1)})</span> `
+        + `= <span class="eq-res">${f(eq.Y_n,0)}</span>${endLine('PC')}</span>`
+        + `<span ${lne('PC')}><span class="eq-lbl">PC</span>`
         + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + shock</span></span>`
         + `<span ${lne('PC')}><span class="eq-lbl"></span><span class="eq-num">= `
         + `${fpc(s.pi_e,1)} + ${f(s.alpha,2)}·(${f(eq.Y,1)}−${f(eq.Y_n,0)})/${f(eq.Y_n,0)} `
@@ -2399,6 +2486,7 @@ if (typeof document !== 'undefined' && document.addEventListener) {
 buildControls();
 initDragManager();
 buildScenarioDropdown();
+syncControls();
 render();
 if (typeof requestAnimationFrame !== 'undefined') {
   requestAnimationFrame(fitCharts);

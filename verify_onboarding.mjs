@@ -226,7 +226,7 @@ const specialEls = {
 };
 const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\nreturn { tutorialState, goToStage, applyBlocks, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, advanceDrillPC, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, getPcDrillStep: () => typeof pcDrillStep !== "undefined" ? pcDrillStep : 0, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window, SCENARIOS };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\nreturn { tutorialState, goToStage, applyBlocks, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window: { toggleSidebarGroup, ...window }, toggleSidebarGroup, SCENARIOS };')(mockElements, specialEls);
 
 testRender.goToStage(0);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -265,7 +265,7 @@ function verifyGating(htmlString) {
   const allowlist = [
     'reset()', 'stepPeriod()', 'reverseStep()', 'jumpLongRun()', 'copyState()', 'advanceTutorial()', 'goToStage(', // Always-on run controls
     'scenario-select', 'applySelectedScenario()', // Preset controls (global)
-    'toggleSection(', 'toggleEq(', 'advanceDrillPC(', 'toggleHelpMode(' // Layout toggles
+    'toggleSection(', 'toggleEq(', 'toggleSidebarGroup(', 'toggleHelpMode(' // Layout toggles
   ];
 
   for (const m of interactives) {
@@ -380,7 +380,8 @@ function testReconciliation(stateOverrides, desc) {
       const resStr = match[2];
       
       let s = numStr.replace(/<[^>]+>/g, '').replace(/−/g, '-').replace(/·/g, '*');
-      s = s.replace(/(-?\d+\.?\d*)%/g, '($1/100)');
+      // To prevent matching the subtraction operator as a negative sign, we rewrite % terms explicitly
+      s = s.replace(/(\d+\.?\d*)%/g, '($1/100)');
       s = s.replace(/(\d)\(/g, '$1*(').replace(/\)([\d\.\-])/g, ')*$1').replace(/\)\(/g, ')*(');
       
       let val = NaN;
@@ -581,7 +582,7 @@ const staticChecks = [
   { id: 'drill-is', ref: '9.1' },
   { id: 'drill-uip', ref: '19.5' },
   { id: 'drill-pc-wsps', ref: '8.4' },
-  { id: 'drill-pc-okun', ref: '8.4' },
+  { id: 'drill-pc-okun', ref: '9.2–9.3' },
   { id: 'drill-pc-phillips', ref: '9.3' }
 ];
 let inv10Passed = true;
@@ -611,9 +612,6 @@ const sBefore = JSON.stringify(testRender.getState());
 const eqBefore = JSON.stringify(testRender.solve(testRender.getState()));
 testRender.drawDrillIS();
 testRender.drawDrillMP();
-testRender.advanceDrillPC(-2); // reset to step 0
-testRender.drawDrillPCChain();
-testRender.advanceDrillPC(1);
 testRender.drawDrillPCChain();
 const sAfter = JSON.stringify(testRender.getState());
 const eqAfter = JSON.stringify(testRender.solve(testRender.getState()));
@@ -625,23 +623,7 @@ badDrillState.m_struct = 0.5; // mutate!
 const caughtRO = (JSON.stringify(badDrillState) !== sBefore);
 check('BAD-fixture: State mutation in drill caught', caughtRO);
 
-// Inv #7 step-by-step highlight (in-drill)
-testRender.advanceDrillPC(-2); // pcDrillStep = 0
-testRender.drawDrillPCChain();
-const pcWsc0 = testRender.specialEls['drill-eq-wsps'].style.color;
-const pcOkunc0 = testRender.specialEls['drill-eq-okun'].style.color;
-const pcPhillc0 = testRender.specialEls['drill-eq-phillips'].style.color;
 
-testRender.advanceDrillPC(1); // pcDrillStep = 1
-testRender.drawDrillPCChain();
-const pcWsc1 = testRender.specialEls['drill-eq-wsps'].style.color;
-const pcOkunc1 = testRender.specialEls['drill-eq-okun'].style.color;
-
-check('Inv #7: Drill-down step-by-step highlight', pcWsc0 !== '#1a1a1a' && pcOkunc0 === '#1a1a1a' && pcPhillc0 === '#1a1a1a' && pcWsc1 === '#1a1a1a' && pcOkunc1 !== '#1a1a1a');
-
-// BAD-fixture: stuck highlight
-const caughtHighlight = (pcWsc0 === pcWsc1); // if it stayed coloured
-check('BAD-fixture: Stuck highlight caught', !caughtHighlight);
 
 // INV-S3-A / S3-B Y_n reconciliation
 function findCx(svgEl, classMatch) {
@@ -655,7 +637,6 @@ function findX1(svgEl, classMatch) {
 
 function testDrillRecon(stateOverrides) {
   testRender.setState(stateOverrides);
-  testRender.advanceDrillPC(2); // open all steps
   
   // Clear fake element children
   testRender.specialEls['svg-drill-pc-a'].children = [];
@@ -710,8 +691,6 @@ check('INV-S3-D: No engine surface growth (headless exports identical)', headles
 
 // INV-3b-1 live redraw
 testRender.specialEls['drill-pc'].classList.add('open');
-testRender.advanceDrillPC(-2); // pcDrillStep = 0
-testRender.advanceDrillPC(2);  // pcDrillStep = 2 (shows C)
 
 testRender.setState({ m_struct: 0.05, z_struct: 0.10 });
 testRender.redrawOpenDrills(); // manual draw
@@ -751,25 +730,7 @@ const badRedraw2 = function() { testRender.drawDrillIS(); }; // draw regardless
 badRedraw2(); // simulate bad render()
 check('BAD-fixture: Redrawing closed drill caught', testRender.specialEls['svg-drill-is'].children.length > 0);
 
-// INV-3b-3 step preserved
-testRender.advanceDrillPC(-2); // reset
-testRender.advanceDrillPC(1);  // step 1
-testRender.setState({ m_struct: 0.10 });
-testRender.render();
-const stepAfterRender = testRender.getPcDrillStep();
-const pcWsc1_b3 = testRender.specialEls['drill-eq-wsps'].style.color;
-const pcOkunc1_b3 = testRender.specialEls['drill-eq-okun'].style.color;
-check('INV-3b-3: Live redraw preserves PC step and highlights',
-  stepAfterRender === 1 && pcWsc1_b3 === '#1a1a1a' && pcOkunc1_b3 !== '#1a1a1a'
-);
 
-// BAD-fixture for INV-3b-3: Redraw resets step
-testRender.advanceDrillPC(-2); // reset
-testRender.advanceDrillPC(1);  // step 1
-const badRedraw3 = function() { testRender.advanceDrillPC(-2); testRender.drawDrillPCChain(); };
-badRedraw3(); // simulate bad render()
-const stepAfterBadRender = testRender.getPcDrillStep();
-check('BAD-fixture: Redraw resetting PC step caught', stepAfterBadRender === 0);
 
 // INV-3b-RO read-only via render
 // open all
@@ -1009,6 +970,57 @@ badTestLegend.innerHTML = 'IS: Y = f(G,T,r,ε) <span class="drill-trigger" data-
 badWrapStaticApiA4.document.querySelectorAll = () => [badTestLegend];
 badWrapStaticApiA4.wrapStaticSymbols();
 check('BAD-fixture: clobbering legend markup caught', !badTestLegend.innerHTML.includes('onclick="toggleDrill('));
+
+// NEW ASSERTIONS FOR SLICE 2
+
+// 1A. All-three-drawn assertion
+testRender.drawDrillPCChain();
+const svgAHasChildren = testRender.specialEls['svg-drill-pc-a'].children.length > 0;
+const svgBHasChildren = testRender.specialEls['svg-drill-pc-b'].children.length > 0;
+const svgCHasChildren = testRender.specialEls['svg-drill-pc-c'].children.length > 0;
+check('INV-1A: All three PC drill graphs are drawn simultaneously', svgAHasChildren && svgBHasChildren && svgCHasChildren);
+
+// 1B. Stroke width 1.4 assertion
+let allCurvesThin = true;
+['svg-drill-pc-a', 'svg-drill-pc-b', 'svg-drill-pc-c', 'svg-drill-is', 'svg-drill-mp'].forEach(id => {
+  if (testRender.specialEls[id]) {
+    testRender.specialEls[id].children.forEach(c => {
+      if (c.attrs && c.attrs.class && c.attrs.class.includes('curve') && !c.attrs.class.includes('curve-label') && !c.attrs.class.includes('curve-natural')) {
+        if (c.attrs['stroke-width'] !== '1.4') allCurvesThin = false;
+      }
+    });
+  }
+});
+check('INV-1B: All derivation curves use stroke-width 1.4', allCurvesThin);
+
+// 1C. Numeric derivation reconciliation assertion
+testRender.applyBlocks(['GOODS', 'ISLM', 'PC']);
+const currState2 = testRender.getState();
+const un2 = (currState2.m_struct + currState2.z_struct) / testRender.ALPHA_WS;
+const Yn2 = testRender.computeYn(currState2);
+testRender.drawEquations(testRender.solve(currState2));
+const pcHtml = testRender.specialEls['eq-pc'].innerHTML;
+const hasUnString = pcHtml.includes('uₙ') && (pcHtml.includes((un2*100).toFixed(1) + '%') || pcHtml.includes(un2.toFixed(2)));
+const hasYnString = pcHtml.includes('Yₙ') && pcHtml.includes(Yn2.toFixed(0));
+check('INV-1C: Numeric derivation strings reconcile with u_n and Y_n', hasUnString && hasYnString);
+
+// 1D. SYMBOL_DEFS terms assertion
+const hasM = !!testRender.SYMBOL_DEFS['m'];
+const hasWageZ = !!testRender.SYMBOL_DEFS['Wage push z'];
+const hasCostZ = !!testRender.SYMBOL_DEFS['Cost-push z'];
+check('INV-1D: SYMBOL_DEFS contains distinct m, Wage push z, and Cost-push z terms', hasM && hasWageZ && hasCostZ);
+
+// 1E. Sidebar regroup data-block integrity assertion
+let passedSidebarRegroup = false;
+try {
+  testRender.window.sidebarGroupByGraph = false;
+  testRender.toggleSidebarGroup(); // toggles ON
+  testRender.toggleSidebarGroup(); // toggles OFF
+  passedSidebarRegroup = true;
+} catch (e) {
+  console.log("Sidebar toggle error:", e);
+}
+check('INV-1E: Sidebar grouping toggle round-trips without error', passedSidebarRegroup);
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);
