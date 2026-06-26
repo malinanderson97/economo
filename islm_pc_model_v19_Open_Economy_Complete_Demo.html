@@ -441,7 +441,7 @@
           <span>Yₙ <span style="display:inline-block;width:18px;border-top:1px dashed #999;vertical-align:middle"></span></span>
         </div>
         <div class="drill-container" id="drill-is">
-          <div class="drill-eq">Y = C(Y−T) + I(Y,r) + G + NX(Y,Y*,ε) <span class="ref">(Blanchard eq. 9.1)</span></div>
+          <div class="drill-eq">Y = C(Y−T) + I(Y,r) + G + NX(Y,Y*,ε) <span class="ref">(Blanchard eq. 19.1)</span></div>
           <div class="drill-graphs">
             <div class="drill-col">
               <div class="sub">Goods-market equilibrium traces IS</div>
@@ -495,7 +495,7 @@
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-a" viewBox="0 0 160 140"></svg></div>
             </div>
             <div class="drill-col" id="drill-pc-okun">
-              <div class="drill-eq" id="drill-eq-okun">Yₙ = L(1−uₙ) <span class="ref">(Blanchard eqs. 9.2–9.3)</span></div>
+              <div class="drill-eq" id="drill-eq-okun">Yₙ = L(1−uₙ) <span class="ref">(Blanchard p.179; cf. Okun's Law box, eq 9B.1)</span></div>
               <div class="sub">Okun's bridge</div>
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-b" viewBox="0 0 160 140"></svg></div>
             </div>
@@ -593,7 +593,7 @@ const IS_T_BASE  = 20;     // baseline taxes (balanced budget at baseline)
 const IS_R_BASE  = 0.01;   // baseline (natural) real interest rate = 1%
 const IS_EPS_BASE = 1;     // baseline real exchange rate
 
-// ─── Structural IS primitives (Blanchard eq. 9.1) ───
+// ─── Structural IS primitives (Blanchard eq. 19.1) ───
 // c1 is slider-driven (default 0.5); d1, d1r are fixed.
 const d1  = 0.10;   // investment accelerator dI/dY
 const d1r = 200;    // investment rate-sensitivity |dI/dr|
@@ -789,7 +789,7 @@ const CURVE_DEFS = {
   'UIP': { meaning: 'uncovered interest parity', ref: 'eq. 19.5', role: 'links domestic and foreign returns through the exchange rate' },
   'PC':  { meaning: 'Phillips curve',           ref: 'eq. 9.3', role: 'links inflation to the output gap' },
   'WS':  { meaning: 'wage-setting relation',    ref: 'eq. 7.1', role: 'real wage demanded by workers given unemployment' },
-  'PS':  { meaning: 'price-setting relation',   ref: 'eq. 7.3', role: 'real wage implied by firms\' price markup' }
+  'PS':  { meaning: 'price-setting relation',   ref: 'eq. 7.6', role: 'real wage implied by firms\' price markup' }
 };
 
 const SYMBOL_DEFS = {
@@ -814,12 +814,12 @@ const SYMBOL_DEFS = {
   'd₁': { meaning: 'output sensitivity of investment', ref: 'eq. 5.1', role: 'accelerator effect' },
   'x₁': { meaning: 'sensitivity of exports to foreign output', ref: 'eq. 19.1', role: 'foreign demand' },
   'n₁': { meaning: 'sensitivity of net exports to real exchange rate', ref: 'eq. 19.1', role: 'Marshall-Lerner condition' },
-  'ε': { meaning: 'real exchange rate', ref: 'eq. 18.1', role: 'relative price of domestic goods' },
+  'ε': { meaning: 'real exchange rate', ref: 'eq. 17.1', role: 'relative price of domestic goods' },
   'Y': { meaning: 'output / income', ref: 'eq. 3.1', role: 'total domestic production' },
   'T': { meaning: 'taxes minus transfers', ref: 'eq. 3.1', role: 'reduces disposable income' },
   'G': { meaning: 'government spending', ref: 'eq. 3.1', role: 'autonomous component of demand' },
   'r': { meaning: 'real interest rate', ref: 'eq. 6.4', role: 'the rate that enters investment' },
-  'i': { meaning: 'nominal interest rate', ref: 'eq. 4.1', role: 'policy rate set by central bank' },
+  'i': { meaning: 'nominal interest rate', ref: 'eq. 4.1 (where i enters); policy rate Ch. 4-2', role: 'policy rate set by central bank' },
   'i_N': { meaning: 'neutral nominal interest rate', ref: 'Ch. 23', role: 'nominal rate when Y = Yₙ and π = π*' },
   'φ': { meaning: 'Taylor rule inflation response', ref: 'Ch. 23', role: 'strength of reaction to inflation gap' },
   'ψ': { meaning: 'Taylor rule output response', ref: 'Ch. 23', role: 'strength of reaction to output gap' },
@@ -1547,23 +1547,23 @@ function drawDrillPCChain() {
     svgA.innerHTML = '';
     const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
     const oA = { W, H, P, clipId: 'clip-drill-pc-a',
-      xMin: 0, xMax: 0.10, yMin: 0, yMax: 0.40,
+      xMin: 0, xMax: 0.10, yMin: 0.80, yMax: 1.10,
       xLabel: 'u', yLabel: 'W/P',
-      xTicks: [0, 0.05, 0.10], yTicks: [0, 0.20, 0.40],
-      xFmt: v => (v * 100).toFixed(0) + '%', yFmt: v => v.toFixed(1)
+      xTicks: [0, 0.05, 0.10], yTicks: [0.80, 0.95, 1.10],
+      xFmt: v => (v * 100).toFixed(0) + '%', yFmt: v => v.toFixed(2)
     };
     drawAxes(svgA, oA);
-    const psY = 0.20;
-    el('line', { x1: P.l, x2: W - P.r, y1: yScale(psY, oA), y2: yScale(psY, oA), class: 'curve', stroke: EQ_COL.PC, 'stroke-width': '1.4' }, svgA);
+    const psY = 1 / (1 + state.m_struct);
+    el('line', { x1: P.l, x2: W - P.r, y1: yScale(psY, oA), y2: yScale(psY, oA), class: 'curve curve-ps', stroke: EQ_COL.PC, 'stroke-width': '1.4' }, svgA);
     { const _t = el('text', { x: W - P.r - 2, y: yScale(psY, oA) - 4, class: 'curve-label', 'text-anchor': 'end', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgA); _t.textContent = 'PS'; svgTitle(_t, 'PS'); }
     
     const wsPts = [];
     for (let u = oA.xMin; u <= oA.xMax; u += 0.01) {
-      wsPts.push([u, psY - (u - un) * ALPHA_WS * 0.1]);
+      wsPts.push([u, psY - (u - un) * ALPHA_WS]);
     }
     const d = wsPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oA).toFixed(2) + ',' + yScale(p[1], oA).toFixed(2)).join(' ');
     el('path', { d, class: 'curve', stroke: EQ_COL.PC, 'stroke-width': '1.4', 'clip-path': `url(#${oA.clipId})` }, svgA);
-    { const endX = xScale(0.10, oA); const endY = yScale(psY - (0.10 - un) * ALPHA_WS * 0.1, oA); const _t = el('text', { x: endX + 2, y: endY, class: 'curve-label', 'text-anchor': 'start', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgA); _t.textContent = 'WS'; svgTitle(_t, 'WS'); }
+    { const endX = xScale(0.10, oA); const endY = yScale(psY - (0.10 - un) * ALPHA_WS, oA); const _t = el('text', { x: endX + 2, y: endY, class: 'curve-label', 'text-anchor': 'start', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgA); _t.textContent = 'WS'; svgTitle(_t, 'WS'); }
 
     const un_x = xScale(un, oA);
     el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgA);

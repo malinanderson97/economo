@@ -579,10 +579,10 @@ check('INV-9 BAD-fixture: Non-EQ_COL literal caught', caughtInv9);
 
 // Inv #10 layout + reference. Static check
 const staticChecks = [
-  { id: 'drill-is', ref: '9.1' },
+  { id: 'drill-is', ref: '19.1' },
   { id: 'drill-uip', ref: '19.5' },
   { id: 'drill-pc-wsps', ref: '8.4' },
-  { id: 'drill-pc-okun', ref: '9.2–9.3' },
+  { id: 'drill-pc-okun', ref: 'p.179' },
   { id: 'drill-pc-phillips', ref: '9.3' }
 ];
 let inv10Passed = true;
@@ -635,6 +635,11 @@ function findX1(svgEl, classMatch) {
   return line ? parseFloat(line.attrs.x1) : null;
 }
 
+function findY1(svgEl, classMatch) {
+  const line = svgEl.children.find(c => c.attrs && c.attrs.class && c.attrs.class.includes(classMatch) && c.attrs.y1);
+  return line ? parseFloat(line.attrs.y1) : null;
+}
+
 function testDrillRecon(stateOverrides) {
   testRender.setState(stateOverrides);
   
@@ -674,6 +679,35 @@ function testDrillRecon(stateOverrides) {
 check('INV-S3-A/B: Y_n and u_n reconciliation (baseline)', testDrillRecon({ m_struct: 0.05, z_struct: 0.10 }));
 check('INV-S3-A/B: Y_n and u_n reconciliation (high m)', testDrillRecon({ m_struct: 0.15, z_struct: 0.10 }));
 check('INV-S3-A/B: Y_n and u_n reconciliation (high z)', testDrillRecon({ m_struct: 0.05, z_struct: 0.20 }));
+
+function testDrillPS() {
+  const oA = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10, yMin: 0.80, yMax: 1.10 };
+  
+  testRender.setState({ m_struct: 0.05, z_struct: 0.10 });
+  testRender.specialEls['svg-drill-pc-a'].children = [];
+  testRender.drawDrillPCChain();
+  const drawnY_05 = findY1(testRender.specialEls['svg-drill-pc-a'], 'curve-ps');
+  const expectedY_05 = testRender.yScale(1/1.05, oA);
+  
+  testRender.setState({ m_struct: 0.15, z_struct: 0.10 });
+  testRender.specialEls['svg-drill-pc-a'].children = [];
+  testRender.drawDrillPCChain();
+  const drawnY_15 = findY1(testRender.specialEls['svg-drill-pc-a'], 'curve-ps');
+  const expectedY_15 = testRender.yScale(1/1.15, oA);
+  
+  const eps = 1e-6;
+  const match05 = Math.abs(drawnY_05 - expectedY_05) < eps;
+  const match15 = Math.abs(drawnY_15 - expectedY_15) < eps;
+  const moved = Math.abs(drawnY_05 - drawnY_15) > eps;
+  
+  return match05 && match15 && moved;
+}
+
+check('INV-S3-PS: PS line height reconciles to markup', testDrillPS());
+
+const expectedY_15_frozen = testRender.yScale(1/1.05, { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, yMin: 0.80, yMax: 1.10 });
+const expectedY_15_true = testRender.yScale(1/1.15, { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, yMin: 0.80, yMax: 1.10 });
+check('BAD-fixture: Frozen PS line caught', Math.abs(expectedY_15_frozen - expectedY_15_true) > 1e-6);
 
 // BAD-fixture: hardcoded u_n
 const badDrawnUnX_A = testRender.xScale(0.05, { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 }); // Literal 0.05
