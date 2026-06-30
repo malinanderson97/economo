@@ -18,7 +18,7 @@ these get their own checks *and* your eyes.
 ## Gates
 
 1. **Verifier-green is the gate** — and on this side that includes `verify_onboarding.mjs`
-   (78/0) alongside `verify_v16.mjs` (32/0) and `verify_v19.mjs` (40/0). Not self-report,
+   (96/0) alongside `verify_v16.mjs` (32/0) and `verify_v19.mjs` (52/0). Not self-report,
    not a screenshot, not two AIs agreeing. (Counts current as of Item D; they grow as
    invariants are added — the point is 0 failures, not a fixed number.)
 2. **Never weaken a check to go green** (mirrors `CLAUDE.md` rule 2). When a spec changes
