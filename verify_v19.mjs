@@ -60,7 +60,7 @@ function preset(id) {
 }
 
 console.log('Verifying islm_pc_model_v19 (open economy) …\n');
-goToStage(4);
+goToStage(3);
 
 // 1. Baseline equilibrium: at i = I_NEUTRAL with πᵉ on target, Y must equal 100.
 {

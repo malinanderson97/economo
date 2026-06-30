@@ -20,13 +20,13 @@ const headlessCode = scripts.slice(0, domStart);
 let api;
 try {
   // We use Function to evaluate the sliced script, which gives us access to the tutorial state machine.
-  api = new Function(headlessCode + '\nfunction render() {}\nreturn { tutorialState, currentStage, goToStage,  resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine };')();
+  api = new Function(headlessCode + '\nfunction render() {}\nreturn { tutorialState, currentStage, goToStage,  resetTutorial, paramDefs, shockDefs, dynamicsDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine };')();
 } catch (e) {
   console.error('FAILED TO IMPORT HEADLESS:', e.message);
   process.exit(1);
 }
 
-const { tutorialState, currentStage, goToStage,  resetTutorial, paramDefs, shockDefs, dynamicsDefs, debtDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine } = api;
+const { tutorialState, currentStage, goToStage,  resetTutorial, paramDefs, shockDefs, dynamicsDefs, wrapSymbols, SYMBOL_DEFS, EQ_REF, endLine } = api;
 
 let headlessBaselineExportKeys = Object.keys(api).sort().join(',');
 
@@ -39,7 +39,7 @@ function check(name, cond, detail = '') {
 
 console.log('Verifying Onboarding State Machine Headless...\n');
 
-const BLOCKS = ['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'];
+const BLOCKS = ['GOODS', 'ISLM', 'UIP', 'PC'];
 
 // Helper to check prefix
 function isPrefixValid(set) {
@@ -65,7 +65,7 @@ if (!tutorialState) process.exit(1);
 check('Reset state is IS Model', tutorialState.unlocked.size === 2 && tutorialState.unlocked.has('GOODS'));
 
 // NEW: Block-mapping assertions
-const allDefs = [...paramDefs, ...shockDefs, ...dynamicsDefs, ...debtDefs];
+const allDefs = [...paramDefs, ...shockDefs, ...dynamicsDefs];
 const getBlock = key => {
   const d = allDefs.find(p => p.key === key);
   return d ? d.block : undefined;
@@ -73,7 +73,7 @@ const getBlock = key => {
 
 check('Mapping: m1 and Ystar ∈ UIP', getBlock('m1') === 'UIP' && getBlock('Ystar') === 'UIP');
 check('Mapping: theta, cred, phi ∈ PC', getBlock('theta') === 'PC' && getBlock('cred') === 'PC' && getBlock('phi') === 'PC');
-check('Mapping: B, g ∈ DEBT', getBlock('B') === 'DEBT' && getBlock('g') === 'DEBT');
+
 const goodsKeys = allDefs.filter(d => d.block === 'GOODS').map(d => d.key).sort();
 check('Mapping: GOODS contains exactly {G, T, c1}', JSON.stringify(goodsKeys) === JSON.stringify(['G', 'T', 'c1'].sort()));
 
@@ -95,10 +95,6 @@ sizes.push(tutorialState.unlocked.size);
 if (!isPrefixValid(tutorialState.unlocked)) isPrefix = false;
 
 goToStage(3);
-sizes.push(tutorialState.unlocked.size);
-if (!isPrefixValid(tutorialState.unlocked)) isPrefix = false;
-
-goToStage(4);
 sizes.push(tutorialState.unlocked.size);
 if (!isPrefixValid(tutorialState.unlocked)) isPrefix = false;
 
@@ -359,7 +355,7 @@ check('Chip gating: expectations chips and ZLB render when blocks unlocked',
 
 // NEW: Equation Reconciliation Checks
 function testReconciliation(stateOverrides, desc) {
-  const cleanState = { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 };
+  const cleanState = { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 };
   Object.assign(testRender.state, cleanState, stateOverrides);
   const eq = testRender.solve(testRender.state);
   testRender.drawEquations(eq);
@@ -451,7 +447,7 @@ function testReconciliationPCLocked(stateOverrides, desc) {
     console.log(`  FAIL [${desc}] r (${eq.r}) !== i (${testRender.state.i})`);
     ok2 = false;
   }
-  testRender.goToStage(4);
+  testRender.goToStage(3);
   return ok1 && ok2;
 }
 
@@ -461,7 +457,7 @@ check('Eq Reconciliation: PC-locked nominal rate',
       testReconciliationPCLocked({ i: 0.04, pi_e: 0.10 }, 'PC-locked, big πᵉ'));
 
 // BAD-fixture: hardcoded coefficient
-testRender.state = Object.assign({ G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 }, { c1: 0.8 });
+testRender.state = Object.assign({ G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 }, { c1: 0.8 });
 const badEq = testRender.solve(testRender.state);
 testRender.specialEls['eq-ismp'].innerHTML = '<span class="eq-line"><span class="eq-lbl">C</span><span class="eq-sym">c₀ + c₁(Y−T)</span> = <span class="eq-num">20 + 0.5(100−20)</span> = <span class="eq-res">60</span></span>';
 
@@ -519,7 +515,6 @@ check('INV-6 Scope: GOODS only', checkScope(['GOODS'], 'GOODS'));
 check('INV-6 Scope: +ISLM', checkScope(['GOODS', 'ISLM'], 'ISLM'));
 check('INV-6 Scope: +UIP', checkScope(['GOODS', 'ISLM', 'UIP'], 'UIP'));
 check('INV-6 Scope: +PC', checkScope(['GOODS', 'ISLM', 'UIP', 'PC'], 'PC'));
-check('INV-6 Scope: +DEBT', checkScope(['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'], 'DEBT'));
 
 // BAD-fixture: forced out of scope
 let caughtScope = false;
@@ -537,7 +532,7 @@ while ((ms = matchScope.exec(htmlScopeTest)) !== null) {
 }
 check('INV-6 BAD-fixture: Term scoped to wrong block caught', caughtScope);
 
-testRender.goToStage(4);
+testRender.goToStage(3);
 testRender.drawEquations(testRender.solve(testRender.state));
 let inv8Passed = true;
 let inv9Passed = true;
@@ -791,7 +786,7 @@ const badWrapCode = headlessCode.replace('return result;', 'return { notAString:
 const badWrapApi = new Function(badWrapCode + '\nfunction render() {}\nreturn { wrapSymbols };')();
 check('BAD-fixture: wrapSymbols impurity caught', typeof badWrapApi.wrapSymbols('Yₙ') !== 'string');
 
-testRender.goToStage(4);
+testRender.goToStage(3);
 testRender.drawEquations(testRender.solve(testRender.state));
 check('INV-C2: drawEquations applies wrapSymbols', testRender.specialEls['eq-ismp'].innerHTML.includes('class="sym"'));
 

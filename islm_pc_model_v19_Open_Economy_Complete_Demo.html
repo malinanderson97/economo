@@ -102,13 +102,6 @@
   .side-section.open .side-head .side-arrow { transform: rotate(90deg); }
   .side-body { display: none; padding-bottom: 12px; }
   .side-section.open .side-body { display: block; }
-  .debt-cue {
-    font-size: 11px; line-height: 1.5; padding: 7px 9px; margin: 4px 0 8px;
-    border-radius: 5px; border: 1px solid transparent;
-  }
-  .debt-cue.snowball { background: #fbeaea; border-color: #e6b8b8; color: #9a3434; }
-  .debt-cue.stable   { background: #e7f3ec; border-color: #b5d8c2; color: #2c6b45; }
-  .debt-cue.neutral  { background: #f4f2ea; border-color: #ddd9cc; color: #6a6658; }
   .toggle-row {
     display: flex; align-items: center; gap: 8px; padding: 6px 8px;
     background: #f6f5f0; border-radius: 5px; margin: 6px 0;
@@ -405,23 +398,6 @@
         <div class="shock-indicator" id="shock-indicator">no active pulse</div>
       </div>
     </div>
-
-    <div class="side-section" id="sec-debt">
-      <div class="side-head" onclick="toggleSection('sec-debt')"><span class="side-arrow">▶</span>Government debt</div>
-      <div class="side-body">
-        <div id="debt-controls"></div>
-        <div class="debt-cue" id="debt-cue"></div>
-        <div class="hint" id="hint-debt">
-          Set a starting debt ratio d = B/Y and a trend growth rate g, then create a primary
-          deficit by raising G above T (or a surplus to pay debt down). The debt ratio evolves by
-          Δd = (r − g)·d − s, where s = (T−G)/Y is the primary surplus. When r &gt; g the ratio
-          snowballs even with a balanced budget; when g &gt; r it erodes on its own. g enters the
-          debt accounting only — it is an assumed trend, not modelled growth in output.
-        </div>
-      </div>
-    </div>
-
-
   </div>
 
   <div id="right-col">
@@ -511,7 +487,7 @@
 
       <div class="chart-box">
         <h3>Dynamics over time</h3>
-        <div class="sub">Y, i, π, P, ε, B/Y across periods.</div>
+        <div class="sub">Y, i, π, P, ε across periods.</div>
         <svg id="ts" viewBox="0 0 360 220"></svg>
         <div class="legend-row">
           <span><span class="legend-swatch" style="background:#1a1a1a"></span>Y</span>
@@ -519,7 +495,6 @@
           <span><span class="legend-swatch" style="background:#534ab7"></span>π</span>
           <span><span class="legend-swatch" style="background:#d85a30"></span>P</span>
           <span><span class="legend-swatch" style="background:#b88a45"></span>ε</span>
-          <span><span class="legend-swatch" style="background:#0f6e56"></span>B/Y</span>
         </div>
         <div class="eq-box" id="box-eq-ts"><div class="eq-toggle" onclick="toggleEq('box-eq-ts')"><span class="eq-arrow">▶</span><span>Show the equations behind this chart</span></div><div class="eq-body" id="eq-ts"></div></div>
       </div>
@@ -534,14 +509,13 @@
 // -------------------------------------------------------------------------
 // Tutorial State & Machine
 // -------------------------------------------------------------------------
-const TUTORIAL_BLOCKS = ['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'];
+const TUTORIAL_BLOCKS = ['GOODS', 'ISLM', 'UIP', 'PC'];
 
 const TUTORIAL_STAGES = [
   { label: 'IS-LM Model',       economy: 'closed', unlocked: ['GOODS', 'ISLM'] },
   { label: 'IS-LM-UIP Model',   economy: 'open',   unlocked: ['GOODS', 'ISLM', 'UIP'] },
   { label: 'IS-LM-PC Model',    economy: 'closed', unlocked: ['GOODS', 'ISLM', 'UIP', 'PC'] },
-  { label: 'Full Model',        economy: 'open',   unlocked: ['GOODS', 'ISLM', 'UIP', 'PC'] },
-  { label: '+ Government Debt', economy: 'open',   unlocked: ['GOODS', 'ISLM', 'UIP', 'PC', 'DEBT'] }
+  { label: 'Full Model',        economy: 'open',   unlocked: ['GOODS', 'ISLM', 'UIP', 'PC'] }
 ];
 
 let tutorialState = {
@@ -674,11 +648,6 @@ const dynamicsDefs = [
   { key: 'phi',      block: 'PC', label: 'Taylor response, φ',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
 ];
 
-const debtDefs = [
-  { key: 'B', block: 'DEBT', label: 'Initial govt debt d=B/Y, d', min: 0, max: 150, step: 1, fmt: v => v.toFixed(0) },
-  { key: 'g', block: 'DEBT', label: 'Trend growth (debt accounting), g', min: -0.02, max: 0.06, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%', editFmt: v => (v*100).toFixed(2), parse: v => v/100, suffix: '%' }
-];
-
 const initialState = {
   G: 20, T: 20, P: 1.0, P_star: 1.0,
   i_target: 0.03,
@@ -691,7 +660,7 @@ const initialState = {
   Ystar: 100,
   m_struct: 0.05,
   z_struct: 0.10,
-  z: 0, z_pulse: 0, theta: 1.0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, history: []
+  z: 0, z_pulse: 0, theta: 1.0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: []
 };
 
 let state = clone(initialState);
@@ -765,9 +734,6 @@ function step(s) {
   const new_pi_e = clamp(s.pi_e + sp * pi_e_drift, -0.10, 0.60);
   const new_cred = nextCredibility(s, eq.pi);
 
-  const g = s.g || 0;
-  const new_B = clamp((s.B * (1 + eq.r) + (s.G - s.T)) / (1 + g), -200, 1000);
-
   return {
     ...s,
     i: new_i,
@@ -777,9 +743,8 @@ function step(s) {
     cred: new_cred,
     E_e: (1 - 0.4 * sp) * s.E_e + 0.4 * sp * eq.E,
     z_pulse: s.z_pulse * Z_PULSE_DECAY,
-    B: new_B,
     period: s.period + 1,
-    history: [...s.history, { period: s.period, ...eq, P: s.P, P_star: s.P_star || 1, B: s.B, pi_e: s.pi_e }]
+    history: [...s.history, { period: s.period, ...eq, P: s.P, P_star: s.P_star || 1, pi_e: s.pi_e }]
   };
 }
 
@@ -984,7 +949,6 @@ function buildControls() {
   buildSliders(document.getElementById('controls'), paramDefs);
   buildSliders(document.getElementById('shock-controls'), shockDefs);
   buildSliders(document.getElementById('dynamics-controls'), dynamicsDefs);
-  buildSliders(document.getElementById('debt-controls'), debtDefs);
   document.getElementById('speed').addEventListener('input', e => {
     state.speed = parseFloat(e.target.value);
     document.getElementById('speed-val').textContent = state.speed.toFixed(2);
@@ -1003,7 +967,7 @@ function toggleSidebarGroup() {
   document.getElementById('sidebar-group-label').textContent = sidebarGroupByGraph ? 'Graph ▸' : 'Function ▸';
   
   const leftPanel = document.getElementById('left-panel');
-  const functionSections = ['sec-policy', 'sec-dynamics', 'sec-shocks', 'sec-debt'];
+  const functionSections = ['sec-policy', 'sec-dynamics', 'sec-shocks'];
   
   if (sidebarGroupByGraph) {
     functionSections.forEach(id => {
@@ -1011,8 +975,8 @@ function toggleSidebarGroup() {
       if (el) el.style.display = 'none';
     });
     
-    const blocks = ['GOODS', 'ISLM', 'PC', 'UIP', 'DEBT'];
-    const blockNames = { 'GOODS': 'IS curve (goods)', 'ISLM': 'LM/MP curve (policy)', 'PC': 'Phillips curve & supply side', 'UIP': 'UIP curve (FX)', 'DEBT': 'Government debt' };
+    const blocks = ['GOODS', 'ISLM', 'PC', 'UIP'];
+    const blockNames = { 'GOODS': 'IS curve (goods)', 'ISLM': 'LM/MP curve (policy)', 'PC': 'Phillips curve & supply side', 'UIP': 'UIP curve (FX)' };
     
     blocks.forEach(b => {
       let sec = document.getElementById('sec-graph-' + b);
@@ -1034,7 +998,6 @@ function toggleSidebarGroup() {
     });
 
     const pcBody = document.getElementById('body-graph-PC');
-    const debtBody = document.getElementById('body-graph-DEBT');
     
     const move = (id, targetBody) => {
       const el = document.getElementById(id);
@@ -1051,9 +1014,6 @@ function toggleSidebarGroup() {
     move('oil-shock-btn', pcBody);
     move('shock-indicator', pcBody);
     
-    move('debt-cue', debtBody);
-    move('hint-debt', debtBody);
-
   } else {
     const restore = (selector) => {
       document.querySelectorAll(selector).forEach(el => {
@@ -1064,7 +1024,7 @@ function toggleSidebarGroup() {
     };
     
     restore('.control[data-block]');
-    ['speed-wrap', 'taylor-toggle', 'deanchor-toggle', 'hint-dynamics', 'oil-shock-btn', 'shock-indicator', 'debt-cue', 'hint-debt'].forEach(id => {
+    ['speed-wrap', 'taylor-toggle', 'deanchor-toggle', 'hint-dynamics', 'oil-shock-btn', 'shock-indicator'].forEach(id => {
       const el = document.getElementById(id);
       if (el && el._originalParent) el._originalParent.appendChild(el);
     });
@@ -1074,7 +1034,7 @@ function toggleSidebarGroup() {
       if (el) el.style.display = 'block';
     });
 
-    const blocks = ['GOODS', 'ISLM', 'PC', 'UIP', 'DEBT'];
+    const blocks = ['GOODS', 'ISLM', 'PC', 'UIP'];
     blocks.forEach(b => {
       const sec = document.getElementById('sec-graph-' + b);
       if (sec) sec.style.display = 'none';
@@ -1085,7 +1045,7 @@ function toggleSidebarGroup() {
 }
 
 function syncControls() {
-  const allDefs = [...paramDefs, ...shockDefs, ...dynamicsDefs, ...debtDefs];
+  const allDefs = [...paramDefs, ...shockDefs, ...dynamicsDefs];
   allDefs.forEach(p => {
     const inp = document.getElementById('ctl-' + p.key);
     if (inp) inp.value = state[p.key];
@@ -1606,7 +1566,6 @@ function drawDrillPCChain() {
       xMin: 85, xMax: 115, yMin: -0.02, yMax: 0.10,
       xLabel: 'output Y', yLabel: 'π',
       xTicks: [85, 100, 115], yTicks: [-0.02, 0.04, 0.10],
-      xFmt: v => (v * 100).toFixed(0) + '%' // Modified: using percentage format as requested in the oC struct but wait, original had xFmt as toFixed(0) and yFmt as (v*100).toFixed(0)+'%'. Let me preserve exactly original.
     };
     oC.xFmt = v => v.toFixed(0);
     oC.yFmt = v => (v * 100).toFixed(0) + '%';
@@ -1643,7 +1602,7 @@ function drawTimeSeries() {
   svg.innerHTML = '';
 
   const eq = solve(state);
-  const hist = [...state.history, { period: state.period, ...eq, P: state.P, B: state.B }];
+  const hist = [...state.history, { period: state.period, ...eq, P: state.P }];
   if (!hist.length) return;
 
   const maxPeriod = Math.max(10, hist.length + 1);
@@ -1679,15 +1638,12 @@ function drawTimeSeries() {
   const mapP    = v => H - P.b - (clamp(v, PMin, PMax) - PMin) / (PMax - PMin) * (H - P.t - P.b);
   const epsMin = 0.5, epsMax = 3.0;
   const mapEps  = v => H - P.b - (clamp(v, epsMin, epsMax) - epsMin) / (epsMax - epsMin) * (H - P.t - P.b);
-  const debtMin = 0, debtMax = 200;
-  const mapDebt = v => H - P.b - (clamp(v, debtMin, debtMax) - debtMin) / (debtMax - debtMin) * (H - P.t - P.b);
 
   plot(hist.map(h => [h.period, h.Y]),  '#1a1a1a', v => yScale(clamp(v, o.yMin, o.yMax), o));
   plot(hist.map(h => [h.period, h.i]),  '#185fa5', mapRate);
   plot(hist.map(h => [h.period, h.pi]), '#534ab7', mapRate);
   plot(hist.map(h => [h.period, h.P]),  '#d85a30', mapP);
   plot(hist.map(h => [h.period, (h.eps !== undefined ? h.eps : 1.0)]), '#b88a45', mapEps);
-  plot(hist.map(h => [h.period, (h.B / eq.Y_n) * 100]), '#0f6e56', mapDebt);
 
   const yn_y = yScale(eq.Y_n, o);
   el('line', { x1: P.l, x2: W - P.r, y1: yn_y, y2: yn_y, class: 'curve-natural' }, svg);
@@ -1699,8 +1655,6 @@ function drawTimeSeries() {
 function drawReadout() {
   const eq = solve(state);
   const gap = ((eq.Y - eq.Y_n) / eq.Y_n) * 100;
-  const pb = state.T - state.G;
-  const debt_ratio = (state.B / eq.Y_n) * 100;
   const stats = [
     { label: 'Output Y',     value: eq.Y.toFixed(2),                    delta: `gap ${gap >= 0 ? '+' : ''}${gap.toFixed(2)}%`, cls: Math.abs(gap) < 0.5 ? '' : (gap > 0 ? 'pos' : 'neg') },
     { label: 'Nominal i',    value: (eq.i * 100).toFixed(2) + '%',      delta: eq.zlb_active ? 'ZLB binds' : 'i*', cls: '' },
@@ -1709,9 +1663,7 @@ function drawReadout() {
     { label: 'Inflation π',  value: (eq.pi * 100).toFixed(2) + '%',     delta: tutorialState.unlocked.has('PC') ? `πᵉ=${(state.pi_e * 100).toFixed(1)}%` : '', cls: '' },
     { label: 'Nominal E',    value: eq.E.toFixed(3),                    delta: `Eᵉ=${state.E_e.toFixed(2)}`, cls: '' },
     { label: 'Real ε',       value: eq.eps.toFixed(3),                  delta: 'E·P/P*',      cls: '' },
-    { label: 'Price P',      value: state.P.toFixed(3),                 delta: '',            cls: '' },
-    { label: 'Primary T−G',  value: pb.toFixed(1),                       delta: pb >= 0 ? 'surplus' : 'deficit',                  cls: pb >= 0 ? 'pos' : 'neg' },
-    { label: 'Debt B/Y',     value: debt_ratio.toFixed(1) + '%',         delta: '',                                              cls: debt_ratio > 100 ? 'neg' : '' }
+    { label: 'Price P',      value: state.P.toFixed(3),                 delta: '',            cls: '' }
   ];
   document.getElementById('readout').innerHTML = wrapSymbols(stats.map(s => `
     <div class="stat">
@@ -1856,35 +1808,8 @@ function drawPCChips(eq) {
   ).join('');
 }
 
-function drawDebtCue(eq) {
-  const cue = document.getElementById('debt-cue');
-  if (!cue) return;
-  const g = state.g || 0;
-  const r = eq.r;
-  const d = state.B / eq.Y_n;
-  const s = (state.T - state.G) / eq.Y_n;
-  const dDot = (r - g) * d - s;
-  const rPct = (r * 100).toFixed(2), gPct = (g * 100).toFixed(2);
-  let cls, verdict;
-  if (r > g + 1e-9) {
-    cls = 'snowball';
-    verdict = `r &gt; g: the (r−g)·d term is positive, so debt tends to snowball. A primary surplus s &gt; (r−g)·d is needed just to hold the ratio steady.`;
-  } else if (g > r + 1e-9) {
-    cls = 'stable';
-    verdict = `g &gt; r: the (r−g)·d term is negative, so the ratio erodes on its own even with a modest deficit.`;
-  } else {
-    cls = 'neutral';
-    verdict = `r = g: the ratio holds steady unless the primary balance pushes it.`;
-  }
-  cue.className = 'debt-cue ' + cls;
-  cue.innerHTML =
-    `r = ${rPct}% vs g = ${gPct}% &nbsp;·&nbsp; Δd = (r−g)·d − s = `
-    + `${(dDot * 100).toFixed(2)}% per period<br>${verdict}`;
-}
-
 // -------------------------------------------------------------------------
-// Live equations panel — symbolic form, numbers substituted, computed result.
-// Terms colour-matched to the curve colours used in the charts.
+// Live equations panel
 // -------------------------------------------------------------------------
 const EQ_COL = { IS:'#d85a30', MP:'#185fa5', UIP:'#0f6e56', eps:'#b88a45',
                  PC:'#534ab7', P:'#d85a30', i:'#185fa5', pi:'#534ab7' };
@@ -1932,7 +1857,6 @@ function drawEquations(eq) {
   const lne = term => `class="eq-line" style="color:${c(term)}" data-term="${term}"`;
   const endLine = term => (EQ_REF[term] ? `<span class="eq-ref">(${EQ_REF[term]})</span>` : '') + '</span>';
 
-  // IS-MP box: IS deviation form (with ε term) and the policy rate (MP / Taylor).
   const ismpEl = document.getElementById('eq-ismp');
   if (ismpEl) {
     const c0 = 32 - 12; // c0 = 20
@@ -2001,7 +1925,6 @@ function drawEquations(eq) {
     );
   }
 
-  // UIP box: nominal E identity and real ε = E·P/P*.
   const uipEl = document.getElementById('eq-uip');
   if (uipEl) {
     if (isUnl('UIP')) {
@@ -2022,7 +1945,6 @@ function drawEquations(eq) {
     }
   }
 
-  // Phillips curve box.
   const pcEl = document.getElementById('eq-pc');
   if (pcEl) {
     if (isUnl('PC')) {
@@ -2052,7 +1974,6 @@ function drawEquations(eq) {
     }
   }
 
-  // Time-series box: the dynamic identities driving each step.
   const tsEl = document.getElementById('eq-ts');
   if (tsEl) {
     const E_e_next = (1 - 0.4*s.speed)*s.E_e + 0.4*s.speed*eq.E;
@@ -2091,20 +2012,14 @@ function drawEquations(eq) {
 function render() {
   const eq = solve(state);
   document.body.classList.toggle('zlb-active', eq.zlb_active);
-
-  // ZLB warning now renders as a hover chip inside the IS-MP plot.
   drawISChips(eq);
-
-  // Inflation warnings render as hover chips inside the Phillips curve plot.
   drawPCChips(eq);
-
   drawISMP();
   drawUIP();
   drawPC();
   drawTimeSeries();
   drawReadout();
   drawEquations(eq);
-  drawDebtCue(eq);
   updateShockIndicator();
   updateReverseButton();
   updateCredMeter(eq);
@@ -2115,7 +2030,6 @@ function render() {
 function redrawOpenDrills() {
   if (document.getElementById('drill-is')?.classList.contains('open'))  drawDrillIS();
   if (document.getElementById('drill-mp')?.classList.contains('open'))  drawDrillMP();
-  if (document.getElementById('drill-uip')?.classList.contains('open') && typeof drawDrillUIP === 'function') drawDrillUIP();
   if (document.getElementById('drill-pc')?.classList.contains('open'))  drawDrillPCChain();
 }
 
@@ -2126,9 +2040,6 @@ function updateReverseButton() {
   btn.textContent = undoStack.length > 0 ? `← Reverse (${undoStack.length})` : '← Reverse';
 }
 
-// One-line readout under the credibility slider: the effective anchoring that
-// actually drives expectations, which is the cap (θ) times current credibility.
-// Reddens as credibility falls; shows whether it's eroding or recovering.
 function updateCredMeter(eq) {
   const m = document.getElementById('meter-cred');
   if (!m) return;
@@ -2187,7 +2098,6 @@ renderTutorial = function() {
     });
   };
 
-  // UI button and dropdown state
   const btnAdv = document.getElementById('btn-advance');
   if (btnAdv) {
     btnAdv.disabled = tutorialState.stage >= TUTORIAL_STAGES.length - 1;
@@ -2206,7 +2116,6 @@ renderTutorial = function() {
     stageDropdown.value = tutorialState.stage;
   }
 
-  // Visual lock/grey/colour-in for each block
   const goodsOn = isUnlocked('GOODS');
   setLocked('.control[data-block="GOODS"]', goodsOn);
   setLocked('.curve-is, .label-is, .handle[data-handle="is"]', goodsOn);
@@ -2224,11 +2133,6 @@ renderTutorial = function() {
   setLocked('#sec-dynamics .side-body', pcOn);
   setLocked('#sec-shocks .side-body', pcOn);
 
-  const debtOn = isUnlocked('DEBT');
-  setLocked('.control[data-block="DEBT"]', debtOn);
-  setLocked('.debt-cue, #ts path[stroke="#0f6e56"], #ts circle[fill="#0f6e56"]', debtOn);
-
-  // Drill triggers gating (INV-S3-C)
   setLocked('.drill-trigger[data-block="ISLM"]', islmOn);
   setLocked('.drill-trigger[data-block="UIP"]', uipActive);
   setLocked('.drill-trigger[data-block="PC"]', pcOn);
@@ -2255,45 +2159,42 @@ function applyOilShock() {
   render();
 }
 
-// -------------------------------------------------------------------------
-// Preset scenario library
-// -------------------------------------------------------------------------
 const SCENARIOS = [
   {
     id: 'taylorPrinciple',
     label: '1. The Taylor Principle',
     narrative: 'Taylor rule ON with φ = 1.5 and partially-anchored expectations (θ=0.25), so expectations can actually move. Apply the oil shock and step: with φ = 1.5 the bank responds more than one-for-one and inflation comes smoothly back to the 2% target within the medium run. Then—without resetting—lower φ to 0.5 and shock again. Now the bank is too passive: the economy overshoots into deflation, the rate is cut nearly to zero, expectations de-anchor (watch the warning chip), and the return to target takes far longer and oscillates. The contrast between the two φ settings is the Taylor principle.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'expectationsDeAnchored',
     label: '2a. De-Anchored Expectations (1970s)',
     narrative: 'θ = 1: expectations are purely adaptive and start at 8%. A transitory cost-push shock (z_pulse = +2%) hits. Disinflation requires a painful recession because the central bank must drag πᵉ down by brute force. Since the shock is transitory, output eventually returns to exactly potential (100). Permanent supply shocks have no stationary equilibrium in the open economy under naive exchange-rate expectations (Blanchard Ch. 20).',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.08, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.02, theta: 1, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.08, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.02, theta: 1, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'expectationsAnchored',
     label: '2b. Anchored Expectations (1990s)',
     narrative: 'θ = 1: credibility is absolute. The same persistent cost-push shock (z = 2%) barely ripples—πᵉ stays nailed to the 2% target, and the adjustment is far smoother than in 2a even though the permanent shock carries the same lasting output cost. Use this side-by-side with preset 2a to show why central-bank credibility is a policy tool.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0.02, z_pulse: 0, theta: 1, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0.02, z_pulse: 0, theta: 1, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'exchangeRateDisinflation',
     label: '3. Exchange-Rate Disinflation',
     narrative: 'Taylor OFF, expectations mostly anchored (θ=0.7). Cut the policy rate to 1%. UIP triggers a nominal depreciation; net exports surge and Y rises above Yₙ. Over time prices climb relative to foreign, the real exchange rate appreciates, and Y drifts back. A temporary stimulus from a weak currency — and because i is held below i* indefinitely, inflation settles slightly above 2% rather than at it.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.01, i: 0.01, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.7, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.01, i: 0.01, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.7, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'twinDeficits',
     label: '4. Twin Deficits & Real Appreciation',
     narrative: 'Taylor OFF, expectations mostly anchored (θ=0.7). A modest fiscal expansion (G raised from 20 to 22, a 10% rise) with no monetary offset drives up domestic prices. The real exchange rate appreciates, crowding out net exports until Y returns to Yₙ and inflation returns to 2% — leaving ε permanently higher (≈1.04). Watch ε climb on the time series.',
-    state: { G: 22, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.7, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
+    state: { G: 22, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.7, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'globalRateHike',
     label: '5. Global Rate Hike Spillover',
     narrative: 'Foreign rates jump to 6%. UIP wants a weaker domestic currency unless the CB matches the hike. With Taylor ON, the domestic rule sees the inflationary depreciation and hikes i. The economy converges to a higher domestic rate with a persistently weaker nominal E — and because i_target still embodies the old neutral rate, inflation settles somewhat above 2%. Raise i_target toward the new world rate to bring it home: a stale-intercept lesson.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.06, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, B: 0, g: 0.02, period: 0, history: [] }
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.06, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   }
 ];
 
@@ -2342,9 +2243,6 @@ function applyScenario(id) {
   render();
 }
 
-// -------------------------------------------------------------------------
-// Copy state export
-// -------------------------------------------------------------------------
 function formatStateExport() {
   const eq = solve(state);
   const pad = (s, n) => String(s).padStart(n);
@@ -2376,7 +2274,6 @@ function formatStateExport() {
   L.push('');
   L.push('FISCAL');
   L.push(`  Primary balance T−G = ${(state.T - state.G).toFixed(1)}`);
-  L.push(`  Debt B = ${state.B.toFixed(2)}   B/Y_n = ${(state.B / eq.Y_n * 100).toFixed(1)}%`);
   L.push('');
   L.push('HISTORY');
   if (state.history.length === 0) {
