@@ -1,5 +1,8 @@
 # Working rules for this repo
 
+**Model scope boundary: Blanchard mechanics frozen; scenarios/content may grow.
+Engine changes → future models. See Decision_Log_Model_Scope.md.**
+
 This file is read on opening the repo. It is the short list of non-negotiables.
 Everything here is enforceable and short on purpose — if it grows past one screen,
 move a rule into a verifier instead of adding sentences here.

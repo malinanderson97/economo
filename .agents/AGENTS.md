@@ -1,5 +1,8 @@
 # Working rules for this repo — implementation / UI side
 
+**Model scope boundary: Blanchard mechanics frozen; scenarios/content may grow.
+Engine changes → future models. See Decision_Log_Model_Scope.md.**
+
 Read on opening the repo, by the agent doing the building. **Engine rules live in
 `CLAUDE.md` and the `macro-model-verification` skill** — read those before any
 `solve()`/`step()`/coefficient change. This file covers everything else: layout, the
