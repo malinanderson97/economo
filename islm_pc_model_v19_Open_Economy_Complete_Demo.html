@@ -337,7 +337,7 @@
 <div class="layout">
 
   <div id="left-panel">
-    <div id="sidebar-group-toggle" class="side-head" style="background:#e8f0fe; color:#185fa5; margin-bottom:10px; cursor:pointer;" onclick="toggleSidebarGroup()">Group by: <span id="sidebar-group-label">Function ▸</span></div>
+
     <div class="side-section open" id="sec-presets">
       <div class="side-head" onclick="toggleSection('sec-presets')"><span class="side-arrow">▶</span>Preset scenarios</div>
       <div class="side-body">
@@ -960,88 +960,53 @@ function toggleSection(id) {
   if (sec) sec.classList.toggle('open');
 }
 
-let sidebarGroupByGraph = false;
-
-function toggleSidebarGroup() {
-  sidebarGroupByGraph = !sidebarGroupByGraph;
-  document.getElementById('sidebar-group-label').textContent = sidebarGroupByGraph ? 'Graph ▸' : 'Function ▸';
-  
+function applyGraphGrouping() {
   const leftPanel = document.getElementById('left-panel');
   const functionSections = ['sec-policy', 'sec-dynamics', 'sec-shocks'];
   
-  if (sidebarGroupByGraph) {
-    functionSections.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
-    
-    const blocks = ['GOODS', 'ISLM', 'PC', 'UIP'];
-    const blockNames = { 'GOODS': 'IS curve (goods)', 'ISLM': 'LM/MP curve (policy)', 'PC': 'Phillips curve & supply side', 'UIP': 'UIP curve (FX)' };
-    
-    blocks.forEach(b => {
-      let sec = document.getElementById('sec-graph-' + b);
-      if (!sec) {
-        sec = document.createElement('div');
-        sec.className = 'side-section open';
-        sec.id = 'sec-graph-' + b;
-        sec.innerHTML = `<div class="side-head" onclick="toggleSection('sec-graph-${b}')"><span class="side-arrow">▶</span>${blockNames[b]}</div><div class="side-body" id="body-graph-${b}"></div>`;
-        leftPanel.appendChild(sec);
-      }
-      sec.style.display = 'block';
-    });
-
-    document.querySelectorAll('.control[data-block]').forEach(ctrl => {
-      if (!ctrl._originalParent) ctrl._originalParent = ctrl.parentNode;
-      const b = ctrl.getAttribute('data-block');
-      const body = document.getElementById('body-graph-' + b);
-      if (body) body.appendChild(ctrl);
-    });
-
-    const pcBody = document.getElementById('body-graph-PC');
-    
-    const move = (id, targetBody) => {
-      const el = document.getElementById(id);
-      if (el && targetBody) { 
-        if (!el._originalParent) el._originalParent = el.parentNode; 
-        targetBody.appendChild(el); 
-      }
-    };
-    
-    move('speed-wrap', pcBody);
-    move('taylor-toggle', pcBody);
-    move('deanchor-toggle', pcBody);
-    move('hint-dynamics', pcBody);
-    move('oil-shock-btn', pcBody);
-    move('shock-indicator', pcBody);
-    
-  } else {
-    const restore = (selector) => {
-      document.querySelectorAll(selector).forEach(el => {
-        if (el._originalParent) {
-          el._originalParent.appendChild(el);
-        }
-      });
-    };
-    
-    restore('.control[data-block]');
-    ['speed-wrap', 'taylor-toggle', 'deanchor-toggle', 'hint-dynamics', 'oil-shock-btn', 'shock-indicator'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el && el._originalParent) el._originalParent.appendChild(el);
-    });
-
-    functionSections.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'block';
-    });
-
-    const blocks = ['GOODS', 'ISLM', 'PC', 'UIP'];
-    blocks.forEach(b => {
-      const sec = document.getElementById('sec-graph-' + b);
-      if (sec) sec.style.display = 'none';
-    });
-  }
+  functionSections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
   
-  if (typeof renderTutorial === 'function') renderTutorial();
+  const blocks = ['ISLM', 'UIP', 'PC'];
+  const blockNames = { 'ISLM': 'IS-LM', 'UIP': 'UIP curve (FX)', 'PC': 'Phillips curve & supply side' };
+  
+  blocks.forEach(b => {
+    let sec = document.getElementById('sec-graph-' + b);
+    if (!sec) {
+      sec = document.createElement('div');
+      sec.className = 'side-section open';
+      sec.id = 'sec-graph-' + b;
+      sec.innerHTML = `<div class="side-head" onclick="toggleSection('sec-graph-${b}')"><span class="side-arrow">▶</span>${blockNames[b]}</div><div class="side-body" id="body-graph-${b}"></div>`;
+      leftPanel.appendChild(sec);
+    }
+    sec.style.display = 'block';
+  });
+
+  document.querySelectorAll('.control[data-block]').forEach(ctrl => {
+    let b = ctrl.getAttribute('data-block');
+    if (b === 'GOODS') b = 'ISLM';
+    const body = document.getElementById('body-graph-' + b);
+    if (body) body.appendChild(ctrl);
+  });
+
+  const pcBody = document.getElementById('body-graph-PC');
+  const islmBody = document.getElementById('body-graph-ISLM');
+  
+  const move = (id, targetBody) => {
+    const el = document.getElementById(id);
+    if (el && targetBody) { 
+      targetBody.appendChild(el); 
+    }
+  };
+  
+  move('taylor-toggle', islmBody);
+  move('speed-wrap', pcBody);
+  move('deanchor-toggle', pcBody);
+  move('hint-dynamics', pcBody);
+  move('oil-shock-btn', pcBody);
+  move('shock-indicator', pcBody);
 }
 
 function syncControls() {
@@ -2386,6 +2351,7 @@ buildControls();
 initDragManager();
 buildScenarioDropdown();
 syncControls();
+applyGraphGrouping();
 render();
 if (typeof requestAnimationFrame !== 'undefined') {
   requestAnimationFrame(fitCharts);

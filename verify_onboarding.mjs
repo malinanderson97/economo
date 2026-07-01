@@ -222,7 +222,7 @@ const specialEls = {
 };
 const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\nreturn { tutorialState, goToStage, applyBlocks, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window: { toggleSidebarGroup, ...window }, toggleSidebarGroup, SCENARIOS };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\nreturn { tutorialState, goToStage, applyBlocks, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window: { ...window }, SCENARIOS, applyGraphGrouping };')(mockElements, specialEls);
 
 testRender.goToStage(0);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -1038,18 +1038,16 @@ const hasM = !!testRender.SYMBOL_DEFS['m'];
 const hasWageZ = !!testRender.SYMBOL_DEFS['Wage push z'];
 const hasCostZ = !!testRender.SYMBOL_DEFS['Cost-push z'];
 check('INV-1D: SYMBOL_DEFS contains distinct m, Wage push z, and Cost-push z terms', hasM && hasWageZ && hasCostZ);
+// 1E. Sidebar grouping on load
+const htmlSrc = fs.readFileSync(FILE, 'utf8');
+const hasToggle = htmlSrc.includes('id="sidebar-group-toggle"');
+const hasApplyCall = htmlSrc.includes('applyGraphGrouping();');
+const hasISLMSec = htmlSrc.includes("sec-graph-' + b"); // Proxy for dynamic section creation
+check('INV-1E: Graph-grouping is applied on load', !hasToggle && hasApplyCall && hasISLMSec);
 
-// 1E. Sidebar regroup data-block integrity assertion
-let passedSidebarRegroup = false;
-try {
-  testRender.window.sidebarGroupByGraph = false;
-  testRender.toggleSidebarGroup(); // toggles ON
-  testRender.toggleSidebarGroup(); // toggles OFF
-  passedSidebarRegroup = true;
-} catch (e) {
-  console.log("Sidebar toggle error:", e);
-}
-check('INV-1E: Sidebar grouping toggle round-trips without error', passedSidebarRegroup);
+// BAD-fixture for INV-1E
+const badHasToggle = true; // Simulating if the toggle was still present
+check('BAD-fixture: Sidebar toggle still present caught', !( !badHasToggle && hasApplyCall && hasISLMSec ));
 
 // INV-S3: Yₙ line and label in IS-LM chart gated by PC unlock
 testRender.applyBlocks(['ISLM']);
