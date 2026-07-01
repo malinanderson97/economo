@@ -394,7 +394,7 @@
       <div class="side-head" onclick="toggleSection('sec-shocks')"><span class="side-arrow">▶</span>Supply shocks</div>
       <div class="side-body">
         <div id="shock-controls"></div>
-        <button class="shock-btn" id="oil-shock-btn" onclick="applyOilShock()">⚡ Apply oil shock (+5%)</button>
+        <button class="shock-btn" id="oil-shock-btn" onclick="applyOilShock()">⚡ Apply temp supply shock (+5%)</button>
         <div class="shock-indicator" id="shock-indicator">no active pulse</div>
       </div>
     </div>
@@ -645,7 +645,7 @@ const shockDefs = [
 const dynamicsDefs = [
   { key: 'theta',    block: 'PC', label: 'Max anchoring (ceiling), θ',  min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2) },
   { key: 'cred',     block: 'PC', label: 'Current credibility',        min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2), meter: 'cred' },
-  { key: 'phi',      block: 'PC', label: 'Taylor response, φ',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
+  { key: 'phi',      block: 'ISLM', label: 'Taylor response, φ',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
 ];
 
 const initialState = {

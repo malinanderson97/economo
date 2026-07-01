@@ -72,7 +72,7 @@ const getBlock = key => {
 };
 
 check('Mapping: m1 and Ystar ∈ UIP', getBlock('m1') === 'UIP' && getBlock('Ystar') === 'UIP');
-check('Mapping: theta, cred, phi ∈ PC', getBlock('theta') === 'PC' && getBlock('cred') === 'PC' && getBlock('phi') === 'PC');
+check('Mapping: theta, cred ∈ PC, phi ∈ ISLM', getBlock('theta') === 'PC' && getBlock('cred') === 'PC' && getBlock('phi') === 'ISLM');
 
 const goodsKeys = allDefs.filter(d => d.block === 'GOODS').map(d => d.key).sort();
 check('Mapping: GOODS contains exactly {G, T, c1}', JSON.stringify(goodsKeys) === JSON.stringify(['G', 'T', 'c1'].sort()));
