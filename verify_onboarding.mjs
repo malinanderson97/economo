@@ -1051,5 +1051,28 @@ try {
 }
 check('INV-1E: Sidebar grouping toggle round-trips without error', passedSidebarRegroup);
 
-console.log(`\n${passed} passed, ${failed} failed.`);
+// INV-S3: Yₙ line and label in IS-LM chart gated by PC unlock
+testRender.applyBlocks(['ISLM']);
+testRender.specialEls['ismp'].children = [];
+testRender.drawISMP();
+let ismpTextsPre = getSvgTexts(testRender.specialEls['ismp']);
+const hasYnPre = ismpTextsPre.some(t => t.textContent === 'Yₙ');
+check('INV-S3: Yₙ label hidden in IS-LM chart when PC is locked', !hasYnPre);
+
+testRender.applyBlocks(['ISLM', 'PC']);
+testRender.specialEls['ismp'].children = [];
+testRender.drawISMP();
+let ismpTextsPost = getSvgTexts(testRender.specialEls['ismp']);
+const hasYnPost = ismpTextsPost.some(t => t.textContent === 'Yₙ');
+check('INV-S3: Yₙ label shown in IS-LM chart when PC is unlocked', hasYnPost);
+
+const badYnCode = scripts.replace(/if\s*\(tutorialState\.unlocked\.has\('PC'\)\)\s*\{\s*const\s*yn_x/, "if (true) { const yn_x");
+const badYnApi = new Function('mockElements', 'specialEls', chipStub + badYnCode + '\nreturn { document, window, drawISMP, solve, state, applyBlocks: function(b) { tutorialState.unlocked = new Set(b); }, tutorialState, xScale, yScale, CURVE_DEFS };')(mockElements, specialEls);
+badYnApi.applyBlocks(['ISLM']);
+specialEls['ismp'].children = [];
+badYnApi.drawISMP();
+let badYnTexts = getSvgTexts(specialEls['ismp']);
+check('BAD-fixture: Unconditional Yₙ draw in IS-LM caught', badYnTexts.some(t => t.textContent === 'Yₙ'));
+
+console.log(`\\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);

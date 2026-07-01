@@ -1196,9 +1196,11 @@ function drawISMP() {
   drawAxes(svg, o);
   const eq = solve(state);
 
-  const yn_x = xScale(eq.Y_n, o);
-  el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-  { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
+  if (tutorialState.unlocked.has('PC')) {
+    const yn_x = xScale(eq.Y_n, o);
+    el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
+    { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
+  }
 
   if (ZLB >= o.yMin && ZLB <= o.yMax) {
     const zlb_y = yScale(ZLB, o);
