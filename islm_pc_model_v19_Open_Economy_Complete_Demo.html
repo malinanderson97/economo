@@ -994,19 +994,100 @@ function applyGraphGrouping() {
   const pcBody = document.getElementById('body-graph-PC');
   const islmBody = document.getElementById('body-graph-ISLM');
   
-  const move = (id, targetBody) => {
-    const el = document.getElementById(id);
-    if (el && targetBody) { 
-      targetBody.appendChild(el); 
+  const moveWrap = (id, targetBody) => {
+    let el = document.getElementById(id);
+    if (!el) {
+      const ctl = document.getElementById('ctl-' + id);
+      if (ctl) el = ctl.closest('.control');
     }
+    if (!el) console.warn('FAIL: Element not found for moveWrap:', id);
+    if (el && targetBody) targetBody.appendChild(el);
   };
+
+  const addDividerAndCaption = (targetBody, captionText, needsDivider) => {
+    if (needsDivider) {
+      const div = document.createElement('div');
+      div.className = 'gap-divider';
+      div.style.cssText = 'border-top:1px solid #ddd; margin:12px 0 4px 0; opacity:0.6;';
+      targetBody.appendChild(div);
+    }
+    const caption = document.createElement('div');
+    caption.className = 'cluster-caption';
+    caption.style.cssText = 'font-size:11px; font-weight:600; color:#888; text-transform:uppercase; margin:4px 0 8px 6px; letter-spacing:0.5px;';
+    caption.textContent = captionText;
+    targetBody.appendChild(caption);
+  };
+
+  // ISLM specific appending (Taylor drill-down)
+  moveWrap('phi', islmBody);
+  moveWrap('taylor-toggle', islmBody);
+  const taylorDrillTrigger = document.createElement('div');
+  taylorDrillTrigger.style.cssText = 'margin: 4px 0 8px 30px; font-size:12.5px;';
+  taylorDrillTrigger.innerHTML = `<span class="drill-trigger" data-block="ISLM" onclick="toggleDrill('drill-taylor')">▸ Policy rule & stability</span>`;
+  islmBody.appendChild(taylorDrillTrigger);
   
-  move('taylor-toggle', islmBody);
-  move('speed-wrap', pcBody);
-  move('deanchor-toggle', pcBody);
-  move('hint-dynamics', pcBody);
-  move('oil-shock-btn', pcBody);
-  move('shock-indicator', pcBody);
+  const taylorDrillBox = document.createElement('div');
+  taylorDrillBox.className = 'drill-container';
+  taylorDrillBox.id = 'drill-taylor';
+  taylorDrillBox.innerHTML = `
+    With the Taylor rule ON the CB sets
+    i = Neutral rate plus φ(π−π*) + 0.25·gap (φ &gt; 1 is the Taylor principle).
+    Stability notes: with the Taylor rule OFF, θ_eff below ≈0.65 is
+    Wicksell-unstable (fixed i + adaptive expectations spiral); with θ_eff = 1,
+    φ above ≈2 can overshoot and spiral. φ ≈ 1.2–2 is robust.
+    <br><em>Note: designed for comparative-static stepping, not multi-decade simulation.</em>
+  `;
+  islmBody.appendChild(taylorDrillBox);
+
+  // PC Ordering and dividers
+  
+  // 1. Phillips curve
+  addDividerAndCaption(pcBody, "Phillips curve", false);
+  moveWrap('pi_e', pcBody);
+  moveWrap('alpha', pcBody);
+  moveWrap('speed-wrap', pcBody);
+
+  // 2. Supply side (natural rate)
+  addDividerAndCaption(pcBody, "Supply side (natural rate)", true);
+  moveWrap('m_struct', pcBody);
+  moveWrap('z_struct', pcBody);
+
+  // 3. Credibility
+  addDividerAndCaption(pcBody, "Credibility", true);
+  moveWrap('theta', pcBody);
+  moveWrap('cred', pcBody);
+  moveWrap('deanchor-toggle', pcBody);
+  
+  const credDrillTrigger = document.createElement('div');
+  credDrillTrigger.style.cssText = 'margin: 4px 0 8px 30px; font-size:12.5px;';
+  credDrillTrigger.innerHTML = `<span class="drill-trigger" data-block="PC" onclick="toggleDrill('drill-cred')">▸ How credibility works</span>`;
+  pcBody.appendChild(credDrillTrigger);
+  
+  const credDrillBox = document.createElement('div');
+  credDrillBox.className = 'drill-container';
+  credDrillBox.id = 'drill-cred';
+  credDrillBox.innerHTML = `
+    π* = 2% target. Expectations are anchored by the product of two sliders:
+    <strong>Max anchoring θ</strong> is the ceiling (how credible this central bank can ever be),
+    and <strong>Current credibility</strong> is where anchoring sits right now (0–100% of that ceiling).
+    Effective anchoring = θ × credibility: at θ=1, full credibility pins expectations to π*; at credibility 0,
+    expectations adapt fully to past inflation.
+    <br><strong>Allow de-anchoring:</strong> when on, current credibility moves on its own each period —
+    it erodes if inflation sits far from target for a sustained stretch, and rebuilds toward the ceiling
+    when inflation returns to target. You can also drag credibility yourself at any time. When off,
+    credibility is held fixed where you set it.
+  `;
+  pcBody.appendChild(credDrillBox);
+
+  // 4. Shocks
+  addDividerAndCaption(pcBody, "Shocks", true);
+  moveWrap('z', pcBody);
+  moveWrap('oil-shock-btn', pcBody);
+  moveWrap('shock-indicator', pcBody);
+
+  // Remove the old hint-dynamics if it still exists elsewhere
+  const oldHint = document.getElementById('hint-dynamics');
+  if (oldHint && oldHint.parentNode) oldHint.parentNode.removeChild(oldHint);
 }
 
 function syncControls() {

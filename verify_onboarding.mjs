@@ -120,7 +120,9 @@ let visualPassed = true;
 const fakeEl = () => ({
   attrs: {}, children: [],
   setAttribute(k, v) { this.attrs[k] = v; }, 
-  appendChild(c) { this.children.push(c); }, 
+  appendChild(c) { 
+    this.children.push(c); 
+  }, 
   style: {},
   classList: { 
     classes: new Set(),
@@ -245,7 +247,24 @@ const specialEls = {
   'drill-pc': fakeEl(),
   'drill-uip': fakeEl()
 };
-const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => specialEls[id] || fakeEl()`);
+
+// Map each control to a parent wrapper node
+const chipStub = stub.replace('getElementById: () => fakeEl()', `getElementById: (id) => {
+  if (id === 'pi_e' || id === 'alpha' || id === 'm_struct' || id === 'z_struct' || id === 'theta' || id === 'cred' || id === 'z') return null;
+  return specialEls[id] || fakeEl();
+}`);
+const pcKeys = ['pi_e', 'alpha', 'm_struct', 'z_struct', 'theta', 'cred', 'z'];
+pcKeys.forEach(k => {
+  const el = fakeEl();
+  const wrapper = fakeEl();
+  el.closest = (sel) => {
+    if (sel === '.control') return wrapper;
+    return null;
+  };
+  specialEls['ctl-' + k] = el;
+  specialEls['wrapper-' + k] = wrapper;
+});
+
 
 const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\nreturn { tutorialState, goToStage, applyBlocks, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window: { ...window }, SCENARIOS, applyGraphGrouping };')(mockElements, specialEls);
 
@@ -1017,9 +1036,11 @@ check('BAD-fixture: Missing ZLB def caught', badZLB && !badZLB.getAttribute('dat
 
 let testSub = testRender.document.createElement('div');
 testSub.innerHTML = 'real r = i − πᵉ';
+const origQSA = testRender.document.querySelectorAll;
 testRender.document.querySelectorAll = () => [testSub];
 testRender.wrapStaticSymbols();
 check('INV-A2: static-wrap pass injects class="sym" into a subtitle', testSub.innerHTML.includes('class="sym"'));
+testRender.document.querySelectorAll = origQSA;
 
 const badWrapStaticCodeA2 = scripts.replace("els[i].innerHTML = wrapSymbols(els[i].innerHTML);", "els[i].innerHTML = els[i].innerHTML;");
 const badWrapStaticApiA2 = new Function('mockElements', 'specialEls', chipStub + badWrapStaticCodeA2 + '\nreturn { document, wrapStaticSymbols };')(mockElements, specialEls);
@@ -1039,9 +1060,11 @@ check('BAD-fixture: wrapping narrative caught', badWrapStaticApiA3.SCENARIOS[0].
 
 let testLegend = testRender.document.createElement('div');
 testLegend.innerHTML = 'IS: Y = f(G,T,r,ε) <span class="drill-trigger" data-block="ISLM" onclick="toggleDrill(\'drill-is\')">derivation ▸</span>';
+const oldQSA = testRender.document.querySelectorAll;
 testRender.document.querySelectorAll = () => [testLegend];
 testRender.wrapStaticSymbols();
 check('INV-A4: wrapStaticSymbols preserves child markup like onclick', testLegend.innerHTML.includes('onclick="toggleDrill(') && testLegend.innerHTML.includes('class="drill-trigger"'));
+testRender.document.querySelectorAll = oldQSA;
 
 const badWrapStaticCodeA4 = scripts.replace("els[i].innerHTML = wrapSymbols(els[i].innerHTML);", "els[i].innerHTML = wrapSymbols(els[i].textContent);");
 const badWrapStaticApiA4 = new Function('mockElements', 'specialEls', chipStub + badWrapStaticCodeA4 + '\nreturn { document, wrapStaticSymbols };')(mockElements, specialEls);
@@ -1090,47 +1113,76 @@ const hasWageZ = !!testRender.SYMBOL_DEFS['Wage push z'];
 const hasCostZ = !!testRender.SYMBOL_DEFS['Cost-push z'];
 check('INV-1D: SYMBOL_DEFS contains distinct m, Wage push z, and Cost-push z terms', hasM && hasWageZ && hasCostZ);
 // 1E. Sidebar grouping on load
-testRender.applyGraphGrouping();
-
+// 1E. Sidebar grouping on load
 const bodyISLM = testRender.specialEls['body-graph-ISLM'];
 const bodyPC = testRender.specialEls['body-graph-PC'];
 const bodyUIP = testRender.specialEls['body-graph-UIP'];
 
+bodyISLM.children = [];
+bodyPC.children = [];
+bodyUIP.children = [];
+
+testRender.applyGraphGrouping();
+
 const islmHasGoods = testRender.mockElements.GOODS.every(el => bodyISLM.children.includes(el));
 const islmHasISLM = testRender.mockElements.ISLM.every(el => bodyISLM.children.includes(el));
 const islmHasTaylor = bodyISLM.children.includes(testRender.specialEls['taylor-toggle']);
+const islmHasTaylorDrill = bodyISLM.children.some(el => el && el.id === 'drill-taylor');
 
-const pcHasPC = testRender.mockElements.PC.every(el => bodyPC.children.includes(el));
-const pcHasDeanchor = bodyPC.children.includes(testRender.specialEls['deanchor-toggle']);
-const pcHasShock = bodyPC.children.includes(testRender.specialEls['oil-shock-btn']);
-const pcHasInd = bodyPC.children.includes(testRender.specialEls['shock-indicator']);
-const pcHasSpeed = bodyPC.children.includes(testRender.specialEls['speed-wrap']);
+const islmCorrect = islmHasGoods && islmHasISLM && islmHasTaylor && islmHasTaylorDrill && !bodyPC.children.includes(testRender.specialEls['ctl-phi']);
+const uipCorrect = testRender.mockElements.UIP.every(el => bodyUIP.children.includes(el));
 
-const uipHasUIP = testRender.mockElements.UIP.every(el => bodyUIP.children.includes(el));
+// Check strict placement order in PC Body
+let pcOrderCorrect = true;
+let captionCount = 0;
+let seen = { pi_e: false, alpha: false, speed: false, m_struct: false, z_struct: false, theta: false, cred: false, deanchor: false, drill_cred: false, z: false, oil_shock: false, shock_ind: false };
+for (const el of bodyPC.children) {
+  if (el && el.className === 'cluster-caption') {
+    captionCount++;
+    if (captionCount === 1) pcOrderCorrect = pcOrderCorrect && el.textContent === 'Phillips curve' && !seen.pi_e;
+    if (captionCount === 2) pcOrderCorrect = pcOrderCorrect && el.textContent === 'Supply side (natural rate)' && seen.pi_e && !seen.m_struct;
+    if (captionCount === 3) pcOrderCorrect = pcOrderCorrect && el.textContent === 'Credibility' && seen.m_struct && !seen.theta;
+    if (captionCount === 4) pcOrderCorrect = pcOrderCorrect && el.textContent === 'Shocks' && seen.theta && !seen.z;
+  }
+  if (testRender.specialEls['wrapper-pi_e'] && el === testRender.specialEls['wrapper-pi_e']) seen.pi_e = true;
+  if (testRender.specialEls['wrapper-alpha'] && el === testRender.specialEls['wrapper-alpha']) seen.alpha = true;
+  if (el === testRender.specialEls['speed-wrap']) seen.speed = true;
+  if (testRender.specialEls['wrapper-m_struct'] && el === testRender.specialEls['wrapper-m_struct']) seen.m_struct = true;
+  if (testRender.specialEls['wrapper-z_struct'] && el === testRender.specialEls['wrapper-z_struct']) seen.z_struct = true;
+  if (testRender.specialEls['wrapper-theta'] && el === testRender.specialEls['wrapper-theta']) seen.theta = true;
+  if (testRender.specialEls['wrapper-cred'] && el === testRender.specialEls['wrapper-cred']) seen.cred = true;
+  if (el === testRender.specialEls['deanchor-toggle']) seen.deanchor = true;
+  if (el && el.id === 'drill-cred') seen.drill_cred = true;
+  if (testRender.specialEls['wrapper-z'] && el === testRender.specialEls['wrapper-z']) seen.z = true;
+  if (el === testRender.specialEls['oil-shock-btn']) seen.oil_shock = true;
+  if (el === testRender.specialEls['shock-indicator']) seen.shock_ind = true;
+}
 
-check('INV-1E: Graph-grouping correctly slots elements into section bodies', 
-  islmHasGoods && islmHasISLM && islmHasTaylor &&
-  pcHasPC && pcHasDeanchor && pcHasShock && pcHasInd && pcHasSpeed &&
-  uipHasUIP
+const allSeen = Object.values(seen).every(v => v === true);
+check('INV-1E: Graph-grouping slots elements per-cluster correctly', 
+  islmCorrect && uipCorrect && captionCount === 4 && pcOrderCorrect && allSeen
 );
 
 // BAD-fixture for INV-1E
 let badGroupingCaught = false;
 try {
-  const badScripts = scripts.replace("if (b === 'GOODS') b = 'ISLM';", "if (false) b = 'ISLM';");
-  const badRender = new Function('mockElements', 'specialEls', chipStub + badScripts + '\\nreturn { applyGraphGrouping };')(mockElements, testRender.specialEls);
+  // Drop one of the PC controls
+  const badScripts = scripts.replace("moveWrap('theta', pcBody);", "");
+  const badEngine = new Function('mockElements', 'specialEls', chipStub + badScripts + '\nreturn { applyGraphGrouping };')(mockElements, testRender.specialEls);
+  bodyPC.children = [];
+  badEngine.applyGraphGrouping();
   
-  bodyISLM.children = []; // clear previous children
-  badRender.applyGraphGrouping();
-  
-  const badIslmHasGoods = testRender.mockElements.GOODS.every(el => bodyISLM.children.includes(el));
-  if (!badIslmHasGoods) {
+  let b_seenTheta = false;
+  for (const el of bodyPC.children) {
+    if (testRender.specialEls['wrapper-theta'] && el === testRender.specialEls['wrapper-theta']) b_seenTheta = true;
+  }
+  if (!b_seenTheta) {
     badGroupingCaught = true;
   }
 } catch (e) {
   badGroupingCaught = true;
 }
-check('BAD-fixture: Broken GOODS remap caught', badGroupingCaught);
+check('BAD-fixture: Missing PC control caught', badGroupingCaught);
 
 // INV-S3: Yₙ line and label in IS-LM chart gated by PC unlock
 testRender.applyBlocks(['ISLM']);
@@ -1155,5 +1207,5 @@ badYnApi.drawISMP();
 let badYnTexts = getSvgTexts(specialEls['ismp']);
 check('BAD-fixture: Unconditional Yₙ draw in IS-LM caught', badYnTexts.some(t => t.textContent === 'Yₙ'));
 
-console.log(`\\n${passed} passed, ${failed} failed.`);
+console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);
