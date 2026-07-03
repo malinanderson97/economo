@@ -217,6 +217,7 @@ const specialEls = {
   'oil-shock-btn': fakeEl(),
   'shock-indicator': fakeEl(),
   'speed-wrap': fakeEl(),
+  'sec-presets': fakeEl(),
   'hint-dynamics': fakeEl(),
   'ctl-phi': fakeEl(),
   'ismp-chips': fakeEl(),
@@ -291,6 +292,7 @@ const dePc = testRender.specialEls['deanchor-toggle'].classList.contains('locked
 const oilPc = testRender.specialEls['oil-shock-btn'].classList.contains('locked');
 const indPc = testRender.specialEls['shock-indicator'].classList.contains('locked');
 const phiPc = testRender.specialEls['ctl-phi'].classList.contains('locked');
+const presetsPc = testRender.specialEls['sec-presets'].classList.contains('locked');
 
 testRender.applyBlocks(['GOODS', 'ISLM', 'UIP', 'PC']); // All unlocked
 const tayFull = testRender.specialEls['taylor-toggle'].classList.contains('locked');
@@ -298,10 +300,11 @@ const deFull = testRender.specialEls['deanchor-toggle'].classList.contains('lock
 const oilFull = testRender.specialEls['oil-shock-btn'].classList.contains('locked');
 const indFull = testRender.specialEls['shock-indicator'].classList.contains('locked');
 const phiFull = testRender.specialEls['ctl-phi'].classList.contains('locked');
+const presetsFull = testRender.specialEls['sec-presets'].classList.contains('locked');
 
 check('INV-6b: Explicit id gating properly greys controls by stage', 
-  tayIslm && dePc && oilPc && indPc && phiPc &&
-  !tayFull && !deFull && !oilFull && !indFull && !phiFull
+  tayIslm && dePc && oilPc && indPc && phiPc && presetsPc &&
+  !tayFull && !deFull && !oilFull && !indFull && !phiFull && !presetsFull
 );
 
 // BAD-fixture for INV-6b
@@ -318,6 +321,19 @@ try {
 }
 check('BAD-fixture: Ungated #oil-shock-btn caught', badIdGatingCaught);
 
+let badPresetGatingCaught = false;
+try {
+  const badScriptsPreset = scripts.replace("setLocked('#sec-presets', pcOn);", "");
+  const badRenderPreset = new Function('mockElements', 'specialEls', chipStub + badScriptsPreset + '\\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\\nreturn { applyBlocks };')(mockElements, testRender.specialEls);
+  badRenderPreset.applyBlocks(['ISLM']); // PC locked
+  if (!testRender.specialEls['sec-presets'].classList.contains('locked')) {
+    badPresetGatingCaught = true;
+  }
+} catch (e) {
+  badPresetGatingCaught = true;
+}
+check('BAD-fixture: Ungated #sec-presets caught', badPresetGatingCaught);
+
 // NEW: General assertion: no ungated interactive control
 const renderSrc = testRender.renderTutorial.toString();
 function verifyGating(htmlString) {
@@ -329,7 +345,7 @@ function verifyGating(htmlString) {
   const interactives = [...htmlNoScripts.matchAll(/<(input|button|select)[^>]*>|<[^>]+(?:onclick="[^"]*"|class="[^"]*\btoggle-row\b[^"]*")[^>]*>/gi)];
 
   const allowlist = [
-    'reset()', 'stepPeriod()', 'reverseStep()', 'jumpLongRun()', 'copyState()', 'advanceTutorial()', 'goToStage(', // Always-on run controls
+    'reset()', 'resetToDefault()', 'stepPeriod()', 'reverseStep()', 'jumpLongRun()', 'copyState()', 'advanceTutorial()', 'goToStage(', // Always-on run controls
     'scenario-select', 'applySelectedScenario()', // Preset controls (global)
     'toggleSection(', 'toggleEq(', 'toggleSidebarGroup(', 'toggleHelpMode(' // Layout toggles
   ];
@@ -1206,6 +1222,60 @@ specialEls['ismp'].children = [];
 badYnApi.drawISMP();
 let badYnTexts = getSvgTexts(specialEls['ismp']);
 check('BAD-fixture: Unconditional Yₙ draw in IS-LM caught', badYnTexts.some(t => t.textContent === 'Yₙ'));
+
+// -------------------------------------------------------------------------
+// Context-Aware Reset (Spec 5 & 6)
+// -------------------------------------------------------------------------
+
+const resetStub = chipStub + `
+  specialEls['speed'] = fakeEl();
+  specialEls['speed'].value = '0.75';
+`;
+
+const testResetApi = new Function('mockElements', 'specialEls', resetStub + scripts + `
+  return { 
+    applyScenario, reset, resetToDefault, 
+    getState: () => state, getInitialState: () => initialState,
+    getActiveScenarioId: () => typeof activeScenarioId !== 'undefined' ? activeScenarioId : null,
+    SCENARIOS
+  };
+`)(mockElements, specialEls);
+
+testResetApi.applyScenario('taylorPrinciple'); 
+const preset = testResetApi.SCENARIOS.find(s => s.id === 'taylorPrinciple');
+testResetApi.getState().G = 30; // user mutates G
+testResetApi.reset();
+const sPostReset = testResetApi.getState();
+
+const restoresPreset = (sPostReset.theta === preset.state.theta); // 0.25
+const revertsMutated = (sPostReset.G === testResetApi.getInitialState().G); // 20
+const preservesSpeed = (sPostReset.speed === 0.75);
+check('Reset context-aware: restores scenario, reverts mutations, keeps speed', restoresPreset && revertsMutated && preservesSpeed);
+
+testResetApi.resetToDefault();
+const sPostDefault = testResetApi.getState();
+const activeNull = (testResetApi.getActiveScenarioId() === null);
+const revertsToInitial = (sPostDefault.theta === testResetApi.getInitialState().theta); // 1.0
+const defaultSpeed = (sPostDefault.speed === 0.75);
+check('Reset to Default: clears active ID, returns to base model, keeps speed', activeNull && revertsToInitial && defaultSpeed);
+
+const badResetScripts = scripts.replace(/function reset\(\) \{[\s\S]*?render\(\);\s*\}/, `function reset() {
+  const sp = parseFloat(document.getElementById('speed').value);
+  state = clone(initialState);
+  state.speed = sp;
+  undoStack = [];
+  syncControls();
+  render();
+}`);
+const badResetApi = new Function('mockElements', 'specialEls', resetStub + badResetScripts + `
+  return { applyScenario, reset, getState: () => state, SCENARIOS };
+`)(mockElements, specialEls);
+
+badResetApi.applyScenario('taylorPrinciple');
+badResetApi.reset();
+const badPostReset = badResetApi.getState();
+const caughtBadReset = (badPostReset.theta !== preset.state.theta);
+check('BAD-fixture: context-aware reset fallback to initialState caught', caughtBadReset);
 
 console.log(`\n${passed} passed, ${failed} failed.`);
 process.exit(failed === 0 ? 0 : 1);

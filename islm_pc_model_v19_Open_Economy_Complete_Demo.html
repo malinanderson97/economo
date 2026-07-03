@@ -327,6 +327,7 @@
       <select id="stage-dropdown" onchange="goToStage(parseInt(this.value))" style="font-size:1em; font-weight:bold;"></select>
       <button onclick="advanceTutorial()" id="btn-advance" class="primary">Next</button>
     <button onclick="reset()">↺ Reset</button>
+    <button onclick="resetToDefault()">↺ Reset to Default</button>
     <button class="reverse" id="reverse-btn" onclick="reverseStep()" disabled>← Reverse</button>
     <button onclick="stepPeriod()">→ Step one period</button>
     <button class="primary" onclick="jumpLongRun()">⟹ Run to rebalance</button>
@@ -665,6 +666,7 @@ const initialState = {
 
 let state = clone(initialState);
 let undoStack = [];
+let activeScenarioId = null;
 
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
@@ -2183,6 +2185,7 @@ renderTutorial = function() {
   setLocked('#oil-shock-btn', pcOn);
   setLocked('#shock-indicator', pcOn);
   setLocked('#speed-wrap', pcOn);
+  setLocked('#sec-presets', pcOn);
 
   setLocked('.drill-trigger[data-block="ISLM"]', islmOn);
   setLocked('.control:has(#ctl-phi), #ctl-phi, #val-phi', pcOn);
@@ -2199,11 +2202,23 @@ function reverseStep() {
 
 function reset() {
   const sp = parseFloat(document.getElementById('speed').value);
-  state = clone(initialState);
+  if (activeScenarioId) {
+    const preset = SCENARIOS.find(s => s.id === activeScenarioId);
+    state = preset ? Object.assign(clone(initialState), clone(preset.state)) : clone(initialState);
+  } else {
+    state = clone(initialState);
+  }
   state.speed = sp;
   undoStack = [];
   syncControls();
   render();
+}
+
+function resetToDefault() {
+  activeScenarioId = null;
+  reset();
+  const sel = document.getElementById('scenario-select');
+  if (sel) sel.value = '';
 }
 
 function applyOilShock() {
@@ -2289,6 +2304,7 @@ function applySelectedScenario() {
 function applyScenario(id) {
   const preset = SCENARIOS.find(s => s.id === id);
   if (!preset) return;
+  activeScenarioId = id;
   state = Object.assign(clone(initialState), clone(preset.state));
   undoStack = [];
   syncControls();
