@@ -2097,8 +2097,11 @@ renderTutorial = function() {
   const pcOn = isUnlocked('PC');
   setLocked('.control[data-block="PC"]', pcOn);
   setLocked('#chart-box-pc, .curve-pc, .label-pc', pcOn);
-  setLocked('#sec-dynamics .side-body', pcOn);
-  setLocked('#sec-shocks .side-body', pcOn);
+  setLocked('#taylor-toggle', islmOn);
+  setLocked('#deanchor-toggle', pcOn);
+  setLocked('#oil-shock-btn', pcOn);
+  setLocked('#shock-indicator', pcOn);
+  setLocked('#speed-wrap', pcOn);
 
   setLocked('.drill-trigger[data-block="ISLM"]', islmOn);
   setLocked('.drill-trigger[data-block="UIP"]', uipActive);

@@ -150,6 +150,13 @@ const stub = `
     getElementById: () => fakeEl(),
     querySelector: () => fakeEl(),
     querySelectorAll: (sel) => {
+      if (sel === '.control[data-block]') {
+        return [...mockElements.GOODS, ...mockElements.ISLM, ...mockElements.UIP, ...mockElements.PC];
+      }
+      if (sel.startsWith('#')) {
+        const id = sel.substring(1).split(',')[0].trim();
+        if (typeof specialEls !== 'undefined' && specialEls[id]) return [specialEls[id]];
+      }
       if (sel.includes('GOODS') || sel.includes('curve-is')) return mockElements.GOODS;
       if (sel.includes('ISLM') || sel.includes('curve-mp')) return mockElements.ISLM;
       if (sel.includes('UIP')) return mockElements.UIP;
@@ -177,6 +184,10 @@ const stub = `
         remove(c) { this.classes.delete(c); },
         contains(c) { return this.classes.has(c); }
       };
+      el.getAttribute = function(attr) {
+        if (attr === 'data-block') return k;
+        return this.attrs && this.attrs[attr] ? this.attrs[attr] : null;
+      };
     });
   }
 `;
@@ -189,9 +200,19 @@ try {
 }
 
 // Wait, the spec says: "Assert there is no block that is unlocked-but-greyed or locked-but-lit."
-// Let's test the \`renderTutorial\` directly using the DOM stub.
+// Let's test the `renderTutorial` directly using the DOM stub.
 // Inject special mock elements for chips
 const specialEls = {
+  'left-panel': fakeEl(),
+  'body-graph-ISLM': fakeEl(),
+  'body-graph-UIP': fakeEl(),
+  'body-graph-PC': fakeEl(),
+  'taylor-toggle': fakeEl(),
+  'deanchor-toggle': fakeEl(),
+  'oil-shock-btn': fakeEl(),
+  'shock-indicator': fakeEl(),
+  'speed-wrap': fakeEl(),
+  'hint-dynamics': fakeEl(),
   'ismp-chips': fakeEl(),
   'pc-chips': fakeEl(),
   'eq-ismp': fakeEl(),
@@ -240,16 +261,40 @@ testRender.mockElements.UIP[0].classList.remove('locked'); // Force lit
 const caughtForcedLit = !testRender.mockElements.UIP[0].classList.contains('locked'); // It is lit!
 check('BAD-fixture: Block forced lit caught by invariant', caughtForcedLit, 'This would fail visual checks if asserted');
 
-// NEW: Specific PC gating assertions
-const renderSrc = testRender.renderTutorial.toString();
-const pcCodeMatch = renderSrc.match(/isUnlocked\('PC'\);([\s\S]*?)(?:isUnlocked|$)/);
-const pcCode = pcCodeMatch ? pcCodeMatch[1] : renderSrc;
-check('Specific PC gating: #speed covered via #sec-dynamics', pcCode.includes('#sec-dynamics'));
-check('Specific PC gating: #taylor-toggle covered via #sec-dynamics', pcCode.includes('#sec-dynamics'));
-check('Specific PC gating: #deanchor-toggle covered via #sec-dynamics', pcCode.includes('#sec-dynamics'));
-check('Specific PC gating: oil-shock button covered via #sec-shocks', pcCode.includes('#sec-shocks'));
+// NEW: Specific gating assertions for Stage 3a
+testRender.applyBlocks(['ISLM']); // PC locked, ISLM unlocked
+const tayIslm = testRender.specialEls['taylor-toggle'].classList.contains('locked');
+const dePc = testRender.specialEls['deanchor-toggle'].classList.contains('locked');
+const oilPc = testRender.specialEls['oil-shock-btn'].classList.contains('locked');
+const indPc = testRender.specialEls['shock-indicator'].classList.contains('locked');
+
+testRender.applyBlocks(['GOODS', 'ISLM', 'UIP', 'PC']); // All unlocked
+const tayFull = testRender.specialEls['taylor-toggle'].classList.contains('locked');
+const deFull = testRender.specialEls['deanchor-toggle'].classList.contains('locked');
+const oilFull = testRender.specialEls['oil-shock-btn'].classList.contains('locked');
+const indFull = testRender.specialEls['shock-indicator'].classList.contains('locked');
+
+check('INV-6b: Explicit id gating properly greys controls by stage', 
+  !tayIslm && dePc && oilPc && indPc &&
+  !tayFull && !deFull && !oilFull && !indFull
+);
+
+// BAD-fixture for INV-6b
+let badIdGatingCaught = false;
+try {
+  const badScripts6b = scripts.replace("setLocked('#oil-shock-btn', pcOn);", "");
+  const badRender6b = new Function('mockElements', 'specialEls', chipStub + badScripts6b + '\\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\\nreturn { applyBlocks };')(mockElements, testRender.specialEls);
+  badRender6b.applyBlocks(['ISLM']); // PC locked
+  if (!testRender.specialEls['oil-shock-btn'].classList.contains('locked')) {
+    badIdGatingCaught = true;
+  }
+} catch (e) {
+  badIdGatingCaught = true;
+}
+check('BAD-fixture: Ungated #oil-shock-btn caught', badIdGatingCaught);
 
 // NEW: General assertion: no ungated interactive control
+const renderSrc = testRender.renderTutorial.toString();
 function verifyGating(htmlString) {
   let passedGeneral = true;
   let ungatedControl = '';
@@ -1039,15 +1084,47 @@ const hasWageZ = !!testRender.SYMBOL_DEFS['Wage push z'];
 const hasCostZ = !!testRender.SYMBOL_DEFS['Cost-push z'];
 check('INV-1D: SYMBOL_DEFS contains distinct m, Wage push z, and Cost-push z terms', hasM && hasWageZ && hasCostZ);
 // 1E. Sidebar grouping on load
-const htmlSrc = fs.readFileSync(FILE, 'utf8');
-const hasToggle = htmlSrc.includes('id="sidebar-group-toggle"');
-const hasApplyCall = htmlSrc.includes('applyGraphGrouping();');
-const hasISLMSec = htmlSrc.includes("sec-graph-' + b"); // Proxy for dynamic section creation
-check('INV-1E: Graph-grouping is applied on load', !hasToggle && hasApplyCall && hasISLMSec);
+testRender.applyGraphGrouping();
+
+const bodyISLM = testRender.specialEls['body-graph-ISLM'];
+const bodyPC = testRender.specialEls['body-graph-PC'];
+const bodyUIP = testRender.specialEls['body-graph-UIP'];
+
+const islmHasGoods = testRender.mockElements.GOODS.every(el => bodyISLM.children.includes(el));
+const islmHasISLM = testRender.mockElements.ISLM.every(el => bodyISLM.children.includes(el));
+const islmHasTaylor = bodyISLM.children.includes(testRender.specialEls['taylor-toggle']);
+
+const pcHasPC = testRender.mockElements.PC.every(el => bodyPC.children.includes(el));
+const pcHasDeanchor = bodyPC.children.includes(testRender.specialEls['deanchor-toggle']);
+const pcHasShock = bodyPC.children.includes(testRender.specialEls['oil-shock-btn']);
+const pcHasInd = bodyPC.children.includes(testRender.specialEls['shock-indicator']);
+const pcHasSpeed = bodyPC.children.includes(testRender.specialEls['speed-wrap']);
+
+const uipHasUIP = testRender.mockElements.UIP.every(el => bodyUIP.children.includes(el));
+
+check('INV-1E: Graph-grouping correctly slots elements into section bodies', 
+  islmHasGoods && islmHasISLM && islmHasTaylor &&
+  pcHasPC && pcHasDeanchor && pcHasShock && pcHasInd && pcHasSpeed &&
+  uipHasUIP
+);
 
 // BAD-fixture for INV-1E
-const badHasToggle = true; // Simulating if the toggle was still present
-check('BAD-fixture: Sidebar toggle still present caught', !( !badHasToggle && hasApplyCall && hasISLMSec ));
+let badGroupingCaught = false;
+try {
+  const badScripts = scripts.replace("if (b === 'GOODS') b = 'ISLM';", "if (false) b = 'ISLM';");
+  const badRender = new Function('mockElements', 'specialEls', chipStub + badScripts + '\\nreturn { applyGraphGrouping };')(mockElements, testRender.specialEls);
+  
+  bodyISLM.children = []; // clear previous children
+  badRender.applyGraphGrouping();
+  
+  const badIslmHasGoods = testRender.mockElements.GOODS.every(el => bodyISLM.children.includes(el));
+  if (!badIslmHasGoods) {
+    badGroupingCaught = true;
+  }
+} catch (e) {
+  badGroupingCaught = true;
+}
+check('BAD-fixture: Broken GOODS remap caught', badGroupingCaught);
 
 // INV-S3: Yₙ line and label in IS-LM chart gated by PC unlock
 testRender.applyBlocks(['ISLM']);
