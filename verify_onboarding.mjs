@@ -230,8 +230,6 @@ const specialEls = {
   'uip': fakeEl(),
   'pc': fakeEl(),
   'ts': fakeEl(),
-  'svg-drill-is': fakeEl(),
-  'svg-drill-mp': fakeEl(),
   'svg-drill-pc-a': fakeEl(),
   'svg-drill-pc-b': fakeEl(),
   'svg-drill-pc-c': fakeEl(),
@@ -243,10 +241,7 @@ const specialEls = {
   'drill-eq-wsps': fakeEl(),
   'drill-eq-okun': fakeEl(),
   'drill-eq-phillips': fakeEl(),
-  'drill-is': fakeEl(),
-  'drill-mp': fakeEl(),
-  'drill-pc': fakeEl(),
-  'drill-uip': fakeEl()
+  'drill-pc': fakeEl()
 };
 
 // Map each control to a parent wrapper node
@@ -267,7 +262,7 @@ pcKeys.forEach(k => {
 });
 
 
-const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\nreturn { tutorialState, goToStage, applyBlocks, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillIS, drawDrillMP, drawDrillPCChain, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window: { ...window }, SCENARIOS, applyGraphGrouping };')(mockElements, specialEls);
+const testRender = new Function('mockElements', 'specialEls', chipStub + scripts + '\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\nreturn { tutorialState, goToStage, applyBlocks, mockElements, renderTutorial, drawISChips, drawPCChips, drawEquations, solve, state, getState: () => state, specialEls, TERM_BLOCK, drawDrillPCChain, computeYn, xScale, yScale, L_LABOR, ALPHA_WS, setState: (o) => Object.assign(state, o), render, redrawOpenDrills, drawISMP, drawUIP, drawPC, drawTimeSeries, wrapSymbols, wrapStaticSymbols, findSymbols, SYMBOL_DEFS, CURVE_DEFS, svgTitle, document, window: { ...window }, SCENARIOS, applyGraphGrouping };')(mockElements, specialEls);
 
 testRender.goToStage(0);
 // Expected: GOODS, ISLM not locked. UIP, PC locked.
@@ -394,7 +389,7 @@ const actualRes = verifyGating(html);
 check('General: no ungated interactive control', actualRes.passed, `Found ungated: ${actualRes.badControl}`);
 
 const s3TriggerMatch = [...html.matchAll(/class="drill-trigger"[^>]*data-block="([^"]+)"/g)];
-check('INV-S3-C: Drill-down triggers carry data-block', s3TriggerMatch.length >= 3 && s3TriggerMatch.every(m => m[1] === 'ISLM' || m[1] === 'UIP' || m[1] === 'PC'));
+check('INV-S3-C: Drill-down triggers carry data-block', s3TriggerMatch.length >= 1 && s3TriggerMatch.every(m => m[1] === 'ISLM' || m[1] === 'UIP' || m[1] === 'PC'));
 
 // NEW: UIP Orientation Assertions
 const uipLabelMatch = html.match(/xLabel:\s*'exchange rate E',\s*yLabel:\s*'interest rate i'/);
@@ -663,8 +658,6 @@ check('INV-9 BAD-fixture: Non-EQ_COL literal caught', caughtInv9);
 
 // Inv #10 layout + reference. Static check
 const staticChecks = [
-  { id: 'drill-is', ref: '19.1' },
-  { id: 'drill-uip', ref: '19.5' },
   { id: 'drill-pc-wsps', ref: '8.4' },
   { id: 'drill-pc-okun', ref: 'p.179' },
   { id: 'drill-pc-phillips', ref: '9.3' }
@@ -694,8 +687,6 @@ check('BAD-fixture: Mislabelled drill reference caught', caughtInv10);
 // INV-S3-RO: read-only drill
 const sBefore = JSON.stringify(testRender.getState());
 const eqBefore = JSON.stringify(testRender.solve(testRender.getState()));
-testRender.drawDrillIS();
-testRender.drawDrillMP();
 testRender.drawDrillPCChain();
 const sAfter = JSON.stringify(testRender.getState());
 const eqAfter = JSON.stringify(testRender.solve(testRender.getState()));
@@ -828,34 +819,31 @@ check('INV-3b-1: Live redraw updates open PC graph',
 
 // BAD-fixture for INV-3b-1: A redrawOpenDrills that skips PC would leave drawnYnCx_post == drawnYnCx_pre
 testRender.specialEls['svg-drill-pc-c'].children = []; // clear
-const badRedraw1 = function() { testRender.drawDrillIS(); testRender.drawDrillMP(); }; // skip PC
+const badRedraw1 = function() {}; // skip PC
 testRender.setState({ z_struct: 0.30 });
 badRedraw1(); // simulate bad render()
 const drawnYnCx_bad = findX1(testRender.specialEls['svg-drill-pc-c'], 'curve-natural');
 check('BAD-fixture: Live redraw skipping PC caught', drawnYnCx_bad === null);
 
 // INV-3b-2 closed not drawn
-testRender.specialEls['drill-is'].classList.remove('open');
-testRender.specialEls['svg-drill-is'].children = []; // clear
+testRender.specialEls['drill-pc'].classList.remove('open');
+testRender.specialEls['svg-drill-pc-a'].children = []; // clear
 testRender.setState({ G: 25 });
-testRender.render(); // should NOT draw IS
-check('INV-3b-2: Closed drills are not drawn', testRender.specialEls['svg-drill-is'].children.length === 0);
+testRender.render(); // should NOT draw PC
+check('INV-3b-2: Closed drills are not drawn', testRender.specialEls['svg-drill-pc-a'].children.length === 0);
 
 // BAD-fixture for INV-3b-2: Redraw regardless of .open
-testRender.specialEls['drill-is'].classList.remove('open');
-testRender.specialEls['svg-drill-is'].children = []; // clear
-const badRedraw2 = function() { testRender.drawDrillIS(); }; // draw regardless
+testRender.specialEls['drill-pc'].classList.remove('open');
+testRender.specialEls['svg-drill-pc-a'].children = []; // clear
+const badRedraw2 = function() { testRender.drawDrillPCChain(); }; // draw regardless
 badRedraw2(); // simulate bad render()
-check('BAD-fixture: Redrawing closed drill caught', testRender.specialEls['svg-drill-is'].children.length > 0);
+check('BAD-fixture: Redrawing closed drill caught', testRender.specialEls['svg-drill-pc-a'].children.length > 0);
 
 
 
 // INV-3b-RO read-only via render
 // open all
-testRender.specialEls['drill-is'].classList.add('open');
-testRender.specialEls['drill-mp'].classList.add('open');
 testRender.specialEls['drill-pc'].classList.add('open');
-if(testRender.specialEls['drill-uip']) testRender.specialEls['drill-uip'].classList.add('open');
 
 const sBefore3b = JSON.stringify(testRender.getState());
 const eqBefore3b = JSON.stringify(testRender.solve(testRender.getState()));
@@ -1078,7 +1066,7 @@ badWrapStaticApiA3.wrapStaticSymbols();
 check('BAD-fixture: wrapping narrative caught', badWrapStaticApiA3.SCENARIOS[0].narrative.includes('class="sym"'));
 
 let testLegend = testRender.document.createElement('div');
-testLegend.innerHTML = 'IS: Y = f(G,T,r,ε) <span class="drill-trigger" data-block="ISLM" onclick="toggleDrill(\'drill-is\')">derivation ▸</span>';
+testLegend.innerHTML = 'π = πᵉ + α(Y−Yₙ)/Yₙ + z <span class="drill-trigger" data-block="PC" onclick="toggleDrill(\'drill-pc\')">derivation ▸</span>';
 const oldQSA = testRender.document.querySelectorAll;
 testRender.document.querySelectorAll = () => [testLegend];
 testRender.wrapStaticSymbols();
@@ -1088,7 +1076,7 @@ testRender.document.querySelectorAll = oldQSA;
 const badWrapStaticCodeA4 = scripts.replace("els[i].innerHTML = wrapSymbols(els[i].innerHTML);", "els[i].innerHTML = wrapSymbols(els[i].textContent);");
 const badWrapStaticApiA4 = new Function('mockElements', 'specialEls', chipStub + badWrapStaticCodeA4 + '\nreturn { document, wrapStaticSymbols };')(mockElements, specialEls);
 let badTestLegend = badWrapStaticApiA4.document.createElement('div');
-badTestLegend.innerHTML = 'IS: Y = f(G,T,r,ε) <span class="drill-trigger" data-block="ISLM" onclick="toggleDrill(\'drill-is\')">derivation ▸</span>';
+badTestLegend.innerHTML = 'π = πᵉ + α(Y−Yₙ)/Yₙ + z <span class="drill-trigger" data-block="PC" onclick="toggleDrill(\'drill-pc\')">derivation ▸</span>';
 badWrapStaticApiA4.document.querySelectorAll = () => [badTestLegend];
 badWrapStaticApiA4.wrapStaticSymbols();
 check('BAD-fixture: clobbering legend markup caught', !badTestLegend.innerHTML.includes('onclick="toggleDrill('));
@@ -1104,7 +1092,7 @@ check('INV-1A: All three PC drill graphs are drawn simultaneously', svgAHasChild
 
 // 1B. Stroke width 1.4 assertion
 let allCurvesThin = true;
-['svg-drill-pc-a', 'svg-drill-pc-b', 'svg-drill-pc-c', 'svg-drill-is', 'svg-drill-mp'].forEach(id => {
+['svg-drill-pc-a', 'svg-drill-pc-b', 'svg-drill-pc-c'].forEach(id => {
   if (testRender.specialEls[id]) {
     testRender.specialEls[id].children.forEach(c => {
       if (c.attrs && c.attrs.class && c.attrs.class.includes('curve') && !c.attrs.class.includes('curve-label') && !c.attrs.class.includes('curve-natural')) {
