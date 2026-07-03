@@ -286,7 +286,7 @@ const caughtForcedLit = !testRender.mockElements.UIP[0].classList.contains('lock
 check('BAD-fixture: Block forced lit caught by invariant', caughtForcedLit, 'This would fail visual checks if asserted');
 
 // NEW: Specific gating assertions for Stage 3a
-testRender.applyBlocks(['ISLM']); // PC locked, ISLM unlocked
+testRender.goToStage(0); // Stage 0: ISLM (PC locked)
 const tayIslm = testRender.specialEls['taylor-toggle'].classList.contains('locked');
 const dePc = testRender.specialEls['deanchor-toggle'].classList.contains('locked');
 const oilPc = testRender.specialEls['oil-shock-btn'].classList.contains('locked');
@@ -294,7 +294,10 @@ const indPc = testRender.specialEls['shock-indicator'].classList.contains('locke
 const phiPc = testRender.specialEls['ctl-phi'].classList.contains('locked');
 const presetsPc = testRender.specialEls['sec-presets'].classList.contains('locked');
 
-testRender.applyBlocks(['GOODS', 'ISLM', 'UIP', 'PC']); // All unlocked
+testRender.goToStage(2); // Stage 2: ISLM-PC (Closed PC, openOn is false)
+const presetsClosedPc = testRender.specialEls['sec-presets'].classList.contains('locked');
+
+testRender.goToStage(3); // Stage 3: Full (PC open, openOn is true)
 const tayFull = testRender.specialEls['taylor-toggle'].classList.contains('locked');
 const deFull = testRender.specialEls['deanchor-toggle'].classList.contains('locked');
 const oilFull = testRender.specialEls['oil-shock-btn'].classList.contains('locked');
@@ -303,7 +306,7 @@ const phiFull = testRender.specialEls['ctl-phi'].classList.contains('locked');
 const presetsFull = testRender.specialEls['sec-presets'].classList.contains('locked');
 
 check('INV-6b: Explicit id gating properly greys controls by stage', 
-  tayIslm && dePc && oilPc && indPc && phiPc && presetsPc &&
+  tayIslm && dePc && oilPc && indPc && phiPc && presetsPc && presetsClosedPc &&
   !tayFull && !deFull && !oilFull && !indFull && !phiFull && !presetsFull
 );
 
@@ -311,8 +314,8 @@ check('INV-6b: Explicit id gating properly greys controls by stage',
 let badIdGatingCaught = false;
 try {
   const badScripts6b = scripts.replace("setLocked('#oil-shock-btn', pcOn);", "");
-  const badRender6b = new Function('mockElements', 'specialEls', chipStub + badScripts6b + '\\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\\nreturn { applyBlocks };')(mockElements, testRender.specialEls);
-  badRender6b.applyBlocks(['ISLM']); // PC locked
+  const badRender6b = new Function('mockElements', 'specialEls', chipStub + badScripts6b + '\\nreturn { goToStage };')(mockElements, testRender.specialEls);
+  badRender6b.goToStage(0); // PC locked
   if (!testRender.specialEls['oil-shock-btn'].classList.contains('locked')) {
     badIdGatingCaught = true;
   }
@@ -323,9 +326,9 @@ check('BAD-fixture: Ungated #oil-shock-btn caught', badIdGatingCaught);
 
 let badPresetGatingCaught = false;
 try {
-  const badScriptsPreset = scripts.replace("setLocked('#sec-presets', pcOn);", "");
-  const badRenderPreset = new Function('mockElements', 'specialEls', chipStub + badScriptsPreset + '\\nfunction applyBlocks(b) { tutorialState.unlocked = new Set(b); renderTutorial(); }\\nreturn { applyBlocks };')(mockElements, testRender.specialEls);
-  badRenderPreset.applyBlocks(['ISLM']); // PC locked
+  const badScriptsPreset = scripts.replace("setLocked('#sec-presets', pcOn && uipActive);", "setLocked('#sec-presets', pcOn);");
+  const badRenderPreset = new Function('mockElements', 'specialEls', chipStub + badScriptsPreset + '\\nreturn { goToStage };')(mockElements, testRender.specialEls);
+  badRenderPreset.goToStage(2); // PC locked but Closed
   if (!testRender.specialEls['sec-presets'].classList.contains('locked')) {
     badPresetGatingCaught = true;
   }

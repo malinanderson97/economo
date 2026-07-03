@@ -1,93 +1,34 @@
-# Spec: Context-aware Reset + "Reset to Default" dropdown option
+# Spec: Context-aware Reset (return to active scenario's start; add "Reset to Default")
 
-Two small, in-scope UI changes to the committed engine `islm_pc_model_v19_Open_Economy_Complete_Demo.html`. SCENARIO/UI-layer only — NO engine changes (`solve`/`step`/`computeYn`/sliders untouched). These restore two of the clean keepers from the abandoned country branch, re-expressed in scenario terms (there are no country presets; "active scenario" = whatever SCENARIOS entry was last loaded).
+## 1. Goal (one sentence)
+`reset()` must return the model to the START of the currently-active scenario (not bare `initialState`), and a separate "Reset to Default" action must return to the no-scenario default — so a user experimenting inside a scenario can restart *that* scenario, while still being able to clear back to the base model.
 
-**NOT in this spec:** the old "settled-warning period>0 patch" is deliberately EXCLUDED. That patched a bug caused by the reverted c0-forced-to-100 mechanism, which no longer exists. Re-adding it would suppress a possibly-correct period-0 warning. Do not add it.
+## 2. Which model / functions
+`islm_pc_model_v19_Open_Economy_Complete_Demo.html` only. Touch points: `reset()` (~2148), `applyScenario(id)` (~2237), a new `activeScenarioId` state var, and the reset UI control (the existing Reset button + a new "Reset to Default" affordance — likely a small dropdown or secondary button next to Reset). NO engine math; `solve`/`step`/`initialState` untouched.
 
-## Behaviour decided
-- **↺ Reset** = return to the **active scenario's starting state** (re-apply the scenario at period 0), preserving the user's `speed`. If no scenario is active, Reset wipes to generic `initialState` (current behaviour).
-- **"-- Reset to Default Settings --"** dropdown option = wipe to generic `initialState`, clear the active-scenario tracker.
+## 3. Background — how scenarios work (so reset is faithful)
+`applyScenario(id)` sets `state = Object.assign(clone(initialState), clone(preset.state))`. So a scenario's START state is fully reconstructable as `initialState + preset.state` — no snapshot needed. The current `reset()` wipes to `clone(initialState)` and preserves the live `speed` slider value (`state.speed = sp`). That speed-preservation is deliberate and MUST be kept.
 
-## Current code (verbatim, for anchored edits)
+## 4. What must NOT change
+- `initialState`, `solve`, `step`, engine constants — untouched.
+- The speed-preservation behaviour in reset (live `speed` value survives a reset) — kept for BOTH reset paths.
+- `undoStack` still cleared on reset (both paths).
+- Scenario application behaviour (`applyScenario`) otherwise unchanged.
+- Verifier baselines: verify_v19 55/0, verify_onboarding 98/0 (a new check may raise onboarding).
 
-`reset()` — already preserves speed; currently always wipes to initialState:
+## 5. The edits
+
+### 5a. Track the active scenario
+Add a module-level `let activeScenarioId = null;` (null = default/no scenario). In `applyScenario(id)`, set `activeScenarioId = id;` after the preset is found. When the user clears to default (5c), set `activeScenarioId = null`.
+
+### 5b. Make reset() context-aware
+Rewrite `reset()` so it rebuilds the active scenario's start (or default if none), preserving speed and clearing undo:
 ```
 function reset() {
   const sp = parseFloat(document.getElementById('speed').value);
-  state = clone(initialState);
-  state.speed = sp;
-  undoStack = [];
-  syncControls();
-  render();
-}
-```
-
-`applyScenario(id)`:
-```
-function applyScenario(id) {
-  const preset = SCENARIOS.find(s => s.id === id);
-  if (!preset) return;
-  state = Object.assign(clone(initialState), clone(preset.state));
-  undoStack = [];
-  syncControls();
-  render();
-}
-```
-
-`previewScenario(id)`:
-```
-function previewScenario(id) {
-  const note = document.getElementById('scenario-narrative');
-  const btn = document.getElementById('scenario-load-btn');
-  if (!id) {
-    note.textContent = 'Select a scenario to see its description.';
-    btn.disabled = true;
-    return;
-  }
-  const preset = SCENARIOS.find(s => s.id === id);
-  if (preset) {
-    note.textContent = preset.narrative;
-    btn.disabled = false;
-  }
-}
-```
-The scenario `<select id="scenario-select">` is EMPTY in HTML and populated by JS — find where options are appended (grep for `scenario-select` and for where SCENARIOS is iterated to build `<option>`s). The new `default` option must be added there as the FIRST option.
-
-## Changes
-
-### 1. Add the global tracker
-Near the other top-level state globals (where `undoStack` / `state` are declared), add:
-```
-let currentScenarioId = null;
-```
-Grep-prove it doesn't already exist (`grep -o "currentScenarioId" <file> | wc -l` → expect 0 before edit).
-
-### 2. `applyScenario` records the active scenario
-After the `state = Object.assign(...)` line, add `currentScenarioId = id;`:
-```
-function applyScenario(id) {
-  const preset = SCENARIOS.find(s => s.id === id);
-  if (!preset) return;
-  state = Object.assign(clone(initialState), clone(preset.state));
-  currentScenarioId = id;
-  undoStack = [];
-  syncControls();
-  render();
-}
-```
-
-### 3. `reset()` becomes context-aware
-Preserve speed (already done), but branch on `currentScenarioId`:
-```
-function reset() {
-  const sp = parseFloat(document.getElementById('speed').value);
-  if (currentScenarioId) {
-    const preset = SCENARIOS.find(s => s.id === currentScenarioId);
-    if (preset) {
-      state = Object.assign(clone(initialState), clone(preset.state));
-    } else {
-      state = clone(initialState);
-    }
+  if (activeScenarioId) {
+    const preset = SCENARIOS.find(s => s.id === activeScenarioId);
+    state = preset ? Object.assign(clone(initialState), clone(preset.state)) : clone(initialState);
   } else {
     state = clone(initialState);
   }
@@ -97,47 +38,43 @@ function reset() {
   render();
 }
 ```
+(Confirm `clone` and `SCENARIOS` are in scope at `reset()` — they are used nearby. Report if not.)
 
-### 4. The "default" dropdown option + its handling
-- When building the scenario `<option>`s, prepend one with `value="default"` and label `-- Reset to Default Settings --`.
-- `previewScenario('default')`: enable the load button and set a descriptive narrative, e.g. `note.textContent = 'Wipe all settings back to the model defaults (generic baseline).';`. So previewScenario needs a branch handling `id === 'default'` BEFORE the `SCENARIOS.find` (since 'default' is not in SCENARIOS).
-- `applyScenario('default')`: intercept at the top — wipe to baseline, clear the tracker:
+### 5c. Add "Reset to Default"
+Add a `resetToDefault()` that clears the active scenario and resets to base:
 ```
-function applyScenario(id) {
-  if (id === 'default') {
-    const sp = parseFloat(document.getElementById('speed').value);
-    state = clone(initialState);
-    state.speed = sp;
-    currentScenarioId = null;
-    undoStack = [];
-    syncControls();
-    render();
-    return;
-  }
-  const preset = SCENARIOS.find(s => s.id === id);
-  if (!preset) return;
-  state = Object.assign(clone(initialState), clone(preset.state));
-  currentScenarioId = id;
-  undoStack = [];
-  syncControls();
-  render();
+function resetToDefault() {
+  activeScenarioId = null;
+  reset();               // now returns to initialState since activeScenarioId is null
+  // optionally clear the scenario-select dropdown to its blank/placeholder option
+  const sel = document.getElementById('scenario-select');
+  if (sel) sel.value = '';
 }
 ```
-(Decide whether 'default' should also preserve speed — yes, keep it consistent with reset, as written above.)
+UI: add a "Reset to Default" affordance next to the existing Reset button. Simplest faithful option: a small secondary button or a dropdown-caret beside Reset offering "Reset to Default". Match existing button styling (`.shock-btn`/toolbar button classes — grep the Reset button's current markup and mirror it). The main Reset button keeps calling `reset()`; the new control calls `resetToDefault()`.
+- Report the exact markup added and where.
 
-## Acceptance checks (explicit PASS/FAIL each)
-- [ ] `grep -o "currentScenarioId" <file> | wc -l` → was 0 before, now ≥3 (declaration + set in applyScenario + read in reset + clear in default).
-- [ ] `node verify_v19.mjs` → 52 passed, 0 failed (engine untouched).
-- [ ] `node verify_onboarding.mjs` → 98 passed, 0 failed. **In particular the existing "Reset sets back to IS Model" / "Reset state is IS Model" onboarding assertions must still pass** — context-aware reset must NOT break reset-with-no-scenario-active (the no-scenario branch must still wipe to initialState exactly as before). If those assertions fail, the branch logic is wrong — fix it, do not weaken the assertion.
-- [ ] HS-1 headless safety check passes.
-- [ ] `git --no-pager diff` pasted in full; changes limited to: the global decl, applyScenario, reset, previewScenario, and the option-building site. Nothing else.
-- [ ] Browser check (Malin): load UK challenge → drag some sliders → ↺ Reset → confirm it returns to the UK *starting* state (B≈100, rate 3.75%), not the generic baseline. Then pick "-- Reset to Default Settings --" → confirm it wipes to generic. Then with nothing loaded, ↺ Reset → confirm still wipes to baseline.
+### 5d. Reset button label (optional polish)
+If trivial, make the main Reset button's tooltip/label indicate context ("Reset scenario") when a scenario is active — but do NOT over-engineer; the core requirement is the two behaviours, not dynamic relabelling. Skip if it complicates the diff.
 
-## Forbidden
-- No engine changes. No settled-warning period>0 patch. No new verifiers.
-- No git commit/add/restore. Malin commits. No scratch files. No reformatting.
-- No weakening the existing reset/onboarding assertions — if context-aware reset trips them, the logic is wrong, fix the logic.
-- Run every check, print PASS/FAIL. STOP and report on dirty tree, verifier count change, or a missing anchor.
+## 6. Invariants
+Add a headless check to verify_onboarding.mjs (state behaviour, no DOM needed beyond the stub):
+- After `applyScenario(<some id>)` then mutating a param then `reset()`: `state` equals `initialState + preset.state` (+ preserved speed) — i.e. reset returns to that scenario's start, not initialState. Assert a scenario-specific field (one that differs from initialState) is restored to the preset value, and a user-mutated field is reverted.
+- After `resetToDefault()`: `activeScenarioId === null` and `state` equals `initialState` (+ preserved speed) — assert a scenario-specific field is back to the initialState value.
+- BAD-fixture (mutating): revert `reset()` to always use `clone(initialState)` in a rebuilt source and confirm the scenario-restore assertion goes red.
 
-## Sequencing note
-This can be done in the SAME Antigravity session as the three-challenges add, or after. If same session, do the challenges FIRST (pure data append, lowest risk), verify green, THEN this (touches functions). Keep them as two separate diffs/reviews even if one session, so each is independently checkable.
+Browser-check: load a scenario, drag some sliders, hit Reset → returns to that scenario's start (not the base model). Hit "Reset to Default" → returns to base model and the scenario dropdown clears. Speed slider value is preserved across both. Undo history cleared.
+
+## 7. Done criteria
+- [ ] verify_v19 55/0; verify_onboarding green (state new total) with the scenario-reset check + mutating BAD-fixture.
+- [ ] mutation_check passes.
+- [ ] No `DOM Stub Run Failed`/error lines anywhere in verifier output (full output pasted, top to bottom).
+- [ ] Reset returns to active scenario start; Reset-to-Default returns to base + clears dropdown; speed preserved both paths; undo cleared.
+- [ ] Report exact reset UI markup added and its location.
+- [ ] `git --no-pager diff` pasted; engine HTML + verify_onboarding only; no engine-math lines.
+- [ ] Browser-check confirmed by human.
+- [ ] Committed by human: suggested `ui: context-aware Reset (returns to active scenario start) + Reset to Default; verifier check`.
+
+## 8. Notes
+- Scenario start is reconstructed as `initialState + preset.state`, not snapshotted — matches how `applyScenario` builds it, so it stays correct if presets change.
+- Pure UX/state change; no engine or fidelity impact; nothing for Frank.

@@ -2185,7 +2185,7 @@ renderTutorial = function() {
   setLocked('#oil-shock-btn', pcOn);
   setLocked('#shock-indicator', pcOn);
   setLocked('#speed-wrap', pcOn);
-  setLocked('#sec-presets', pcOn);
+  setLocked('#sec-presets', pcOn && uipActive);
 
   setLocked('.drill-trigger[data-block="ISLM"]', islmOn);
   setLocked('.control:has(#ctl-phi), #ctl-phi, #val-phi', pcOn);
