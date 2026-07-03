@@ -720,7 +720,7 @@ function step(s) {
   const gap = (eq.Y - Y_n) / Y_n;
 
   let raw_i = s.i_target;
-  if (s.taylor_on) {
+  if (s.taylor_on && tutorialState.unlocked.has('PC')) {
     const neutral_r = isRateForOutput(Y_n, s.G, s.T, eq.eps, PI_TARGET, s.c1, s.m1, s.Ystar) - PI_TARGET;
     const neutral_i = neutral_r + PI_TARGET;
     const taylor_target = neutral_i + s.phi * (eq.pi - PI_TARGET) + PSI * gap;
@@ -2097,13 +2097,14 @@ renderTutorial = function() {
   const pcOn = isUnlocked('PC');
   setLocked('.control[data-block="PC"]', pcOn);
   setLocked('#chart-box-pc, .curve-pc, .label-pc', pcOn);
-  setLocked('#taylor-toggle', islmOn);
+  setLocked('#taylor-toggle', pcOn);
   setLocked('#deanchor-toggle', pcOn);
   setLocked('#oil-shock-btn', pcOn);
   setLocked('#shock-indicator', pcOn);
   setLocked('#speed-wrap', pcOn);
 
   setLocked('.drill-trigger[data-block="ISLM"]', islmOn);
+  setLocked('.control:has(#ctl-phi), #ctl-phi, #val-phi', pcOn);
   setLocked('.drill-trigger[data-block="UIP"]', uipActive);
   setLocked('.drill-trigger[data-block="PC"]', pcOn);
 };

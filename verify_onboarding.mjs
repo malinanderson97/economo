@@ -157,6 +157,9 @@ const stub = `
         const id = sel.substring(1).split(',')[0].trim();
         if (typeof specialEls !== 'undefined' && specialEls[id]) return [specialEls[id]];
       }
+      if (sel.includes('ctl-phi') && typeof specialEls !== 'undefined') {
+        return [specialEls['ctl-phi']];
+      }
       if (sel.includes('GOODS') || sel.includes('curve-is')) return mockElements.GOODS;
       if (sel.includes('ISLM') || sel.includes('curve-mp')) return mockElements.ISLM;
       if (sel.includes('UIP')) return mockElements.UIP;
@@ -213,6 +216,7 @@ const specialEls = {
   'shock-indicator': fakeEl(),
   'speed-wrap': fakeEl(),
   'hint-dynamics': fakeEl(),
+  'ctl-phi': fakeEl(),
   'ismp-chips': fakeEl(),
   'pc-chips': fakeEl(),
   'eq-ismp': fakeEl(),
@@ -267,16 +271,18 @@ const tayIslm = testRender.specialEls['taylor-toggle'].classList.contains('locke
 const dePc = testRender.specialEls['deanchor-toggle'].classList.contains('locked');
 const oilPc = testRender.specialEls['oil-shock-btn'].classList.contains('locked');
 const indPc = testRender.specialEls['shock-indicator'].classList.contains('locked');
+const phiPc = testRender.specialEls['ctl-phi'].classList.contains('locked');
 
 testRender.applyBlocks(['GOODS', 'ISLM', 'UIP', 'PC']); // All unlocked
 const tayFull = testRender.specialEls['taylor-toggle'].classList.contains('locked');
 const deFull = testRender.specialEls['deanchor-toggle'].classList.contains('locked');
 const oilFull = testRender.specialEls['oil-shock-btn'].classList.contains('locked');
 const indFull = testRender.specialEls['shock-indicator'].classList.contains('locked');
+const phiFull = testRender.specialEls['ctl-phi'].classList.contains('locked');
 
 check('INV-6b: Explicit id gating properly greys controls by stage', 
-  !tayIslm && dePc && oilPc && indPc &&
-  !tayFull && !deFull && !oilFull && !indFull
+  tayIslm && dePc && oilPc && indPc && phiPc &&
+  !tayFull && !deFull && !oilFull && !indFull && !phiFull
 );
 
 // BAD-fixture for INV-6b

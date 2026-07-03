@@ -334,6 +334,41 @@ goToStage(3);
   goToStage(3);
 }
 
+// ---- 16b. Taylor PC-gating ---------------------------------------------------
+{
+  goToStage(1); // PC NOT in the set
+  const sA = clone(initialState); sA.taylor_on = false; sA.pi_e = 0.04;
+  const sB = clone(initialState); sB.taylor_on = true; sB.pi_e = 0.04; // large gap created if Taylor on
+  const iA = step(sA).i, iB = step(sB).i;
+  
+  check('16b PC-locked: i invariant to taylor_on', approx(iA, iB, 1e-9),
+        `i(off)=${iA.toFixed(4)} i(on)=${iB.toFixed(4)}`);
+
+  goToStage(3); // PC UNLOCKED
+  const iC = step(sB).i;
+  check('16b PC-unlocked: Taylor changes i', !approx(iA, iC, 1e-9),
+        `i(off)=${iA.toFixed(4)} i(on, PC)=${iC.toFixed(4)}`);
+
+  // BAD-fixture: Mutate source to drop PC gate on taylor
+  let badTaylorGatingCaught = false;
+  try {
+    const badSrc = scripts.replace("if (s.taylor_on && tutorialState.unlocked.has('PC'))", "if (s.taylor_on)");
+    const badEngine = new Function('mockElements', 'specialEls', stub + badSrc + '\\nreturn { step, goToStage };')(mockElements, specialEls);
+    
+    badEngine.goToStage(1); // PC locked
+    const b_iA = badEngine.step(sA).i;
+    const b_iB = badEngine.step(sB).i;
+    if (!approx(b_iA, b_iB, 1e-9)) {
+      badTaylorGatingCaught = true;
+    }
+  } catch (e) {
+    badTaylorGatingCaught = true;
+  }
+  check('16b BAD-fixture: Ungated taylor_on caught', badTaylorGatingCaught);
+  
+  goToStage(3);
+}
+
 // ---- 17. Closed Multiplier (§5.1) -------------------------------------------
 {
   goToStage(0); // IS Model (closed)
