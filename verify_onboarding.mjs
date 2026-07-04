@@ -241,7 +241,8 @@ const specialEls = {
   'drill-eq-wsps': fakeEl(),
   'drill-eq-okun': fakeEl(),
   'drill-eq-phillips': fakeEl(),
-  'drill-pc': fakeEl()
+  'drill-pc': fakeEl(),
+  'box-eq-ts': fakeEl()
 };
 
 // Map each control to a parent wrapper node
@@ -332,6 +333,40 @@ try {
 }
 check('BAD-fixture: Ungated #sec-presets caught', badPresetGatingCaught);
 
+// INV-6b ext: #box-eq-ts (dynamics-over-time equation toggle) greys ONLY when its
+// panel is empty, i.e. at pure IS-LM (neither UIP nor PC unlocked).
+testRender.goToStage(0); // pure IS-LM: panel empty -> should be locked
+const eqTsLockedStage0 = testRender.specialEls['box-eq-ts'].classList.contains('locked');
+testRender.goToStage(1); // IS-LM-UIP: Eᵉ′ shows -> should NOT be locked
+const eqTsLockedStage1 = testRender.specialEls['box-eq-ts'].classList.contains('locked');
+testRender.goToStage(2); // IS-LM-PC: fisher/P′ show -> should NOT be locked
+const eqTsLockedStage2 = testRender.specialEls['box-eq-ts'].classList.contains('locked');
+testRender.goToStage(3); // Full: both -> should NOT be locked
+const eqTsLockedStage3 = testRender.specialEls['box-eq-ts'].classList.contains('locked');
+
+check('INV-6b ext: #box-eq-ts greyed only at pure IS-LM (empty dynamics panel)',
+  eqTsLockedStage0 && !eqTsLockedStage1 && !eqTsLockedStage2 && !eqTsLockedStage3,
+  `stage0=${eqTsLockedStage0} stage1=${eqTsLockedStage1} stage2=${eqTsLockedStage2} stage3=${eqTsLockedStage3}`
+);
+
+// BAD-fixture: revert to gating on pcOn alone -> should wrongly grey the UIP stage (1)
+let badEqTsGatingCaught = false;
+try {
+  const badScriptsEqTs = scripts.replace(
+    "setLocked('#box-eq-ts', uipActive || pcOn);",
+    "setLocked('#box-eq-ts', pcOn);"
+  );
+  const badRenderEqTs = new Function('mockElements', 'specialEls', chipStub + badScriptsEqTs + '\nreturn { goToStage };')(mockElements, testRender.specialEls);
+  badRenderEqTs.goToStage(1); // UIP stage: pcOn=false, uipActive=true
+  if (testRender.specialEls['box-eq-ts'].classList.contains('locked')) {
+    badEqTsGatingCaught = true; // wrongly greyed, as expected from the BAD (pcOn-only) gate
+  }
+} catch (e) {
+  badEqTsGatingCaught = false; // a construction/runtime error would NOT prove the gating bug
+}
+check('BAD-fixture: #box-eq-ts gated on pcOn alone wrongly greys UIP stage', badEqTsGatingCaught);
+testRender.goToStage(0); // restore baseline stage for subsequent checks
+
 // NEW: General assertion: no ungated interactive control
 const renderSrc = testRender.renderTutorial.toString();
 function verifyGating(htmlString) {
@@ -381,7 +416,11 @@ function verifyGating(htmlString) {
   return { passed: passedGeneral, badControl: ungatedControl };
 }
 
-const badHTML = html + '\n<button onclick="bad()">TRULY UNGATED</button>';
+// Inserted right after <body> (not appended at the end): the "ancestor" check below
+// only looks at the last 5 textually-preceding <div id="..."> matches, not real DOM
+// nesting, so appending at end-of-document risks spuriously matching whatever real
+// gated id happens to sit last in the file (e.g. #box-eq-ts) once that id is gated.
+const badHTML = html.replace('<body>', '<body>\n<button onclick="bad()">TRULY UNGATED</button>');
 const badRes = verifyGating(badHTML);
 check('BAD-fixture: Ungated interactive control caught', !badRes.passed && badRes.badControl.includes('onclick="bad()"'));
 
