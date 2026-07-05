@@ -381,9 +381,9 @@
     cursor: help;
     position: relative;
   }
-  .sym .sym-pop { display: none; }
-  #svg-tooltip { display: none; }
-  .sym-pop {
+  .sym .sym-pop { z-index: 9999;  display: none; }
+  #svg-tooltip { display: none; z-index: 2147483647 !important; }
+  .sym-pop { z-index: 9999; 
     position: fixed;
     width: max-content; max-width: 240px;
     background: var(--navy-900); color: #fff;
@@ -401,7 +401,7 @@
   .cluster-caption { color: var(--ink-4) !important; }
   .gap-divider { border-top-color: var(--rule) !important; }
   .charts { position: relative; }
-  #connector-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: visible; }
+  #connector-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; overflow: visible; }
   .eq-box, .legend-row { position: relative; z-index: 1; }
   .guide-line { stroke: #8a8f98; stroke-width: 1; stroke-dasharray: 3 4; fill: none; }
   .connector-faint { stroke: #8a8f98; stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.35; fill: none; }
@@ -891,8 +891,13 @@ const EQ_REF = {
 };
 
 function findSymbols(text) {
-  if (!text) return [];
-  const sortedTokens = Object.keys(SYMBOL_DEFS).sort((a, b) => b.length - a.length);
+    if (!text) return [];
+    
+    // Explicit manual overrides for edge cases where SVG strings differ from SYMBOL_DEFS keys
+    if (text === 'Eᵉ') return [{ token: 'Eᵉ', def: SYMBOL_DEFS['E\'e'] }];
+    if (text === 'Y\'T' || text === 'Y\'T') return [{ token: 'Yₙ', def: SYMBOL_DEFS['Yₙ'] }];
+    
+    const sortedTokens = Object.keys(SYMBOL_DEFS).sort((a, b) => b.length - a.length);
   let t = text;
   let matches = [];
   for (let j = 0; j < sortedTokens.length; j++) {
@@ -935,7 +940,7 @@ function wrapSymbols(htmlOrText) {
     const def = SYMBOL_DEFS[token];
     if (result.includes('%%SYM' + j + '%%')) {
       const tooltip = def.meaning + '; ' + def.ref + '; ' + def.role;
-      result = result.split('%%SYM' + j + '%%').join('<span class="sym" data-sym="' + token + '" data-tooltip="' + tooltip + '"><span class="sym-pop" data-tooltip="' + tooltip + '"></span>' + token + '</span>');
+      result = result.split('%%SYM' + j + '%%').join('<span class="sym" data-sym="' + token + '" data-tooltip="' + tooltip + '">' + token + '</span>');
     }
   }
   return result;
@@ -1900,6 +1905,20 @@ function toggleEq(boxId) {
     if (box.classList.contains('open') && typeof drawEquations === 'function' && typeof solve === 'function') {
       drawEquations(solve(state));
     }
+    
+    // Smoothly animate the connector lines as the box expands/collapses
+    if (typeof drawConnectors === 'function') {
+      let start = performance.now();
+      function anim(time) {
+        if (time - start < 450) {
+          drawConnectors();
+          requestAnimationFrame(anim);
+        } else {
+          drawConnectors();
+        }
+      }
+      requestAnimationFrame(anim);
+    }
   }
   
   const anyOpen = document.querySelectorAll('.eq-box.open').length > 0;
@@ -2544,30 +2563,40 @@ if (typeof document !== 'undefined' && document.addEventListener) {
   wrapStaticSymbols();
   
   document.addEventListener('mouseover', e => {
-    if (!document.body.classList.contains('help-mode')) return;
-    const sym = e.target.closest('.sym');
-    if (sym) {
-      const pop = sym.querySelector('.sym-pop');
-      if (!pop) return;
-
-      const rect = sym.getBoundingClientRect();
-      pop.style.display = 'block';
-      const popRect = pop.getBoundingClientRect();
-      
-      let top = rect.bottom + 4;
-      let left = rect.left;
-      
-      if (left + popRect.width > window.innerWidth) {
-        left = window.innerWidth - popRect.width - 10;
+      if (!document.body.classList.contains('help-mode')) return;
+      const sym = e.target.closest('.sym');
+      if (sym) {
+        const pop = document.getElementById('svg-tooltip');
+        if (!pop) return;
+        
+        // Use data-tooltip attribute. If not present, try finding inner sym-pop
+        let tipText = sym.getAttribute('data-tooltip');
+        if (!tipText) {
+           const innerPop = sym.querySelector('.sym-pop');
+           if (innerPop) tipText = innerPop.getAttribute('data-tooltip');
+        }
+        if (!tipText) return;
+        
+        pop.setAttribute('data-tooltip', tipText);
+  
+        const rect = sym.getBoundingClientRect();
+        pop.style.display = 'block';
+        const popRect = pop.getBoundingClientRect();
+        
+        let top = rect.bottom + 4;
+        let left = rect.left;
+        
+        if (left + popRect.width > window.innerWidth) {
+          left = window.innerWidth - popRect.width - 10;
+        }
+        if (top + popRect.height > window.innerHeight) {
+          top = rect.top - popRect.height - 4;
+        }
+        
+        pop.style.top = top + 'px';
+        pop.style.left = Math.max(10, left) + 'px';
+        return;
       }
-      if (top + popRect.height > window.innerHeight) {
-        top = rect.top - popRect.height - 4;
-      }
-      
-      pop.style.top = top + 'px';
-      pop.style.left = Math.max(10, left) + 'px';
-      return;
-    }
 
     const svgLabel = e.target.closest('[data-svgtip]');
     if (!svgLabel || !svgLabel.getAttribute('data-tooltip')) return;
@@ -2585,12 +2614,12 @@ if (typeof document !== 'undefined' && document.addEventListener) {
   });
 
   document.addEventListener('mouseout', e => {
-    const sym = e.target.closest('.sym');
-    if (sym) {
-      if (e.relatedTarget && sym.contains(e.relatedTarget)) return;
-      const pop = sym.querySelector('.sym-pop');
-      if (pop) pop.style.display = 'none';
-    }
+      const sym = e.target.closest('.sym');
+      if (sym) {
+        if (e.relatedTarget && sym.contains(e.relatedTarget)) return;
+        const pop = document.getElementById('svg-tooltip');
+        if (pop) pop.style.display = 'none';
+      }
 
     const svgLabel = e.target.closest('[data-svgtip]');
     if (svgLabel) {

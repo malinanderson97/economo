@@ -931,11 +931,11 @@ const badEndLineCode2 = headlessCode.replace("? `<span class=\"eq-ref\">(${EQ_RE
 const badEndLineApi2 = new Function(badEndLineCode2 + '\nfunction render() {}\nreturn { endLine };')();
 check('BAD-fixture: endLine creates garbage for missing ref caught', badEndLineApi2.endLine('UNKNOWN_REF_XXX') !== '');
 
-const expC = `<span class="sym" data-sym="C" data-tooltip="${SYMBOL_DEFS['C'].meaning}; ${SYMBOL_DEFS['C'].ref}; ${SYMBOL_DEFS['C'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['C'].meaning}; ${SYMBOL_DEFS['C'].ref}; ${SYMBOL_DEFS['C'].role}"></span>C</span>`;
-const expI = `<span class="sym" data-sym="I" data-tooltip="${SYMBOL_DEFS['I'].meaning}; ${SYMBOL_DEFS['I'].ref}; ${SYMBOL_DEFS['I'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['I'].meaning}; ${SYMBOL_DEFS['I'].ref}; ${SYMBOL_DEFS['I'].role}"></span>I</span>`;
-const expPiStar = `<span class="sym" data-sym="π*" data-tooltip="${SYMBOL_DEFS['π*'].meaning}; ${SYMBOL_DEFS['π*'].ref}; ${SYMBOL_DEFS['π*'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['π*'].meaning}; ${SYMBOL_DEFS['π*'].ref}; ${SYMBOL_DEFS['π*'].role}"></span>π*</span>`;
-const exp_i = `<span class="sym" data-sym="i" data-tooltip="${SYMBOL_DEFS['i'].meaning}; ${SYMBOL_DEFS['i'].ref}; ${SYMBOL_DEFS['i'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['i'].meaning}; ${SYMBOL_DEFS['i'].ref}; ${SYMBOL_DEFS['i'].role}"></span>i</span>`;
-const expPi = `<span class="sym" data-sym="π" data-tooltip="${SYMBOL_DEFS['π'].meaning}; ${SYMBOL_DEFS['π'].ref}; ${SYMBOL_DEFS['π'].role}"><span class="sym-pop" data-tooltip="${SYMBOL_DEFS['π'].meaning}; ${SYMBOL_DEFS['π'].ref}; ${SYMBOL_DEFS['π'].role}"></span>π</span>`;
+const expC = `<span class="sym" data-sym="C" data-tooltip="${SYMBOL_DEFS['C'].meaning}; ${SYMBOL_DEFS['C'].ref}; ${SYMBOL_DEFS['C'].role}">C</span>`;
+const expI = `<span class="sym" data-sym="I" data-tooltip="${SYMBOL_DEFS['I'].meaning}; ${SYMBOL_DEFS['I'].ref}; ${SYMBOL_DEFS['I'].role}">I</span>`;
+const expPiStar = `<span class="sym" data-sym="π*" data-tooltip="${SYMBOL_DEFS['π*'].meaning}; ${SYMBOL_DEFS['π*'].ref}; ${SYMBOL_DEFS['π*'].role}">π*</span>`;
+const exp_i = `<span class="sym" data-sym="i" data-tooltip="${SYMBOL_DEFS['i'].meaning}; ${SYMBOL_DEFS['i'].ref}; ${SYMBOL_DEFS['i'].role}">i</span>`;
+const expPi = `<span class="sym" data-sym="π" data-tooltip="${SYMBOL_DEFS['π'].meaning}; ${SYMBOL_DEFS['π'].ref}; ${SYMBOL_DEFS['π'].role}">π</span>`;
 
 const s1Expected = `<div>${expC} and ${expI} and <span>${expPiStar}</span> and ${exp_i}, ${expPi}</div>`;
 check('INV-S1: wrapSymbols is pure and string-to-string (headless)', 
