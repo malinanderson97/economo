@@ -80,6 +80,8 @@ goToStage(3);
   for (let k = 0; k < 300; k++) { trough = Math.min(trough, solve(s).Y); s = step(s); }
   const eq = solve(s);
   check('2 deAnchored troughs (sacrifice)', trough < 98, `trough Y=${trough.toFixed(1)}`);
+  check('2 deAnchored recession is deep (adaptive expectations)', trough < 90,
+        `trough Y=${trough.toFixed(1)} (θ=0.15 sacrifice: must be well below the anchored preset's 96.1 trough)`);
   
   // Permanent supply shocks in the open economy have no stationary equilibrium under backward-looking
   // exchange-rate expectations (Blanchard Ch. 20 — forward-looking FX is out of scope). This scenario

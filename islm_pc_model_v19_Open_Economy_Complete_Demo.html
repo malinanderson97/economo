@@ -2242,14 +2242,14 @@ const SCENARIOS = [
   {
     id: 'taylorPrinciple',
     label: '1. The Taylor Principle',
-    narrative: 'Taylor rule ON with φ = 1.5 and partially-anchored expectations (θ=0.25), so expectations can actually move. Apply the oil shock and step: with φ = 1.5 the bank responds more than one-for-one and inflation comes smoothly back to the 2% target within the medium run. Then—without resetting—lower φ to 0.5 and shock again. Now the bank is too passive: the economy overshoots into deflation, the rate is cut nearly to zero, expectations de-anchor (watch the warning chip), and the return to target takes far longer and oscillates. The contrast between the two φ settings is the Taylor principle.',
+    narrative: 'Taylor rule ON with φ = 1.5 and partially-anchored expectations (θ=0.25), so expectations can actually move. Apply the oil shock and step: with φ = 1.5 the bank responds more than one-for-one and inflation comes smoothly back to the 2% target within the medium run. Then—without resetting—lower φ to 0.5 and shock again. Now the bank is too passive: the rate is cut to the ZLB floor and pinned there for several periods, expectations de-anchor (watch the warning chip), and the return to target takes far longer and oscillates. The contrast between the two φ settings is the Taylor principle.',
     state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'expectationsDeAnchored',
     label: '2a. De-Anchored Expectations (1970s)',
-    narrative: 'θ = 1: expectations are purely adaptive and start at 8%. A transitory cost-push shock (z_pulse = +2%) hits. Disinflation requires a painful recession because the central bank must drag πᵉ down by brute force. Since the shock is transitory, output eventually returns to exactly potential (100). Permanent supply shocks have no stationary equilibrium in the open economy under naive exchange-rate expectations (Blanchard Ch. 20).',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.08, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.02, theta: 1, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
+    narrative: 'θ = 0.15: expectations are mostly adaptive and start at 8%. A transitory cost-push shock (z_pulse = +2%) hits. Disinflation requires a deep, drawn-out recession because the central bank must drag πᵉ down by brute force — the policy rate spends several periods pinned at the ZLB along the way. Since the shock is transitory, output eventually returns to exactly potential (100). Contrast the depth and length of this slump with preset 2b. Permanent supply shocks have no stationary equilibrium in the open economy under naive exchange-rate expectations (Blanchard Ch. 20).',
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.08, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.02, theta: 0.15, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'expectationsAnchored',
@@ -2266,13 +2266,13 @@ const SCENARIOS = [
   {
     id: 'twinDeficits',
     label: '4. Twin Deficits & Real Appreciation',
-    narrative: 'Taylor OFF, expectations mostly anchored (θ=0.7). A modest fiscal expansion (G raised from 20 to 22, a 10% rise) with no monetary offset drives up domestic prices. The real exchange rate appreciates, crowding out net exports until Y returns to Yₙ and inflation returns to 2% — leaving ε permanently higher (≈1.04). Watch ε climb on the time series.',
+    narrative: 'Taylor OFF, expectations mostly anchored (θ=0.7). A modest fiscal expansion (G raised from 20 to 22, a 10% rise) with no monetary offset drives up domestic prices. The real exchange rate appreciates, crowding out net exports until Y returns to Yₙ and inflation returns to 2% — leaving ε permanently higher (≈1.03). Watch ε climb on the time series.',
     state: { G: 22, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.7, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'globalRateHike',
     label: '5. Global Rate Hike Spillover',
-    narrative: 'Foreign rates jump to 6%. UIP wants a weaker domestic currency unless the CB matches the hike. With Taylor ON, the domestic rule sees the inflationary depreciation and hikes i. The economy converges to a higher domestic rate with a persistently weaker nominal E — and because i_target still embodies the old neutral rate, inflation settles somewhat above 2%. Raise i_target toward the new world rate to bring it home: a stale-intercept lesson.',
+    narrative: 'Foreign rates jump to 6%. UIP wants a weaker domestic currency unless the CB matches the hike. With Taylor ON, the domestic rule sees the inflationary depreciation and hikes i. Because the rule anchors to the structurally computed neutral rate, the economy converges cleanly: i settles at the new world rate (6%), inflation returns to the 2% target, and the lasting cost is a persistently weaker nominal E. The lesson: under UIP, a small open economy with a credible rule ends up importing the world interest rate — the exchange rate, not the inflation rate, absorbs the shock.',
     state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.06, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   }
 ];
