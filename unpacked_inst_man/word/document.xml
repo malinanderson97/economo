@@ -1,0 +1,1203 @@
+<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 wp14">
+  <w:body>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Eyebrow"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="635BFF"/>
+          <w:sz w:val="17"/>
+          <w:szCs w:val="17"/>
+        </w:rPr>
+        <w:t xml:space="preserve">INSTRUCTOR MANUAL</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Title"/>
+        <w:spacing w:after="40"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Fredoka" w:cs="Fredoka" w:eastAsia="Fredoka" w:hAnsi="Fredoka"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="0A2540"/>
+          <w:sz w:val="48"/>
+          <w:szCs w:val="48"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Economo</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="20"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="0A2540"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">IS-LM-PC Interactive Macro Lab</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="697386"/>
+          <w:sz w:val="20"/>
+          <w:szCs w:val="20"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A guide for lecturers and seminar leaders · Blanchard, </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:i/>
+          <w:iCs/>
+          <w:color w:val="697386"/>
+          <w:sz w:val="20"/>
+          <w:szCs w:val="20"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Macroeconomics</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="697386"/>
+          <w:sz w:val="20"/>
+          <w:szCs w:val="20"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> 9th Global Edition</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="425466"/>
+          <w:sz w:val="23"/>
+          <w:szCs w:val="23"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Economo is a single-file, browser-based simulator for teaching short-run and medium-run macroeconomics. It turns the core IS-LM-PC framework into something students manipulate directly: drag the curves, step through time, and watch the whole economy respond at once.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="0A2540"/>
+          <w:sz w:val="30"/>
+          <w:szCs w:val="30"/>
+        </w:rPr>
+        <w:t xml:space="preserve">1. About this tool</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="425466"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Economo is one progressive learning tool, not a set of separate models. The full IS-LM-PC-UIP system — closed and open economy, goods market through Phillips curve — lives in a single HTML file. The whole model is always on screen; blocks not yet taught are greyed out and locked. As you move through the stages, complexity unlocks in the order your syllabus follows.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="425466"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">It runs in any desktop browser (the HTML isn't built for small mobile screens) with no install, no login, and no internet connection. Project it in a lecture, embed it in your VLE, or email the file to students.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="0A2540"/>
+          <w:sz w:val="30"/>
+          <w:szCs w:val="30"/>
+        </w:rPr>
+        <w:t xml:space="preserve">2. The four teaching stages</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="425466"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A dropdown in the top bar (with a </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="0A2540"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Next</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="425466"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> button beside it) moves between stages. Each stage unlocks one more block of the model. The order follows the course syllabus, not Blanchard&#x2019;s chapter order — the open economy is introduced before the Phillips curve.</w:t>
+      </w:r>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblW w:type="dxa" w:w="9360"/>
+        <w:tblBorders>
+          <w:top w:val="single" w:color="auto" w:sz="4"/>
+          <w:left w:val="single" w:color="auto" w:sz="4"/>
+          <w:bottom w:val="single" w:color="auto" w:sz="4"/>
+          <w:right w:val="single" w:color="auto" w:sz="4"/>
+          <w:insideH w:val="single" w:color="auto" w:sz="4"/>
+          <w:insideV w:val="single" w:color="auto" w:sz="4"/>
+        </w:tblBorders>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="900"/>
+        <w:gridCol w:w="1700"/>
+        <w:gridCol w:w="1300"/>
+        <w:gridCol w:w="3160"/>
+        <w:gridCol w:w="2300"/>
+      </w:tblGrid>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="900"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="F7FAFC" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="8792A2"/>
+                <w:spacing w:val="20"/>
+                <w:sz w:val="15"/>
+                <w:szCs w:val="15"/>
+              </w:rPr>
+              <w:t xml:space="preserve">STAGE</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1700"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="F7FAFC" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="8792A2"/>
+                <w:spacing w:val="20"/>
+                <w:sz w:val="15"/>
+                <w:szCs w:val="15"/>
+              </w:rPr>
+              <w:t xml:space="preserve">MODEL</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="F7FAFC" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="8792A2"/>
+                <w:spacing w:val="20"/>
+                <w:sz w:val="15"/>
+                <w:szCs w:val="15"/>
+              </w:rPr>
+              <w:t xml:space="preserve">ECONOMY</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3160"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="F7FAFC" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="8792A2"/>
+                <w:spacing w:val="20"/>
+                <w:sz w:val="15"/>
+                <w:szCs w:val="15"/>
+              </w:rPr>
+              <w:t xml:space="preserve">WHAT UNLOCKS</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="F7FAFC" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="8792A2"/>
+                <w:spacing w:val="20"/>
+                <w:sz w:val="15"/>
+                <w:szCs w:val="15"/>
+              </w:rPr>
+              <w:t xml:space="preserve">RATE REGIME</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="900"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="635BFF"/>
+                <w:sz w:val="21"/>
+                <w:szCs w:val="21"/>
+              </w:rPr>
+              <w:t xml:space="preserve">0</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1700"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="0A2540"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">IS-LM</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b w:val="false"/>
+                <w:bCs w:val="false"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Closed</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3160"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b w:val="false"/>
+                <w:bCs w:val="false"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Goods market, IS-LM chart, policy rate</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="IBM Plex Mono" w:cs="IBM Plex Mono" w:eastAsia="IBM Plex Mono" w:hAnsi="IBM Plex Mono"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="18"/>
+                <w:szCs w:val="18"/>
+              </w:rPr>
+              <w:t xml:space="preserve">r = i — prices fixed</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="900"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="635BFF"/>
+                <w:sz w:val="21"/>
+                <w:szCs w:val="21"/>
+              </w:rPr>
+              <w:t xml:space="preserve">1</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1700"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="0A2540"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">IS-LM-UIP</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b w:val="false"/>
+                <w:bCs w:val="false"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Open</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3160"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b w:val="false"/>
+                <w:bCs w:val="false"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">+ Imports/exports, UIP, exchange rate</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="IBM Plex Mono" w:cs="IBM Plex Mono" w:eastAsia="IBM Plex Mono" w:hAnsi="IBM Plex Mono"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="18"/>
+                <w:szCs w:val="18"/>
+              </w:rPr>
+              <w:t xml:space="preserve">still r = i</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="900"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="635BFF"/>
+                <w:sz w:val="21"/>
+                <w:szCs w:val="21"/>
+              </w:rPr>
+              <w:t xml:space="preserve">2</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1700"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="0A2540"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">IS-LM-PC</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b w:val="false"/>
+                <w:bCs w:val="false"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Closed</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3160"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b w:val="false"/>
+                <w:bCs w:val="false"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">+ Phillips curve, expectations, Yn, Okun</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="IBM Plex Mono" w:cs="IBM Plex Mono" w:eastAsia="IBM Plex Mono" w:hAnsi="IBM Plex Mono"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="18"/>
+                <w:szCs w:val="18"/>
+              </w:rPr>
+              <w:t xml:space="preserve">r = i − πᵉ switches on</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="900"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="635BFF"/>
+                <w:sz w:val="21"/>
+                <w:szCs w:val="21"/>
+              </w:rPr>
+              <w:t xml:space="preserve">3</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1700"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="0A2540"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Full Model</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b w:val="false"/>
+                <w:bCs w:val="false"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Open</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3160"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b w:val="false"/>
+                <w:bCs w:val="false"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Everything combined</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2300"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:left w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:bottom w:val="single" w:color="E3E8EE" w:sz="1"/>
+              <w:right w:val="single" w:color="E3E8EE" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="FFFFFF" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="70"/>
+              <w:left w:type="dxa" w:w="110"/>
+              <w:bottom w:type="dxa" w:w="70"/>
+              <w:right w:type="dxa" w:w="110"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="IBM Plex Mono" w:cs="IBM Plex Mono" w:eastAsia="IBM Plex Mono" w:hAnsi="IBM Plex Mono"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="18"/>
+                <w:szCs w:val="18"/>
+              </w:rPr>
+              <w:t xml:space="preserve">r = i − πᵉ</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p/>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblW w:type="dxa" w:w="9360"/>
+        <w:tblBorders>
+          <w:top w:val="single" w:color="DEDBFB" w:sz="1"/>
+          <w:left w:val="single" w:color="635BFF" w:sz="18"/>
+          <w:bottom w:val="single" w:color="DEDBFB" w:sz="1"/>
+          <w:right w:val="single" w:color="DEDBFB" w:sz="1"/>
+          <w:insideH w:val="single" w:color="auto" w:sz="4"/>
+          <w:insideV w:val="single" w:color="auto" w:sz="4"/>
+        </w:tblBorders>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="9360"/>
+      </w:tblGrid>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="9360"/>
+            <w:shd w:fill="EFEEFE" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="120"/>
+              <w:left w:type="dxa" w:w="200"/>
+              <w:bottom w:type="dxa" w:w="120"/>
+              <w:right w:type="dxa" w:w="200"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="635BFF"/>
+                <w:spacing w:val="30"/>
+                <w:sz w:val="16"/>
+                <w:szCs w:val="16"/>
+              </w:rPr>
+              <w:t xml:space="preserve">THE KEY PEDAGOGICAL MOVE</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="22"/>
+                <w:szCs w:val="22"/>
+              </w:rPr>
+              <w:t xml:space="preserve">The nominal-versus-real distinction does </w:t>
+            </w:r>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:b/>
+                <w:bCs/>
+                <w:color w:val="0A2540"/>
+                <w:sz w:val="22"/>
+                <w:szCs w:val="22"/>
+              </w:rPr>
+              <w:t xml:space="preserve">not exist</w:t>
+            </w:r>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+                <w:color w:val="425466"/>
+                <w:sz w:val="22"/>
+                <w:szCs w:val="22"/>
+              </w:rPr>
+              <w:t xml:space="preserve"> until the Phillips curve is unlocked. In stages 0 and 1 the economy is Blanchard&#x2019;s core short run: prices are constant, so the real rate equals the nominal rate (r = i), and there is no expected-inflation control. The Fisher line, the real-rate line, and the πᵉ slider all appear together the moment the PC block unlocks at stage 2.</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="0A2540"/>
+          <w:sz w:val="30"/>
+          <w:szCs w:val="30"/>
+        </w:rPr>
+        <w:t xml:space="preserve">3. The interface at a glance</w:t>
+      </w:r>
+    </w:p>
+        
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="0A2540"/>
+          <w:sz w:val="23"/>
+          <w:szCs w:val="23"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A permanent open-economy supply shock never settles.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="425466"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">The open economy uses backward-looking exchange-rate expectations, so permanent supply shocks have no stationary equilibrium under UIP. Use transitory shocks; forward-looking FX dynamics are out of scope for this version.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="0A2540"/>
+          <w:sz w:val="23"/>
+          <w:szCs w:val="23"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Nothing installs — is that right?</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="425466"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Yes. It is one HTML file. Double-click it, or host it on your VLE. No IT involvement, works offline.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pBdr>
+          <w:top w:val="single" w:color="E3E8EE" w:sz="6" w:space="10"/>
+        </w:pBdr>
+        <w:spacing w:before="300"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="697386"/>
+          <w:sz w:val="18"/>
+          <w:szCs w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Economo</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="8792A2"/>
+          <w:sz w:val="18"/>
+          <w:szCs w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> — IS-LM-PC Interactive Macro Lab. Built around Blanchard, </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:i/>
+          <w:iCs/>
+          <w:color w:val="8792A2"/>
+          <w:sz w:val="18"/>
+          <w:szCs w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Macroeconomics</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="8792A2"/>
+          <w:sz w:val="18"/>
+          <w:szCs w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve">, 9th Global Edition (2024). The underlying economic model is drawn from published academic work and is not claimed as proprietary; this manual and the software implementation are the author&#x2019;s own work.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Hanken Grotesk" w:cs="Hanken Grotesk" w:eastAsia="Hanken Grotesk" w:hAnsi="Hanken Grotesk"/>
+          <w:color w:val="8792A2"/>
+          <w:sz w:val="18"/>
+          <w:szCs w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Malin Anderson · malinanderson97@gmail.com</w:t>
+      </w:r>
+    </w:p>
+    <w:sectPr>
+      <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
+      <w:pgNumType/>
+      <w:docGrid w:linePitch="360"/>
+    </w:sectPr>
+  </w:body>
+</w:document>

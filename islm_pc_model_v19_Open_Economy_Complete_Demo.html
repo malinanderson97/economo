@@ -64,6 +64,7 @@
     background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 14px;
     box-shadow: var(--shadow-card);
   }
+  .panel.charts { padding-top: 6px; padding-bottom: 6px; }
   #left-panel {
     align-self: stretch;
     overflow-y: auto;
@@ -82,7 +83,7 @@
     margin: 0 0 10px; font-size: 11px; font-weight: 500; color: var(--ink-4);
     text-transform: uppercase; letter-spacing: 0.14em;
   }
-  .charts { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 10px; align-items: start; }
+  .charts { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; column-gap: 10px; row-gap: 2px; align-items: start; }
   .chart-box { padding: 10px 10px 4px; display: flex; flex-direction: column; }
   .chart-box h3 {
     margin: 0 0 4px; color: var(--ink); text-transform: none; letter-spacing: -0.01em; font-size: 12px;
@@ -215,7 +216,7 @@
   }
   .shock-indicator.active { color: #9A4D26; background: #FBEDE3; }
   .run-controls { display: flex; gap: 6px; flex-wrap: wrap; }
-  .readout { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; flex: 0 0 auto; }
+  .readout { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0; flex: 0 0 auto; }
   #right-col { overflow-y: scroll; }
   #right-col.eq-open .charts { flex: 0 0 auto; height: auto; }
   .stat {
@@ -342,7 +343,7 @@
   }
   .drill-trigger {
     display: inline-flex; align-items: center; gap: 4px;
-    font-size: 10px; color: var(--ink-3); cursor: pointer; user-select: none;
+    font-size: 10px; color: var(--accent-active); cursor: pointer; user-select: none;
     margin-left: 8px; text-transform: none; font-weight: normal; letter-spacing: 0;
   }
   .drill-trigger:hover { color: var(--accent); }
@@ -1444,12 +1445,17 @@ function drawISMP() {
     { const _t = el('text', { x: P.l + 4, y: labelY(yScale(real_i, o) - 5, o), class: 'curve-label label-mp' }, svg); _t.textContent = 'r'; svgTitle(_t, 'r'); }
   }
 
-  el('circle', { cx: xScale(eq.Y, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
+  const cY = clamp(eq.Y, o.xMin, o.xMax);
+  const ci = clamp(eq.i, o.yMin, o.yMax);
+  el('circle', { cx: xScale(cY, o), cy: yScale(ci, o), r: 4.5, class: 'eq-point' }, svg);
   // guide: Y drop-line from the dot to the x-axis (continues to PC via overlay)
-  el('line', { x1: xScale(eq.Y, o), x2: xScale(eq.Y, o), y1: yScale(eq.i, o), y2: H - P.b, class: 'guide-line' }, svg);
-  { const _t = el('text', { x: xScale(eq.Y, o) + 3, y: H - P.b - 4, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'Y'; svgTitle(_t, 'Y'); }
+  el('line', { x1: xScale(cY, o), x2: xScale(cY, o), y1: yScale(ci, o), y2: H - P.b, class: 'guide-line' }, svg);
+  let yx = xScale(cY, o);
+  let yAnchor = 'start';
+  if (yx > W - P.r - 12) { yx -= 4; yAnchor = 'end'; } else { yx += 3; }
+  { const _t = el('text', { x: yx, y: H - P.b - 4, class: 'axis-label', fill: '#666', 'text-anchor': yAnchor }, svg); _t.textContent = 'Y'; svgTitle(_t, 'Y'); }
   // guide: i continues rightward toward UIP (bridge drawn by overlay)
-  el('line', { x1: xScale(eq.Y, o), x2: W - P.r, y1: yScale(eq.i, o), y2: yScale(eq.i, o), class: 'guide-line' }, svg);
+  el('line', { x1: xScale(cY, o), x2: W - P.r, y1: yScale(ci, o), y2: yScale(ci, o), class: 'guide-line' }, svg);
 
   const isHandleY = 90;
   const isHandle_i = isRateForOutput(isHandleY, state.G, state.T, eq.eps, effectivePiE(state), state.c1, state.m1, state.Ystar);
@@ -1562,12 +1568,23 @@ function drawUIP() {
   }
   drawLine(svg, epsPts, o, 'curve-eps');
 
-  const uipEndE = state.E_e * (1 + o.yMax) / (1 + state.i_star);
-  { const _t = el('text', { x: xScale(uipEndE, o) + 4, y: labelY(yScale(o.yMax, o) + 12, o), class: 'curve-label label-uip' }, svg); _t.textContent = 'UIP'; svgTitle(_t, 'UIP'); }
+  let labelE = state.E_e * (1 + o.yMax) / (1 + state.i_star);
+  let label_i = o.yMax;
+  if (labelE > o.xMax) { labelE = o.xMax; label_i = o.xMax * (1 + state.i_star) / state.E_e - 1; }
+  let lx = xScale(labelE, o);
+  let ly = yScale(label_i, o) + 12;
+  let lAnchor = 'start';
+  if (lx > W - P.r - 24) { lx -= 6; lAnchor = 'end'; } else { lx += 4; }
+  { const _t = el('text', { x: lx, y: labelY(ly, o), class: 'curve-label label-uip', 'text-anchor': lAnchor }, svg); _t.textContent = 'UIP'; svgTitle(_t, 'UIP'); }
 
-  el('circle', { cx: xScale(eq.E, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
-  el('line', { x1: xScale(eq.E, o), x2: xScale(eq.E, o), y1: yScale(eq.i, o), y2: H - P.b, class: 'guide-line' }, svg);
-  { const _t = el('text', { x: xScale(eq.E, o) + 3, y: H - P.b - 4, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'E'; svgTitle(_t, 'E'); }
+  const cE = clamp(eq.E, o.xMin, o.xMax);
+  const ci = clamp(eq.i, o.yMin, o.yMax);
+  el('circle', { cx: xScale(cE, o), cy: yScale(ci, o), r: 4.5, class: 'eq-point' }, svg);
+  el('line', { x1: xScale(cE, o), x2: xScale(cE, o), y1: yScale(ci, o), y2: H - P.b, class: 'guide-line' }, svg);
+  let ex = xScale(cE, o);
+  let eAnchor = 'start';
+  if (ex > W - P.r - 12) { ex -= 4; eAnchor = 'end'; } else { ex += 3; }
+  { const _t = el('text', { x: ex, y: H - P.b - 4, class: 'axis-label', fill: '#666', 'text-anchor': eAnchor }, svg); _t.textContent = 'E'; svgTitle(_t, 'E'); }
 
   const handle_i = 0.06;
   const uipHandleE = state.E_e * (1 + handle_i) / (1 + state.i_star);
@@ -1630,8 +1647,14 @@ function drawPC() {
   const pcEndVal = state.pi_e + state.alpha * ((o.xMax - eq.Y_n) / eq.Y_n) + z_eff;
   { const _t = el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(pcEndVal, o) - 4, o), class: 'curve-label label-pc' }, svg); _t.textContent = 'PC'; svgTitle(_t, 'PC'); }
 
-  el('circle', { cx: xScale(clamp(eq.Y, o.xMin, o.xMax), o), cy: yScale(clamp(eq.pi, o.yMin, o.yMax), o), r: 4.5, class: 'eq-point' }, svg);
-  el('line', { x1: xScale(clamp(eq.Y, o.xMin, o.xMax), o), x2: xScale(clamp(eq.Y, o.xMin, o.xMax), o), y1: P.t, y2: yScale(clamp(eq.pi, o.yMin, o.yMax), o), class: 'guide-line' }, svg);
+  const cY = clamp(eq.Y, o.xMin, o.xMax);
+  const cpi = clamp(eq.pi, o.yMin, o.yMax);
+  el('circle', { cx: xScale(cY, o), cy: yScale(cpi, o), r: 4.5, class: 'eq-point' }, svg);
+  el('line', { x1: xScale(cY, o), x2: xScale(cY, o), y1: P.t, y2: H - P.b, class: 'guide-line' }, svg);
+  let yx = xScale(cY, o);
+  let yAnchor = 'start';
+  if (yx > W - P.r - 12) { yx -= 4; yAnchor = 'end'; } else { yx += 3; }
+  { const _t = el('text', { x: yx, y: H - P.b - 4, class: 'axis-label', fill: '#666', 'text-anchor': yAnchor }, svg); _t.textContent = 'Y'; svgTitle(_t, 'Y'); }
 
   el('circle', {
     cx: xScale(eq.Y_n, o),
@@ -1680,7 +1703,7 @@ function drawDrillPCChain() {
   const svgA = document.getElementById('svg-drill-pc-a');
   if (svgA) {
     svgA.innerHTML = '';
-    const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
+    const W = 160, H = 140, P = { l: 38, r: 12, t: 14, b: 28 };
     const oA = { W, H, P, clipId: 'clip-drill-pc-a',
       xMin: 0, xMax: 0.10, yMin: 0.80, yMax: 1.10,
       xLabel: 'u', yLabel: 'W/P',
@@ -1708,7 +1731,7 @@ function drawDrillPCChain() {
   const svgB = document.getElementById('svg-drill-pc-b');
   if (svgB) {
     svgB.innerHTML = '';
-    const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
+    const W = 160, H = 140, P = { l: 38, r: 12, t: 14, b: 28 };
     const oB = { W, H, P, clipId: 'clip-drill-pc-b',
       xMin: 0, xMax: 0.10, yMin: 80, yMax: 120,
       xLabel: 'u', yLabel: 'output Y',
@@ -1736,7 +1759,7 @@ function drawDrillPCChain() {
   const svgC = document.getElementById('svg-drill-pc-c');
   if (svgC) {
     svgC.innerHTML = '';
-    const W = 160, H = 140, P = { l: 28, r: 12, t: 14, b: 28 };
+    const W = 160, H = 140, P = { l: 38, r: 12, t: 14, b: 28 };
     const oC = { W, H, P, clipId: 'clip-drill-pc-c',
       xMin: 85, xMax: 115, yMin: -0.02, yMax: 0.10,
       xLabel: 'output Y', yLabel: 'π',

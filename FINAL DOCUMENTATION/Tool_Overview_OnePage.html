@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Economo — Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A2540;--ink-2:#425466;--ink-3:#697386;--ink-4:#8792A2;
+    --navy-900:#0A2540;--navy-700:#1A2E4A;
+    --bg:#F6F9FC;--surface:#FFFFFF;--surface-2:#F7FAFC;--surface-tint:#EEF2F8;
+    --rule:#E3E8EE;--rule-2:#D5DBE3;
+    --accent:#635BFF;--accent-hover:#5851EC;--accent-tint:#EFEEFE;--accent-tint-2:#DEDBFB;
+    --curve-is:#E25950;--curve-mp:#635BFF;--curve-uip:#0FA9A0;--curve-eps:#F5A623;--curve-pc:#E0408E;
+    --grad:#11B8C9;
+    --shadow-card:0 1px 1px rgba(0,0,0,.03),0 3px 6px rgba(60,66,87,.06),0 2px 4px rgba(60,66,87,.05);
+    --font-ui:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
+    --font-brand:'Fredoka',system-ui,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font-ui);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:840px;margin:0 auto;padding:0 0 60px;}
+
+  header{position:relative;background:var(--navy-900);color:#fff;padding:34px 44px 30px;}
+  header::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--grad);}
+  .brandmark{font-family:var(--font-brand);font-weight:600;font-size:36px;letter-spacing:.4px;line-height:1;}
+  .brandmark .bang{color:#8C84FF;}
+  header .tag{font-size:15px;color:rgba(255,255,255,.72);margin-top:12px;max-width:560px;}
+  header .eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px;}
+
+  main{padding:0 44px;}
+  h2{font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:34px 0 12px;}
+  p{margin:8px 0;color:var(--ink-2);}
+  strong{color:var(--ink);font-weight:600;}
+
+  .whatis{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow-card);margin:26px 0 6px;font-size:15px;}
+  .whatis strong{color:var(--ink);}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:10px 0;}
+  .feat{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:15px 18px;box-shadow:var(--shadow-card);}
+  .feat .ft{font-weight:600;color:var(--ink);margin-bottom:3px;display:flex;align-items:center;gap:8px;}
+  .feat .dot{width:9px;height:9px;border-radius:50%;flex:none;}
+  .feat p{margin:0;font-size:13.5px;color:var(--ink-3);}
+
+  .stages{display:flex;gap:0;margin:10px 0;border:1px solid var(--rule);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-card);}
+  .stage{flex:1;padding:13px 12px;background:var(--surface);border-right:1px solid var(--rule);}
+  .stage:last-child{border-right:none;}
+  .stage .n{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);font-size:13px;}
+  .stage .nm{font-weight:600;color:var(--ink);font-size:13px;margin:3px 0 2px;}
+  .stage .ec{font-size:11px;color:var(--ink-4);text-transform:uppercase;letter-spacing:.06em;}
+
+  ul{list-style:none;margin:8px 0;}
+  ul li{position:relative;padding-left:20px;margin:6px 0;color:var(--ink-2);}
+  ul li::before{content:'';position:absolute;left:2px;top:8px;width:7px;height:7px;border-radius:50%;background:var(--accent);}
+
+  .cta{background:var(--navy-900);color:#fff;border-radius:14px;padding:22px 26px;margin:30px 0 0;position:relative;overflow:hidden;}
+  .cta::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--grad);}
+  .cta .eyebrow{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px;}
+  .cta p{color:rgba(255,255,255,.82);margin:6px 0;}
+  .cta .contact{margin-top:14px;font-size:13.5px;color:#fff;font-weight:500;}
+  .cta a{color:#8C84FF;text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Interactive Macroeconomics Teaching Tool</div>
+  <div class="brandmark">Economo</div>
+  <div class="tag">A browser-based IS-LM-PC simulator for intermediate macro — drag the curves, step through time, watch the economy respond.</div>
+</header>
+<main>
+
+  <div class="whatis">
+    <strong>What it is.</strong> A single HTML file that runs in any browser — no install, no login, no internet needed. Open it and it works: project it in a lecture, embed it in your VLE, or email it to students. It turns the core models of intermediate macro into something students manipulate directly rather than read about.
+  </div>
+
+  <h2>One tool, four stages</h2>
+  <p>The full model is always on screen. Complexity unlocks stage by stage, following the course syllabus — the closed economy is simply the open economy with the trade channel switched off.</p>
+  <div class="stages">
+    <div class="stage"><div class="n">0</div><div class="nm">IS-LM</div><div class="ec">Closed</div></div>
+    <div class="stage"><div class="n">1</div><div class="nm">IS-LM-UIP</div><div class="ec">Open</div></div>
+    <div class="stage"><div class="n">2</div><div class="nm">IS-LM-PC</div><div class="ec">Closed</div></div>
+    <div class="stage"><div class="n">3</div><div class="nm">Full Model</div><div class="ec">Open</div></div>
+  </div>
+
+  <h2>Why it helps students learn</h2>
+  <div class="grid">
+    <div class="feat"><div class="ft"><span class="dot" style="background:var(--curve-is)"></span>Simultaneity, made visible</div><p>Drag the IS curve and the LM line, Phillips curve, and time path all move at once — the thing hardest to convey on a static whiteboard.</p></div>
+    <div class="feat"><div class="ft"><span class="dot" style="background:var(--curve-mp)"></span>Diagram tied to algebra</div><p>A panel under each chart shows the live equation — Y = C + I + G (+ NX) with current numbers — so curve and identity update together.</p></div>
+    <div class="feat"><div class="ft"><span class="dot" style="background:var(--curve-pc)"></span>Dynamics, not just equilibria</div><p>Step period by period to watch a shock land, prices adjust, and the economy return to potential — the short-run / medium-run story unfolding live.</p></div>
+    <div class="feat"><div class="ft"><span class="dot" style="background:var(--curve-uip)"></span>The hard ideas, surfaced</div><p>The sacrifice ratio, the Taylor principle, crowding out, expectations anchoring — each has a ready-made scenario.</p></div>
+  </div>
+
+  <h2>What's included</h2>
+  <ul>
+    <li>The full simulator, with <strong>six ready-to-run preset scenarios</strong> and teaching narratives.</li>
+    <li>An <strong>Instructor Manual</strong> with lesson plans, the economics behind each control, and FAQs.</li>
+    <li>A <strong>Model Equations Reference</strong> documenting every equation and its calibration, for transparency with colleagues and examiners.</li>
+  </ul>
+
+  <h2>Practical fit</h2>
+  <ul>
+    <li><strong>No IT involvement.</strong> One file; works offline; nothing to install or maintain.</li>
+    <li><strong>Course-ready.</strong> The stages and scenarios map onto standard intermediate-macro syllabi; usable in lectures, seminars, or as a self-study resource.</li>
+    <li><strong>Transparent economics.</strong> Every coefficient traces to a recognisable structural parameter, anchored to Blanchard's 9th edition; nothing is a black box.</li>
+  </ul>
+
+  <div class="cta">
+    <div class="eyebrow">Try it with your module</div>
+    <p>I'd welcome the chance to show it to you and, if it fits, run a pilot with your students this coming term. Happy to send the file or give a ten-minute demo — whichever is easier.</p>
+    <div class="contact">Malin Anderson · <a href="mailto:malinanderson97@gmail.com">malinanderson97@gmail.com</a></div>
+  </div>
+
+</main>
+</div>
+</body>
+</html>

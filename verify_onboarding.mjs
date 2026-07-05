@@ -434,7 +434,7 @@ check('INV-S3-C: Drill-down triggers carry data-block', s3TriggerMatch.length >=
 const uipLabelMatch = html.match(/xLabel:\s*'exchange rate E',\s*yLabel:\s*'interest rate i'/);
 check('UIP Orientation: E on x-axis, i on y-axis', !!uipLabelMatch, 'opts_uip should map E to x and i to y');
 
-const uipEqMatch = html.match(/el\('circle',\s*\{\s*cx:\s*xScale\(eq\.E,\s*o\),\s*cy:\s*yScale\(eq\.i,\s*o\)/);
+const uipEqMatch = html.match(/el\('circle',\s*\{\s*cx:\s*xScale\((?:eq\.E|cE),\s*o\),\s*cy:\s*yScale\((?:eq\.i|ci),\s*o\)/);
 check('UIP Orientation: eq-point uses E for cx and i for cy', !!uipEqMatch, 'eq-point rendering must map eq.E to cx and eq.i to cy');
 
 // NEW: Layout Assertion
@@ -764,9 +764,9 @@ function testDrillRecon(stateOverrides) {
   
   testRender.drawDrillPCChain();
   
-  const oA = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 };
-  const oB = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 };
-  const oC = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 85, xMax: 115 };
+  const oA = { W: 160, H: 140, P: { l: 38, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 };
+  const oB = { W: 160, H: 140, P: { l: 38, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 };
+  const oC = { W: 160, H: 140, P: { l: 38, r: 12, t: 14, b: 28 }, xMin: 85, xMax: 115 };
   
   const currState = testRender.getState();
   const un = (currState.m_struct + currState.z_struct) / testRender.ALPHA_WS;
@@ -795,7 +795,7 @@ check('INV-S3-A/B: Y_n and u_n reconciliation (high m)', testDrillRecon({ m_stru
 check('INV-S3-A/B: Y_n and u_n reconciliation (high z)', testDrillRecon({ m_struct: 0.05, z_struct: 0.20 }));
 
 function testDrillPS() {
-  const oA = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10, yMin: 0.80, yMax: 1.10 };
+  const oA = { W: 160, H: 140, P: { l: 38, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10, yMin: 0.80, yMax: 1.10 };
   
   testRender.setState({ m_struct: 0.05, z_struct: 0.10 });
   testRender.specialEls['svg-drill-pc-a'].children = [];
@@ -819,13 +819,13 @@ function testDrillPS() {
 
 check('INV-S3-PS: PS line height reconciles to markup', testDrillPS());
 
-const expectedY_15_frozen = testRender.yScale(1/1.05, { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, yMin: 0.80, yMax: 1.10 });
-const expectedY_15_true = testRender.yScale(1/1.15, { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, yMin: 0.80, yMax: 1.10 });
+const expectedY_15_frozen = testRender.yScale(1/1.05, { W: 160, H: 140, P: { l: 38, r: 12, t: 14, b: 28 }, yMin: 0.80, yMax: 1.10 });
+const expectedY_15_true = testRender.yScale(1/1.15, { W: 160, H: 140, P: { l: 38, r: 12, t: 14, b: 28 }, yMin: 0.80, yMax: 1.10 });
 check('BAD-fixture: Frozen PS line caught', Math.abs(expectedY_15_frozen - expectedY_15_true) > 1e-6);
 
 // BAD-fixture: hardcoded u_n
-const badDrawnUnX_A = testRender.xScale(0.05, { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 }); // Literal 0.05
-const expectedUnX_A_mutated = testRender.xScale((0.15 + 0.10) / testRender.ALPHA_WS, { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 });
+const badDrawnUnX_A = testRender.xScale(0.05, { W: 160, H: 140, P: { l: 38, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 }); // Literal 0.05
+const expectedUnX_A_mutated = testRender.xScale((0.15 + 0.10) / testRender.ALPHA_WS, { W: 160, H: 140, P: { l: 38, r: 12, t: 14, b: 28 }, xMin: 0, xMax: 0.10 });
 const caughtHardcodedUn = Math.abs(badDrawnUnX_A - expectedUnX_A_mutated) > 1e-6;
 check('BAD-fixture: Hardcoded u_n caught', caughtHardcodedUn);
 
@@ -842,7 +842,7 @@ testRender.specialEls['drill-pc'].classList.add('open');
 
 testRender.setState({ m_struct: 0.05, z_struct: 0.10 });
 testRender.redrawOpenDrills(); // manual draw
-const oC = { W: 160, H: 140, P: { l: 28, r: 12, t: 14, b: 28 }, xMin: 85, xMax: 115 };
+const oC = { W: 160, H: 140, P: { l: 38, r: 12, t: 14, b: 28 }, xMin: 85, xMax: 115 };
 let Yn_pre = testRender.computeYn(testRender.getState());
 const drawnYnCx_pre = findX1(testRender.specialEls['svg-drill-pc-c'], 'curve-natural');
 
