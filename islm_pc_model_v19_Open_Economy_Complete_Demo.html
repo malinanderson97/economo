@@ -40,14 +40,14 @@
     display: flex; justify-content: space-between; align-items: center;
     flex-wrap: wrap; gap: 10px; flex: 0 0 auto;
     background: var(--navy-900); color: #fff;
-    margin: -14px -14px 14px -14px; padding: 13px 20px;
+    margin: -14px -14px 14px -14px; padding: 6px 20px;
   }
   .header::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--grad); }
   h1 { font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -0.01em; color: #fff; display: flex; align-items: center; gap: 10px; }
   h1 span { color: rgba(255,255,255,.55); font-weight: 400; font-size: 12px; }
   h1 .brandmark { font-family: 'Fredoka', system-ui, sans-serif; font-weight: 600; font-size: 21px; letter-spacing: .3px; color: #fff; line-height: 1; }
-  .logo-badge { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 48px; height: 48px; }
-  .logo-badge img { width: 44px; height: 44px; object-fit: contain; display: block; }
+  .logo-badge { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 56px; height: 56px; }
+  .logo-badge img { width: 52px; height: 52px; object-fit: contain; display: block; }
   .brand-sub {
     font-family: 'Hanken Grotesk', sans-serif !important; font-size: 11px !important;
     font-weight: 400; letter-spacing: .02em; color: rgba(255,255,255,.5) !important;
@@ -399,6 +399,11 @@
      them sets an inline style.cssText, so the color override needs !important to win. */
   .cluster-caption { color: var(--ink-4) !important; }
   .gap-divider { border-top-color: var(--rule) !important; }
+  .charts { position: relative; }
+  #connector-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: visible; }
+  .eq-box, .legend-row { position: relative; z-index: 1; }
+  .guide-line { stroke: #8a8f98; stroke-width: 1; stroke-dasharray: 3 4; fill: none; }
+  .connector-faint { stroke: #8a8f98; stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.35; fill: none; }
 </style>
 </head>
 <body>
@@ -487,6 +492,7 @@
 
   <div id="right-col">
     <div class="panel charts">
+      <svg id="connector-overlay" aria-hidden="true"></svg>
 
       <div class="chart-box" id="chart-box-ismp">
         <h3>ISLM (goods market &amp; policy rate)</h3>
@@ -1291,8 +1297,8 @@ function drawAxes(svg, o) {
   });
   el('line', { x1: o.P.l, x2: o.P.l, y1: o.P.t, y2: o.H - o.P.b, class: 'axis-line' }, svg);
   el('line', { x1: o.P.l, x2: o.W - o.P.r, y1: o.H - o.P.b, y2: o.H - o.P.b, class: 'axis-line' }, svg);
-  { const _t = el('text', { x: o.W - o.P.r, y: o.H - o.P.b - 4, class: 'axis-label', 'text-anchor': 'end' }, svg); _t.textContent = o.xLabel; svgTitle(_t, o.xLabel); }
-  { const _t = el('text', { x: o.P.l + 4, y: o.P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg); _t.textContent = o.yLabel; svgTitle(_t, o.yLabel); }
+  { const _t = el('text', { x: (o.P.l + o.W - o.P.r) / 2, y: o.H - 6, class: 'axis-label', 'text-anchor': 'middle' }, svg); _t.textContent = o.xLabel; svgTitle(_t, o.xLabel); }
+  { const _t = el('text', { x: 12, y: (o.P.t + o.H - o.P.b) / 2, class: 'axis-label', 'text-anchor': 'middle', transform: `rotate(-90 12 ${(o.P.t + o.H - o.P.b) / 2})` }, svg); _t.textContent = o.yLabel; svgTitle(_t, o.yLabel); }
 }
 
 function xScale(v, o) { return o.P.l + (v - o.xMin)/(o.xMax - o.xMin) * (o.W - o.P.l - o.P.r); }
@@ -1350,9 +1356,49 @@ function initDragManager() {
 // IS-MP chart
 // -------------------------------------------------------------------------
 let opts_ismp;
+  function drawConnectors() {
+    const ov = document.getElementById('connector-overlay');
+    if (!ov || typeof ov.getBoundingClientRect !== 'function') return;   // headless guard
+    while (ov.firstChild) ov.removeChild(ov.firstChild);
+    const cont = ov.getBoundingClientRect();
+    if (!cont || !cont.width) return;
+    const svgs = {};
+    for (const id of ['ismp', 'uip', 'pc']) {
+      const n = document.getElementById(id);
+      if (!n || typeof n.getBoundingClientRect !== 'function') return;
+      svgs[id] = n.getBoundingClientRect();
+      if (!svgs[id].width) return;
+    }
+    const eq = solve(state);
+
+    function mapCoord(rect, vx, vy) {
+      const S = Math.min(rect.width / 360, rect.height / 220);
+      const dx = (rect.width - 360 * S) / 2;
+      const dy = (rect.height - 220 * S) / 2;
+      return {
+        x: rect.left - cont.left + dx + vx * S,
+        y: rect.top - cont.top + dy + vy * S
+      };
+    }
+
+    // Y bridge: bottom of ismp plot -> top of pc plot
+    const vxIsmp = xScale(clamp(eq.Y, opts_ismp.xMin, opts_ismp.xMax), opts_ismp);
+    const vxPc   = xScale(clamp(eq.Y, opts_pc.xMin,  opts_pc.xMax),  opts_pc);
+    const p1 = mapCoord(svgs.ismp, vxIsmp, 220 - opts_ismp.P.b);
+    const p2 = mapCoord(svgs.pc,   vxPc,   opts_pc.P.t);
+    el('path', { d: `M ${p1.x} ${p1.y} L ${p1.x} ${(p1.y + p2.y) / 2} L ${p2.x} ${(p1.y + p2.y) / 2} L ${p2.x} ${p2.y}`, class: 'connector-faint' }, ov);
+
+    // i bridge: right edge of ismp plot -> left edge of uip plot
+    const vyIsmp = yScale(clamp(eq.i, opts_ismp.yMin, opts_ismp.yMax), opts_ismp);
+    const vyUip  = yScale(clamp(eq.i, opts_uip.yMin,  opts_uip.yMax),  opts_uip);
+    const p3 = mapCoord(svgs.ismp, 360 - opts_ismp.P.r, vyIsmp);
+    const p4 = mapCoord(svgs.uip,  opts_uip.P.l,        vyUip);
+    el('path', { d: `M ${p3.x} ${p3.y} L ${(p3.x + p4.x) / 2} ${p3.y} L ${(p3.x + p4.x) / 2} ${p4.y} L ${p4.x} ${p4.y}`, class: 'connector-faint' }, ov);
+  }
+
 function drawISMP() {
   const svg = document.getElementById('ismp');
-  const W = 360, H = 220, P = { l: 38, r: 16, t: 14, b: 28 };
+  const W = 360, H = 220, P = { l: 46, r: 16, t: 14, b: 40 };
   const o = opts_ismp = {
     W, H, P,
     xMin: 70, xMax: 130, yMin: -0.02, yMax: 0.15,
@@ -1367,7 +1413,7 @@ function drawISMP() {
   if (tutorialState.unlocked.has('PC')) {
     const yn_x = xScale(eq.Y_n, o);
     el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-    { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
+    { const _t = el('text', { x: yn_x - 3, y: H - P.b - 4, class: 'axis-label', fill: '#666', 'text-anchor': 'end' }, svg); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
   }
 
   if (ZLB >= o.yMin && ZLB <= o.yMax) {
@@ -1389,12 +1435,21 @@ function drawISMP() {
     el('line', { x1: P.l, x2: W - P.r, y1: yScale(real_i, o), y2: yScale(real_i, o), class: 'curve curve-real' }, svg);
   }
 
-  const isEndVal = isRateForOutput(o.xMax, state.G, state.T, eq.eps, effectivePiE(state), state.c1, state.m1, state.Ystar);
-  { const _t = el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(isEndVal, o) + 12, o), class: 'curve-label label-is' }, svg); _t.textContent = 'IS'; svgTitle(_t, 'IS'); }
+  const isStartVal = isRateForOutput(o.xMin, state.G, state.T, eq.eps, effectivePiE(state), state.c1, state.m1, state.Ystar);
+  { const _t = el('text', { x: xScale(o.xMin, o) + 6, y: labelY(yScale(isStartVal, o) - 6, o), class: 'curve-label label-is' }, svg); _t.textContent = 'IS'; svgTitle(_t, 'IS'); }
 
-  { const _t = el('text', { x: P.l + 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp' }, svg); _t.textContent = 'LM'; svgTitle(_t, 'LM'); }
+  { const _t = el('text', { x: W - P.r - 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp', 'text-anchor': 'end' }, svg); _t.textContent = 'LM'; svgTitle(_t, 'LM'); }
+  { const _t = el('text', { x: P.l + 4, y: labelY(yScale(mp_i, o) - 5, o), class: 'curve-label label-mp' }, svg); _t.textContent = 'i'; svgTitle(_t, 'i'); }
+  if (tutorialState.unlocked.has('PC')) {
+    { const _t = el('text', { x: P.l + 4, y: labelY(yScale(real_i, o) - 5, o), class: 'curve-label label-mp' }, svg); _t.textContent = 'r'; svgTitle(_t, 'r'); }
+  }
 
   el('circle', { cx: xScale(eq.Y, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
+  // guide: Y drop-line from the dot to the x-axis (continues to PC via overlay)
+  el('line', { x1: xScale(eq.Y, o), x2: xScale(eq.Y, o), y1: yScale(eq.i, o), y2: H - P.b, class: 'guide-line' }, svg);
+  { const _t = el('text', { x: xScale(eq.Y, o) + 3, y: H - P.b - 4, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'Y'; svgTitle(_t, 'Y'); }
+  // guide: i continues rightward toward UIP (bridge drawn by overlay)
+  el('line', { x1: xScale(eq.Y, o), x2: W - P.r, y1: yScale(eq.i, o), y2: yScale(eq.i, o), class: 'guide-line' }, svg);
 
   const isHandleY = 90;
   const isHandle_i = isRateForOutput(isHandleY, state.G, state.T, eq.eps, effectivePiE(state), state.c1, state.m1, state.Ystar);
@@ -1472,7 +1527,7 @@ HANDLES.mp = (sx, sy) => {
 let opts_uip;
 function drawUIP() {
   const svg = document.getElementById('uip');
-  const W = 360, H = 220, P = { l: 38, r: 16, t: 14, b: 28 };
+  const W = 360, H = 220, P = { l: 46, r: 16, t: 14, b: 40 };
   const o = opts_uip = {
     W, H, P,
     xMin: 0.70, xMax: 1.30, yMin: -0.02, yMax: 0.15,
@@ -1486,7 +1541,14 @@ function drawUIP() {
 
   const ee_y = yScale(state.i_star, o);
   el('line', { x1: P.l, x2: W - P.r, y1: ee_y, y2: ee_y, class: 'curve-natural' }, svg);
-  { const _t = el('text', { x: W - P.r - 10, y: ee_y - 4, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'i*'; svgTitle(_t, 'i*'); }
+  const i_y = yScale(clamp(eq.i, o.yMin, o.yMax), o);
+  el('line', { x1: P.l, x2: W - P.r, y1: i_y, y2: i_y, class: 'guide-line' }, svg);
+  if (Math.abs(eq.i - state.i_star) < 0.0025) {
+    { const _t = el('text', { x: P.l + 4, y: ee_y - 4, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'i, i*'; svgTitle(_t, 'i, i*'); }
+  } else {
+    { const _t = el('text', { x: P.l + 4, y: ee_y - 4, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'i*'; svgTitle(_t, 'i*'); }
+    { const _t = el('text', { x: P.l + 4, y: i_y - 4, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'i'; svgTitle(_t, 'i'); }
+  }
 
   const uipPts = [];
   for (let i = o.yMin; i <= o.yMax; i += 0.005) {
@@ -1504,6 +1566,8 @@ function drawUIP() {
   { const _t = el('text', { x: xScale(uipEndE, o) + 4, y: labelY(yScale(o.yMax, o) + 12, o), class: 'curve-label label-uip' }, svg); _t.textContent = 'UIP'; svgTitle(_t, 'UIP'); }
 
   el('circle', { cx: xScale(eq.E, o), cy: yScale(eq.i, o), r: 4.5, class: 'eq-point' }, svg);
+  el('line', { x1: xScale(eq.E, o), x2: xScale(eq.E, o), y1: yScale(eq.i, o), y2: H - P.b, class: 'guide-line' }, svg);
+  { const _t = el('text', { x: xScale(eq.E, o) + 3, y: H - P.b - 4, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'E'; svgTitle(_t, 'E'); }
 
   const handle_i = 0.06;
   const uipHandleE = state.E_e * (1 + handle_i) / (1 + state.i_star);
@@ -1530,7 +1594,7 @@ HANDLES.uip = (sx, sy) => {
 let opts_pc;
 function drawPC() {
   const svg = document.getElementById('pc');
-  const W = 360, H = 220, P = { l: 38, r: 16, t: 14, b: 28 };
+  const W = 360, H = 220, P = { l: 46, r: 16, t: 14, b: 40 };
   const o = opts_pc = {
     W, H, P,
     xMin: 70, xMax: 130, yMin: -0.05, yMax: 0.30,
@@ -1545,7 +1609,7 @@ function drawPC() {
 
   const yn_x = xScale(eq.Y_n, o);
   el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svg);
-  { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svg); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
+  { const _t = el('text', { x: yn_x - 3, y: H - P.b - 4, class: 'axis-label', fill: '#666', 'text-anchor': 'end' }, svg); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
 
   const target_y = yScale(PI_TARGET, o);
   el('line', { x1: P.l, x2: W - P.r, y1: target_y, y2: target_y, class: 'curve-target' }, svg);
@@ -1567,6 +1631,7 @@ function drawPC() {
   { const _t = el('text', { x: xScale(o.xMax, o) - 14, y: labelY(yScale(pcEndVal, o) - 4, o), class: 'curve-label label-pc' }, svg); _t.textContent = 'PC'; svgTitle(_t, 'PC'); }
 
   el('circle', { cx: xScale(clamp(eq.Y, o.xMin, o.xMax), o), cy: yScale(clamp(eq.pi, o.yMin, o.yMax), o), r: 4.5, class: 'eq-point' }, svg);
+  el('line', { x1: xScale(clamp(eq.Y, o.xMin, o.xMax), o), x2: xScale(clamp(eq.Y, o.xMin, o.xMax), o), y1: P.t, y2: yScale(clamp(eq.pi, o.yMin, o.yMax), o), class: 'guide-line' }, svg);
 
   el('circle', {
     cx: xScale(eq.Y_n, o),
@@ -1800,6 +1865,7 @@ function fitCharts() {
     h -= 4; guard++;
     document.documentElement.style.setProperty('--chart-h', h + 'px');
   }
+  if (typeof drawConnectors === 'function') drawConnectors();
 }
 
 window.addEventListener('resize', () => requestAnimationFrame(fitCharts));
@@ -2135,6 +2201,7 @@ function render() {
   updateCredMeter(eq);
   renderTutorial();
   redrawOpenDrills();
+  drawConnectors();
 }
 
 function redrawOpenDrills() {
