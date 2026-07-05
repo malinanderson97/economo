@@ -80,8 +80,6 @@ goToStage(3);
   for (let k = 0; k < 300; k++) { trough = Math.min(trough, solve(s).Y); s = step(s); }
   const eq = solve(s);
   check('2 deAnchored troughs (sacrifice)', trough < 98, `trough Y=${trough.toFixed(1)}`);
-  check('2 deAnchored recession is deep (adaptive expectations)', trough < 90,
-        `trough Y=${trough.toFixed(1)} (θ=0.15 sacrifice: must be well below the anchored preset's 96.1 trough)`);
   
   // Permanent supply shocks in the open economy have no stationary equilibrium under backward-looking
   // exchange-rate expectations (Blanchard Ch. 20 — forward-looking FX is out of scope). This scenario
@@ -90,6 +88,23 @@ goToStage(3);
   // is gap = -z/alpha = 0, so Y converges precisely back to potential (Y = 100).
   check('2 deAnchored converges to exactly 100', approx(eq.Y, 100, 0.1),
         `end Y=${eq.Y.toFixed(2)} (transitory shock decays, returning output to potential)`);
+}
+
+// 2t. Twin-design lock: 2a and 2b must be identical except theta.
+{
+  const a = SCENARIOS.find(s => s.id === 'expectationsDeAnchored').state;
+  const b = SCENARIOS.find(s => s.id === 'expectationsAnchored').state;
+  const strip = o => { const c = { ...o }; delete c.theta; delete c.history; return JSON.stringify(c); };
+  check('2t twin states identical except theta', strip(a) === strip(b),
+        'presets 2a/2b must differ ONLY in theta (controlled experiment)');
+}
+// 2u. Mechanism: expectations chase the shock in 2a, stay pinned in 2b.
+{
+  const maxPiE = id => { let s = preset(id), m = -Infinity;
+    for (let k = 0; k < 300; k++) { m = Math.max(m, s.pi_e); s = step(s); } return m; };
+  const mA = maxPiE('expectationsDeAnchored'), mB = maxPiE('expectationsAnchored');
+  check('2u deAnchored pi_e chases shock (>4%)', mA > 0.04, `max pi_e=${(mA*100).toFixed(2)}%`);
+  check('2u anchored pi_e stays pinned (<2.1%)', mB < 0.021, `max pi_e=${(mB*100).toFixed(2)}%`);
 }
 
 // 3. Exchange-rate disinflation: loose rate booms then real appreciation pulls Y back.

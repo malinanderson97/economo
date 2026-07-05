@@ -967,6 +967,40 @@ const endLine = term => (EQ_REF[term] ? `<span class="eq-ref">(${EQ_REF[term]})<
 // -------------------------------------------------------------------------
 // Controls
 // -------------------------------------------------------------------------
+// Same rejection cue as dragging the LM curve while the rule is active (HANDLES.mp):
+// the attempt is refused and a fading notice appears over the control.
+function showTaylorSliderMsg(anchorEl) {
+  let msg = document.getElementById('taylor-slider-msg');
+  if (!msg) {
+    msg = document.createElement('div');
+    msg.id = 'taylor-slider-msg';
+    msg.style.position = 'absolute';
+    msg.style.top = '0';
+    msg.style.left = '0';
+    msg.style.right = '0';
+    msg.style.background = '#1a1a1a';
+    msg.style.color = '#fff';
+    msg.style.padding = '6px 10px';
+    msg.style.borderRadius = '4px';
+    msg.style.fontSize = '11px';
+    msg.style.lineHeight = '1.4';
+    msg.style.pointerEvents = 'none';
+    msg.style.zIndex = '100';
+    msg.textContent = 'Taylor rule is ON — rate is set by the rule. Turn it off to set manually.';
+  }
+  if (msg.parentNode !== anchorEl) {
+    anchorEl.style.position = 'relative';
+    anchorEl.appendChild(msg);
+  }
+  msg.style.opacity = '1';
+  msg.style.transition = 'none';
+  if (window.taylorSliderMsgTimeout) clearTimeout(window.taylorSliderMsgTimeout);
+  window.taylorSliderMsgTimeout = setTimeout(() => {
+    msg.style.transition = 'opacity 0.5s ease';
+    msg.style.opacity = '0';
+  }, 2000);
+}
+
 function buildSliders(root, defs) {
   defs.forEach(p => {
     const wrap = document.createElement('div');
@@ -996,13 +1030,25 @@ function buildSliders(root, defs) {
         range.value = state.i_target;
       }
     };
+    const taylorOwnsRate = () =>
+      p.key === 'i_target' && state.taylor_on && tutorialState.unlocked.has('PC');
     range.addEventListener('input', e => {
+      if (taylorOwnsRate()) {
+        showTaylorSliderMsg(wrap);
+        syncControls();   // snap the thumb back to the rule's current i
+        return;
+      }
       state[p.key] = parseFloat(e.target.value);
       applyITargetGuard();
       edit.value = editFmt(state[p.key]);
       render();
     });
     const commit = () => {
+      if (taylorOwnsRate()) {
+        showTaylorSliderMsg(wrap);
+        syncControls();   // restore the box to the rule's current i
+        return;
+      }
       let raw = parse(parseFloat(edit.value));
       if (isNaN(raw)) { edit.value = editFmt(state[p.key]); return; }
       raw = clamp(raw, p.min, p.max);
@@ -1165,12 +1211,16 @@ function applyGraphGrouping() {
 function syncControls() {
   const allDefs = [...paramDefs, ...shockDefs, ...dynamicsDefs];
   allDefs.forEach(p => {
+    // While the Taylor rule drives the rate (same gate as step()), the policy-rate
+    // slider mirrors the rule's current i; the manual target is inert until Taylor is off.
+    const shown = (p.key === 'i_target' && state.taylor_on && tutorialState.unlocked.has('PC'))
+      ? state.i : state[p.key];
     const inp = document.getElementById('ctl-' + p.key);
-    if (inp) inp.value = state[p.key];
+    if (inp) inp.value = shown;
     const lbl = document.getElementById('val-' + p.key);
     if (lbl) {
       const editFmt = p.editFmt || (v => p.fmt(v).replace(/[^0-9.\-]/g, ''));
-      lbl.value = editFmt(state[p.key]);
+      lbl.value = editFmt(shown);
     }
   });
   document.getElementById('taylor-toggle').classList.toggle('on', state.taylor_on);
@@ -2248,14 +2298,14 @@ const SCENARIOS = [
   {
     id: 'expectationsDeAnchored',
     label: '2a. De-Anchored Expectations (1970s)',
-    narrative: 'θ = 0.15: expectations are mostly adaptive and start at 8%. A transitory cost-push shock (z_pulse = +2%) hits. Disinflation requires a deep, drawn-out recession because the central bank must drag πᵉ down by brute force — the policy rate spends several periods pinned at the ZLB along the way. Since the shock is transitory, output eventually returns to exactly potential (100). Contrast the depth and length of this slump with preset 2b. Permanent supply shocks have no stationary equilibrium in the open economy under naive exchange-rate expectations (Blanchard Ch. 20).',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.08, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.02, theta: 0.15, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
+    narrative: 'Twin experiment, part 1 — identical to preset 2b in every field except θ. θ = 0.15: expectations are mostly adaptive. A transitory supply shock (z_pulse = +5%) hits: inflation spikes to 7% and πᵉ chases it upward (watch it climb toward 5%). The central bank now fights a moving target: rates go higher for longer, inflation stays elevated for roughly twice as long as in 2b, and the cumulative output loss is about 1.5× larger — even though the first-period dip is milder, because rising πᵉ erodes the real rate. That cushion is exactly the poison. Since the shock is transitory, output eventually returns to potential (100).',
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.05, theta: 0.15, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'expectationsAnchored',
     label: '2b. Anchored Expectations (1990s)',
-    narrative: 'θ = 1: credibility is absolute. The same persistent cost-push shock (z = 2%) barely ripples—πᵉ stays nailed to the 2% target, and the adjustment is far smoother than in 2a even though the permanent shock carries the same lasting output cost. Use this side-by-side with preset 2a to show why central-bank credibility is a policy tool.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0.02, z_pulse: 0, theta: 1, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
+    narrative: 'Twin experiment, part 2 — identical to preset 2a in every field except θ. θ = 1: credibility is absolute and πᵉ stays nailed to 2% no matter what inflation does. The same +5% transitory supply shock produces a sharper but brief slump: one decisive hike, inflation is back near target within a couple of periods, and the episode is over by around t = 12. Run this side-by-side with 2a: same economy, same shock — the only difference is whether expectations are anchored. Central-bank credibility is itself a policy tool (Blanchard Ch. 9).',
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.05, theta: 1, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'exchangeRateDisinflation',
