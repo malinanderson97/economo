@@ -1,0 +1,95 @@
+
+--- Matches for Investment function I(Y, i) ---
+PDF 110: I = I(Y, i)
+PDF 425: ■ Investment also rises because it depends on both output and the interest rate: I = I(Y, i).
+PDF 426: and the interest rate: I = I(Y, i). Here output rises, but so does the interest rate.
+PDF 559: I = I(Y, i)
+
+--- Matches for UIP 1+i* ---
+
+--- Matches for UIP 1+i* no spaces ---
+PDF 390: 1+i* Note that 1.7% per month is still higher than the monthly
+PDF 434: (1+i )=(1+i*)(E Ee )−x
+PDF 458: t (1+i*)(1+i*e )(cid:31)(1+i*e ) t+n+1 nominal exchange rate and the broad real exchange rate
+
+--- Matches for UIP E= ---
+PDF 419: E = t Ee (19.4) t+1
+PDF 421: the yen. By how much? Equation (19.5) gives the answer: E = (1.021.02) 110 = 110.
+PDF 422: exchange rate (E = Ee). This implies that the line corresponding to the interest parity
+PDF 430: When the country pegs its exchange rate at E, the current exchange rate E = E.
+PDF 444: say E = E. If markets expect that the parity will be maintained over the period, then
+PDF 447: E = t Ee (20.4)
+PDF 448: E = t t+1 Ee
+PDF 449: E = 1= 1
+PDF 450: E = = = 0.90
+PDF 458: E = (1+i t )(1+i t e +1 )(cid:31)(1+i t e +n ) Ee b. Make a time-series graph of the redefined Mexican–US
+PDF 460: E = E
+
+--- Matches for UIP E= no spaces ---
+
+--- Matches for Eq 18.x ---
+PDF 396: Z = C +I +G−IM ε+X (18.1)
+PDF 397: IM = IM(Y,ε) (18.2)
+PDF 399: Y = C(Y −T)+ I(Y,r)+G−IM(Y,ε) ε+ X(Y*,ε) (18.4)
+PDF 406: More concretely, if the dollar Replace X and IM by their expressions from equations (18.2) and (18.3):
+PDF 410: CA = S +(T −G)−I (18.5)
+PDF 411: Note also, however, what equation (18.5) does not say.
+PDF 413: c. Using equation (18.5), what must happen to private sav-
+PDF 414: tion (18.5), describe the relation among the current account
+PDF 418: librium condition equation (18.4):
+
+--- Matches for Eq 19.x ---
+PDF 418: decrease in net exports (see Y = C(Y −T)+ I(Y, r)+G+ NX(Y,Y*, ε) (19.1)
+PDF 419: then ε = E and we can replace ε with E in equation (19.1). bP = P* = 1, so ε = E.
+PDF 421: the yen. By how much? Equation (19.5) gives the answer: E = (1.021.02) 110 = 110.
+PDF 422: rate, E, implied by equation (19.5)—the interest parity relation. The relation is drawn for
+PDF 423: Using equation (19.5) then gives us the implied exchange rate. Take the IS relation first
+PDF 447: As we did in Chapter 19 (equation (19.4)), multiply both sides by Ee and reorga-
+PDF 460: derived in equation (19.1) in Chapter 19: domestic interest rate, i, must be equal to the foreign interest
+
+--- Matches for Phillips curve with m+z ---
+
+--- Matches for Phillips curve gap form ---
+
+--- Matches for Natural rate ---
+
+--- Matches for Eq 9.x ---
+PDF 200: Y = C(Y −T)+ I(Y, r +x)+G (9.1)
+PDF 201: π−πe = −α(u−u ) (9.2)
+PDF 203: π−π = (α L)(Y −Y ) (9.4)
+PDF 206: and potential output), but in contrast to the simple equation (9.4), the signal is noisy.
+PDF 442: of prices is well described by the Phillips curve relation (Chapter 9, equation (9.3)):
+
+--- Matches for Eq 8.x ---
+PDF 181: P = Pe (1+m)(1−αu+ z) (8.1)
+PDF 182: equation (8.3) gives
+PDF 183: negative relation between unemployment and inflation, corresponding to equation (8.4),
+PDF 184: tion and unemployment. Substitute equation (8.7) for the value of πe in equation (8.5):
+PDF 187: To see what this implies, go back to equation (8.4). The increase in m, given z and α, b Recall: P = (1+ m) W⇒
+PDF 188: inflation was likely to be limited. In terms of equation (8.5), the argument was that α
+PDF 189: equation (8.5), an increase in the markup (m). This was for two reasons.
+PDF 191: Under this assumption, equation (8.5) becomes
+PDF 198: given by equation (8.1), (πe ≡(Pe −P ) P ):
+
+--- Matches for Eq 5.x ---
+PDF 110: (+,−) (5.1)
+PDF 111: Equation (5.1) states that investment I depends on production Y and the interest
+PDF 114: = Y L(i) (5.3)
+PDF 115: From now on, we shall refer to equation (5.3) as the LM relation. The advantage of
+PDF 127: 2. Consider first the goods market model with constant investment a. What is on the left-hand side of equation (5.3)?
+PDF 514: From Chapter 5, equation (5.3):
+PDF 559: tion (5.1) in Chapter 5:
+
+--- Matches for Eq 3.x ---
+PDF 68: C = C(Y ) (3.1)
+PDF 69: equation (3.2), C = c . If we use this interpretation, a natural restriction is that,
+PDF 70: retirees), and Medicaid (health Replacing Y in equation (3.2) gives
+PDF 71: Replacing C and I from equations (3.3) and (3.4), we get
+PDF 72: Rewrite the equilibrium equation (3.7):
+PDF 73: The relation between demand and income is given by equation (3.5). Let’s
+PDF 76: equilibrium condition (3.6), I have assumed that production is always equal to demand. In
+PDF 77: able income has not changed? Or, in terms of equation (3.2), September 15, 2008, Lehman Brothers, a very large bank,
+PDF 79: We characterized the equilibrium using the first condition, equation (3.6). We now
+PDF 80: In my view, this may be one c Equation (3.12) is exactly the same as equation (3.8). This should come as no sur-
+PDF 83: QUICK CHECK Start from equation (3.8).
+PDF 560: function (3.2) in Chapter 3: tical scale, the plot looks like Figure A2-1(a). The increases

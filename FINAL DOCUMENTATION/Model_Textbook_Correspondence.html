@@ -1,666 +1,1347 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Economo — Model Textbook Correspondence</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#0A2540;--ink-2:#425466;--ink-3:#697386;--ink-4:#8792A2;
-    --navy-900:#0A2540;--navy-700:#1A2E4A;
-    --bg:#F6F9FC;--surface:#FFFFFF;--surface-2:#F7FAFC;--surface-tint:#EEF2F8;
-    --rule:#E3E8EE;--rule-2:#D5DBE3;--rule-strong:#AEB7C4;
-    --accent:#635BFF;--accent-hover:#5851EC;--accent-tint:#EFEEFE;--accent-tint-2:#DEDBFB;
-    --curve-is:#E25950;--curve-mp:#635BFF;--curve-uip:#0FA9A0;--curve-eps:#F5A623;--curve-pc:#E0408E;
-    --grad:#11B8C9;
-    --shadow-card:0 1px 1px rgba(0,0,0,.03),0 3px 6px rgba(60,66,87,.06),0 2px 4px rgba(60,66,87,.05);
-    --font-ui:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
-    --font-brand:'Fredoka',system-ui,sans-serif;
-    --font-mono:'IBM Plex Mono',ui-monospace,monospace;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:var(--font-ui);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:820px;margin:0 auto;padding:0 0 80px;}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Economo — Model Textbook Correspondence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0A2540;
+      --ink-2: #425466;
+      --ink-3: #697386;
+      --ink-4: #8792A2;
+      --navy-900: #0A2540;
+      --navy-700: #1A2E4A;
+      --bg: #F6F9FC;
+      --surface: #FFFFFF;
+      --surface-2: #F7FAFC;
+      --surface-tint: #EEF2F8;
+      --rule: #E3E8EE;
+      --rule-2: #D5DBE3;
+      --rule-strong: #AEB7C4;
+      --accent: #635BFF;
+      --accent-hover: #5851EC;
+      --accent-tint: #EFEEFE;
+      --accent-tint-2: #DEDBFB;
+      --curve-is: #E25950;
+      --curve-mp: #635BFF;
+      --curve-uip: #0FA9A0;
+      --curve-eps: #F5A623;
+      --curve-pc: #E0408E;
+      --grad: #11B8C9;
+      --shadow-card: 0 1px 1px rgba(0, 0, 0, .03), 0 3px 6px rgba(60, 66, 87, .06), 0 2px 4px rgba(60, 66, 87, .05);
+      --font-ui: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+      --font-brand: 'Fredoka', system-ui, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
 
-  /* Header band */
-  header{position:relative;overflow:hidden;background:var(--navy-900);color:#fff;padding:38px 48px 34px;}
-  header::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--grad);}
-  .brandmark{font-family:var(--font-brand);font-weight:600;font-size:34px;letter-spacing:.4px;line-height:1;}
-  .brandmark .bang{color:#8C84FF;margin-left:1px;}
-  header .doc-title{font-size:18px;font-weight:600;margin-top:14px;letter-spacing:-0.01em;}
-  header .doc-sub{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;}
-  header .eyebrow{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:18px;}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  main{padding:0 48px;}
-  h2{font-size:21px;font-weight:700;letter-spacing:-0.01em;margin:42px 0 6px;padding-top:20px;border-top:1px solid var(--rule);color:var(--ink);}
-  h2:first-of-type{border-top:none;padding-top:8px;}
-  h2 .num{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:10px;}
-  h3{font-size:15.5px;font-weight:600;margin:24px 0 4px;color:var(--ink);}
-  p{margin:8px 0;color:var(--ink-2);}
-  ul,ol{margin:8px 0 8px 22px;color:var(--ink-2);}
-  li{margin:5px 0;}
-  strong{color:var(--ink);font-weight:600;}
-  code,.mono{font-family:var(--font-mono);font-size:13.5px;background:var(--surface-2);border:1px solid var(--rule);border-radius:5px;padding:1px 6px;color:var(--ink);}
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  .lead{font-size:16px;color:var(--ink-2);margin:18px 0 8px;}
+    .wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 0 80px;
+    }
 
-  /* Eyebrow label */
-  .eyebrow{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-4);}
+    /* Header band */
+    header {
+      position: relative;
+      overflow: hidden;
+      background: var(--navy-900);
+      color: #fff;
+      padding: 38px 48px 34px;
+    }
 
-  /* Cards / callouts */
-  .card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow-card);margin:18px 0;}
-  .note{background:var(--accent-tint);border:1px solid var(--accent-tint-2);border-radius:12px;padding:14px 18px;margin:18px 0;font-size:14px;color:var(--navy-700);}
-  .note .eyebrow{color:var(--accent);margin-bottom:4px;}
+    header::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 4px;
+      background: var(--grad);
+    }
 
-  /* Equation block */
-  .eq{font-family:var(--font-mono);font-size:13.5px;background:var(--surface-2);border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.9;overflow-x:auto;}
-  .eq .ref{color:var(--ink-4);font-family:var(--font-ui);font-size:12px;margin-left:8px;}
+    .brandmark {
+      font-family: var(--font-brand);
+      font-weight: 600;
+      font-size: 34px;
+      letter-spacing: .4px;
+      line-height: 1;
+    }
 
-  /* Stage table */
-  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;}
-  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;}
-  th{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-4);background:var(--surface-2);}
-  td{color:var(--ink-2);}
-  td strong{color:var(--ink);}
-  .stage-n{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);}
+    .brandmark .bang {
+      color: #8C84FF;
+      margin-left: 1px;
+    }
 
-  /* curve key dot */
-  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;margin-right:6px;}
+    header .doc-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 14px;
+      letter-spacing: -0.01em;
+    }
 
-  /* TOC */
-  .toc{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:18px 24px;box-shadow:var(--shadow-card);margin:26px 0;}
-  .toc .eyebrow{margin-bottom:10px;}
-  .toc ol{list-style:none;margin:0;counter-reset:toc;}
-  .toc li{counter-increment:toc;margin:6px 0;color:var(--ink-2);}
-  .toc li::before{content:counter(toc);color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums;margin-right:12px;}
-  .toc a{color:var(--ink-2);text-decoration:none;}
-  .toc a:hover{color:var(--accent);}
+    header .doc-sub {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .6);
+      margin-top: 4px;
+    }
 
-  footer{margin-top:50px;padding:22px 48px;border-top:1px solid var(--rule);color:var(--ink-4);font-size:12.5px;}
-  footer strong{color:var(--ink-3);}
-  a{color:var(--accent);}
-</style>
+    header .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .5);
+      margin-bottom: 18px;
+    }
+
+    main {
+      padding: 0 48px;
+    }
+
+    h2 {
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin: 42px 0 6px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
+      color: var(--ink);
+    }
+
+    h2:first-of-type {
+      border-top: none;
+      padding-top: 8px;
+    }
+
+    h2 .num {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      margin-right: 10px;
+    }
+
+    h3 {
+      font-size: 15.5px;
+      font-weight: 600;
+      margin: 24px 0 4px;
+      color: var(--ink);
+    }
+
+    p {
+      margin: 8px 0;
+      color: var(--ink-2);
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 8px 22px;
+      color: var(--ink-2);
+    }
+
+    li {
+      margin: 5px 0;
+    }
+
+    strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    code,
+    .mono {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      background: var(--surface-2);
+      border: 1px solid var(--rule);
+      border-radius: 5px;
+      padding: 1px 6px;
+      color: var(--ink);
+    }
+
+    .lead {
+      font-size: 16px;
+      color: var(--ink-2);
+      margin: 18px 0 8px;
+    }
+
+    /* Eyebrow label */
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+    }
+
+    /* Cards / callouts */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      padding: 18px 22px;
+      box-shadow: var(--shadow-card);
+      margin: 18px 0;
+    }
+
+    .note {
+      background: var(--accent-tint);
+      border: 1px solid var(--accent-tint-2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 18px 0;
+      font-size: 14px;
+      color: var(--navy-700);
+    }
+
+    .note .eyebrow {
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    /* Equation block */
+    .eq {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      background: var(--surface-2);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 12px 0;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.9;
+      overflow-x: auto;
+    }
+
+    .eq .ref {
+      color: var(--ink-4);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
+    /* Stage table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13.5px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink-4);
+      background: var(--surface-2);
+    }
+
+    td {
+      color: var(--ink-2);
+    }
+
+    td strong {
+      color: var(--ink);
+    }
+
+    .stage-n {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* curve key dot */
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* TOC */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      padding: 18px 24px;
+      box-shadow: var(--shadow-card);
+      margin: 26px 0;
+    }
+
+    .toc .eyebrow {
+      margin-bottom: 10px;
+    }
+
+    .toc ol {
+      list-style: none;
+      margin: 0;
+      counter-reset: toc;
+    }
+
+    .toc li {
+      counter-increment: toc;
+      margin: 6px 0;
+      color: var(--ink-2);
+    }
+
+    .toc li::before {
+      content: counter(toc);
+      color: var(--accent);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      margin-right: 12px;
+    }
+
+    .toc a {
+      color: var(--ink-2);
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      color: var(--accent);
+    }
+
+    footer {
+      margin-top: 50px;
+      padding: 22px 48px;
+      border-top: 1px solid var(--rule);
+      color: var(--ink-4);
+      font-size: 12.5px;
+    }
+
+    footer strong {
+      color: var(--ink-3);
+    }
+
+    a {
+      color: var(--accent);
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
-<header>
-  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA2kAAALQCAYAAAAKOjivAAAAx3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabVBbDgMhCPz3FD0Cgg84jrvapDfo8YuCye6mkzjggAiE8f28w2sCYwopVy5SCiiSJMGmDoOhLY6QFi8UAXL1pocOgMtDlWaKpQEXs3Hr/mDb2NTLl0J8euC4BySZRX4U8o9odjRb6F5IvBChBaIXaG2PwvU6wjHgDrYTJp3Dxov+2/Oeqm6vZxUJcZDKykRsDdA8JVBTpygjiSYCyVImZ6reiS7k3542wg+ihFosuUVbWQAAAYVpQ0NQSUNDIHByb2ZpbGUAAHicfZG/S8NAHMVfU7UiFQc7qChkqJ3soiKOpYpFsFDaCq06mFz6Q2jSkKS4OAquBQd/LFYdXJx1dXAVBMEfIP4B4qToIiV+Lym0iPHguA/v7j3u3gFCo8JUsysGqJplpBNxMZdfEQOv6MEYAohgWGKmnswsZOE5vu7h4+tdlGd5n/tz9CsFkwE+kTjGdMMiXiee2bR0zvvEIVaWFOJz4gmDLkj8yHXZ5TfOJYcFnhkysuk54hCxWOpguYNZ2VCJp4nDiqpRvpBzWeG8xVmt1FjrnvyFwYK2nOE6zVEksIgkUhAho4YNVGAhSqtGiok07cc9/COOP0UumVwbYOSYRxUqJMcP/ge/uzWLU5NuUjAOdL/Y9sc4ENgFmnXb/j627eYJ4H8GrrS2v9oAZj9Jr7e18BEwsA1cXLc1eQ+43AGGnnTJkBzJT1MoFoH3M/qmPDB4C/Stur219nH6AGSpq6Ub4OAQiJQoe83j3b2dvf17ptXfD8lVcsnPH784AAANdmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNC40LjAtRXhpdjIiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iCiAgICB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgeG1sbnM6R0lNUD0iaHR0cDovL3d3dy5naW1wLm9yZy94bXAvIgogICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgIHhtcE1NOkRvY3VtZW50SUQ9ImdpbXA6ZG9jaWQ6Z2ltcDo0OTE1OTA1ZS0xNzM5LTQ4YTAtODczYS05OGY1MjFjMzE3NDQiCiAgIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ZjMzYThiYWItZGNmNS00MGRlLWJlZTktYTgzMjBlNmFiYzAwIgogICB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6MjIyYjk0OGUtNDBkMC00ZjE2LTkzMWItODQwZmRhM2Y4Yjc4IgogICBkYzpGb3JtYXQ9ImltYWdlL3BuZyIKICAgR0lNUDpBUEk9IjIuMCIKICAgR0lNUDpQbGF0Zm9ybT0iV2luZG93cyIKICAgR0lNUDpUaW1lU3RhbXA9IjE3ODI3MjA2MDM3NDkyNzQiCiAgIEdJTVA6VmVyc2lvbj0iMi4xMC4zOCIKICAgdGlmZjpPcmllbnRhdGlvbj0iMSIKICAgeG1wOkNyZWF0b3JUb29sPSJHSU1QIDIuMTAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjY6MDY6MjlUMDk6MDk6NTcrMDE6MDAiCiAgIHhtcDpNb2RpZnlEYXRlPSIyMDI2OjA2OjI5VDA5OjA5OjU3KzAxOjAwIj4KICAgPHhtcE1NOkhpc3Rvcnk+CiAgICA8cmRmOlNlcT4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MzU3M2RkOWUtMzA0OC00OTliLWEyOGEtNzA0NTQyNmNjM2RmIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJHaW1wIDIuMTAgKFdpbmRvd3MpIgogICAgICBzdEV2dDp3aGVuPSIyMDI2LTA2LTI5VDA5OjEwOjAzIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/PlHoeX0AAAAGYktHRAD2APkA/DAp6OoAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAHdElNRQfqBh0ICgM7zQAuAAAgAElEQVR42u3dT24U25IH4CxkCYkZLIG7BLwEWAJMPLTEXQIsAZYAUg1rwl0CLAGWgJcAMyQkpOoBdl9fP/ynqs7JjIjzfdKTXre6jZ154kT8MrOypgkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmMPKIQAgmx8/f23/9L9/cP9IXwNASAOAQ4LVbSHr4v/vwf2j1W3h7PL/bavfTfADQEgDoFz4GoEwB4CQBoAgJsgBIKQBIIjRKqzt+3gmAEIaAAIZM4W3y+dGeAMQ0gAoHMhuevEGuYKcowAgpAGQLJAhtAEgpAEglCG4ASCkAQhl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" alt="Economo Logo" style="position: absolute; right: -77px; bottom: -77px; width: 320px; height: 320px; object-fit: contain; opacity: 0.25;">
-  <div class="eyebrow">Instructor Manual</div>
-  <div class="brandmark">Economo</div>
-  <div class="doc-title">Model Textbook Correspondence</div>
-  <div class="doc-sub">Detailed mapping to Blanchard Macroeconomics (9th ed.)</div>
-</header>
-<main>
+  <div class="wrap">
+    <header>
+      <img
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA2kAAALQCAYAAAAKOjivAAAAx3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabVBbDgMhCPz3FD0Cgg84jrvapDfo8YuCye6mkzjggAiE8f28w2sCYwopVy5SCiiSJMGmDoOhLY6QFi8UAXL1pocOgMtDlWaKpQEXs3Hr/mDb2NTLl0J8euC4BySZRX4U8o9odjRb6F5IvBChBaIXaG2PwvU6wjHgDrYTJp3Dxov+2/Oeqm6vZxUJcZDKykRsDdA8JVBTpygjiSYCyVImZ6reiS7k3542wg+ihFosuUVbWQAAAYVpQ0NQSUNDIHByb2ZpbGUAAHicfZG/S8NAHMVfU7UiFQc7qChkqJ3soiKOpYpFsFDaCq06mFz6Q2jSkKS4OAquBQd/LFYdXJx1dXAVBMEfIP4B4qToIiV+Lym0iPHguA/v7j3u3gFCo8JUsysGqJplpBNxMZdfEQOv6MEYAohgWGKmnswsZOE5vu7h4+tdlGd5n/tz9CsFkwE+kTjGdMMiXiee2bR0zvvEIVaWFOJz4gmDLkj8yHXZ5TfOJYcFnhkysuk54hCxWOpguYNZ2VCJp4nDiqpRvpBzWeG8xVmt1FjrnvyFwYK2nOE6zVEksIgkUhAho4YNVGAhSqtGiok07cc9/COOP0UumVwbYOSYRxUqJMcP/ge/uzWLU5NuUjAOdL/Y9sc4ENgFmnXb/j627eYJ4H8GrrS2v9oAZj9Jr7e18BEwsA1cXLc1eQ+43AGGnnTJkBzJT1MoFoH3M/qmPDB4C/Stur219nH6AGSpq6Ub4OAQiJQoe83j3b2dvf17ptXfD8lVcsnPH784AAANdmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNC40LjAtRXhpdjIiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iCiAgICB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgeG1sbnM6R0lNUD0iaHR0cDovL3d3dy5naW1wLm9yZy94bXAvIgogICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgIHhtcE1NOkRvY3VtZW50SUQ9ImdpbXA6ZG9jaWQ6Z2ltcDo0OTE1OTA1ZS0xNzM5LTQ4YTAtODczYS05OGY1MjFjMzE3NDQiCiAgIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ZjMzYThiYWItZGNmNS00MGRlLWJlZTktYTgzMjBlNmFiYzAwIgogICB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6MjIyYjk0OGUtNDBkMC00ZjE2LTkzMWItODQwZmRhM2Y4Yjc4IgogICBkYzpGb3JtYXQ9ImltYWdlL3BuZyIKICAgR0lNUDpBUEk9IjIuMCIKICAgR0lNUDpQbGF0Zm9ybT0iV2luZG93cyIKICAgR0lNUDpUaW1lU3RhbXA9IjE3ODI3MjA2MDM3NDkyNzQiCiAgIEdJTVA6VmVyc2lvbj0iMi4xMC4zOCIKICAgdGlmZjpPcmllbnRhdGlvbj0iMSIKICAgeG1wOkNyZWF0b3JUb29sPSJHSU1QIDIuMTAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjY6MDY6MjlUMDk6MDk6NTcrMDE6MDAiCiAgIHhtcDpNb2RpZnlEYXRlPSIyMDI2OjA2OjI5VDA5OjA5OjU3KzAxOjAwIj4KICAgPHhtcE1NOkhpc3Rvcnk+CiAgICA8cmRmOlNlcT4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MzU3M2RkOWUtMzA0OC00OTliLWEyOGEtNzA0NTQyNmNjM2RmIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJHaW1wIDIuMTAgKFdpbmRvd3MpIgogICAgICBzdEV2dDp3aGVuPSIyMDI2LTA2LTI5VDA5OjEwOjAzIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/PlHoeX0AAAAGYktHRAD2APkA/DAp6OoAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAHdElNRQfqBh0ICgM7zQAuAAAgAElEQVR42u3dT24U25IH4CxkCYkZLIG7BLwEWAJMPLTEXQIsAZYAUg1rwl0CLAGWgJcAMyQkpOoBdl9fP/ynqs7JjIjzfdKTXre6jZ154kT8MrOypgkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmMPKIQAgmx8/f23/9L9/cP9IXwNASAOAQ4LVbSHr4v/vwf2j1W3h7PL/bavfTfADQEgDoFz4GoEwB4CQBoAgJsgBIKQBIIjRKqzt+3gmAEIaAAIZM4W3y+dGeAMQ0gAoHMhuevEGuYKcowAgpAGQLJAhtAEgpAEglCG4ASCkAQhl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"
+        alt="Economo Logo"
+        style="position: absolute; right: -77px; bottom: -77px; width: 320px; height: 320px; object-fit: contain; opacity: 0.25;">
+      <div class="eyebrow">Instructor Manual</div>
+      <div class="brandmark">Economo</div>
+      <div class="doc-title">Model Textbook Correspondence</div>
+      <div class="doc-sub">Detailed mapping to Blanchard Macroeconomics (9th ed.)</div>
+    </header>
+    <main>
 
-  <div class="toc">
-    <div class="eyebrow">Contents</div>
-    <ol>
-      <li><a href="#equation-index">Equation Index</a></li>
-      <li><a href="#scope-and-anchoring">Scope and anchoring</a></li>
-      <li><a href="#blanchard-s-building-blocks-with-equation-numbers">Blanchard's building blocks (with equation numbers)</a></li>
-      <li><a href="#is-equilibrium">Derivation of the closed-economy IS coefficients (symbolic)</a></li>
-      <li><a href="#numeric-check-case-baseline-calibration">Numeric check-case (baseline calibration)</a></li>
-      <li><a href="#the-lm-mp-block-money-market-and-the-policy-rate">The LM / MP block (money market and the policy rate)</a></li>
-      <li><a href="#the-phillips-curve-block-inflation">The Phillips-curve block (inflation)</a></li>
-      <li><a href="#the-open-economy-block-exchange-rate-and-foreign-output">The open-economy block (exchange rate and foreign output)</a></li>
-    </ol>
+      <div class="toc">
+        <div class="eyebrow">Contents</div>
+        <ol>
+          <li><a href="#equation-index">Equation Index</a></li>
+          <li><a href="#scope-and-anchoring">Scope and anchoring</a></li>
+          <li><a href="#blanchard-s-building-blocks-with-equation-numbers">Blanchard's building blocks (with equation
+              numbers)</a></li>
+          <li><a href="#is-equilibrium">Derivation of the closed-economy IS coefficients (symbolic)</a></li>
+          <li><a href="#numeric-check-case-baseline-calibration">Numeric check-case (baseline calibration)</a></li>
+          <li><a href="#the-lm-mp-block-money-market-and-the-policy-rate">The LM / MP block (money market and the policy
+              rate)</a></li>
+          <li><a href="#the-phillips-curve-block-inflation">The Phillips-curve block (inflation)</a></li>
+          <li><a href="#the-open-economy-block-exchange-rate-and-foreign-output">The open-economy block (exchange rate
+              and foreign output)</a></li>
+        </ol>
+      </div>
+
+
+      <h2 id="equation-index"><span class="num">0</span> Equation Index</h2>
+      <div style="overflow-x:auto;">
+        <table
+          style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
+          <tr>
+            <th style="border: 1px solid var(--rule); padding: 8px 12px; background:var(--surface-2);">Graph Line</th>
+            <th style="border: 1px solid var(--rule); padding: 8px 12px; background:var(--surface-2);">Concept</th>
+            <th style="border: 1px solid var(--rule); padding: 8px 12px; background:var(--surface-2);">Tool Equation
+            </th>
+            <th style="border: 1px solid var(--rule); padding: 8px 12px; background:var(--surface-2);">Reference</th>
+          </tr>
+          <!-- ISLM -->
+          <tr>
+            <td rowspan="7"
+              style="border: 1px solid var(--rule); padding: 8px 12px; font-weight:600; vertical-align: middle;">ISLM
+            </td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Closed IS Equation</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">Y = [1 / (1 − c₁ − d₁)] · [c₀ + d₀
+              + G − c₁ T − d₂ r]</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#is-equilibrium">§2</a></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Closed Multiplier</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">k = 1 / (1 − c₁ − d₁)</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#is-equilibrium">§3</a></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open Multiplier</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">k_o = 1 / (1 − c₁ − d₁ + m₁)</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#reduced-form-coefficients">§7.4</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Consumption</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">C = c₀ + c₁(Y − T)</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#consumption">§2.1</a></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Investment</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">I = d₀ + d₁Y − d₂r</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#investment">§2.2</a></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Net Exports</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">NX = x₁Y* − m₁Y − n₁(ε−1)</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#linearising-net-exports">§7.3</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Taylor Rule</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">i = ρ·i_prev + (1−ρ)·(ī + φ(π − π̄)
+              + ψ(Y − Yₙ)/Yₙ)</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#taylor-rule">§5.4</a></td>
+          </tr>
+          <!-- Open IS -->
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px; font-weight:600; vertical-align: middle;">Open
+              IS</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open IS Equation</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">Y = Yₙ + [1 / (1 − c₁ − d₁ + m₁)] ·
+              [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + x₁(Y*−Y₀) ]</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#reduced-form-coefficients">§7.4</a>
+            </td>
+          </tr>
+          <!-- UIP -->
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px; font-weight:600; vertical-align: middle;">UIP
+            </td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Uncovered Interest Parity (UIP)</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">E = Eᵉ(1+i)/(1+i*)</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#uip">§7.1</a></td>
+          </tr>
+          <!-- PC -->
+          <tr>
+            <td rowspan="3"
+              style="border: 1px solid var(--rule); padding: 8px 12px; font-weight:600; vertical-align: middle;">PC</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Phillips Curve Equation</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">π = πᵉ + (α_tool / Yₙ)(Y − Yₙ) +
+              z_shock</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a
+                href="#the-phillips-curve-block-inflation">§6</a></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Phillips Curve Component</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">π = πᵉ + (α_tool / Yₙ)(Y − Yₙ) +
+              z_shock</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#pc-conversion">§6.3</a></td>
+          </tr>
+          <tr>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;">Natural Rate of Unemployment</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">uₙ = (m + z_struct) / α_WS</td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#natural-rate">§6.2</a></td>
+          </tr>
+        </table>
+      </div>
+
+      <h2 id="scope-and-anchoring"><span class="num">1</span> Scope and anchoring</h2>
+      <p>The tool is a single progressive teaching application; the closed and open economy are two stages of one
+        engine, each anchored to a different part of Blanchard:</p>
+      <ul>
+        <li>Closed-economy stage: anchored to Chapter 9 (the IS-LM-PC model), which is where Blanchard links the goods
+          market, the interest rate, and inflation. The IS block derives from eq. (9.1).</li>
+      </ul>
+      <ul>
+        <li>Open-economy stage: the IS block and the exchange-rate channel are anchored to Chapters 18–19 (the
+          open-economy goods market and the IS relation with net exports), eq. (18.4); the Phillips-curve block is
+          carried over from Chapter 9. Blanchard has no single chapter combining an open-economy IS with a Phillips
+          curve, so this variant is an explicit synthesis of Ch. 18–19 (IS + UIP) and Ch. 9 (PC), documented as such
+          rather than transcribed from one chapter.</li>
+      </ul>
+      <p>Sections 2–4 cover the closed-economy IS block; §5 the LM/MP block; §6 the Phillips curve; §7 the open-economy
+        exchange-rate and foreign-output channel. §8 is the consolidated implementation prompt.</p>
+      <h2 id="is-equilibrium"><span class="num">2</span> The Closed-Economy IS Equation (reduced form)</h2>
+      <p class="eq" style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">Y = [1
+        / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ r]</p>
+      <h3 id="is-derivation">2.1 Derivation from Blanchard's building blocks</h3>
+      <h3 id="consumption">2.1 Consumption — Chapter 3</h3>
+      <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+          style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − <span
+            style="color:var(--accent); font-weight:bold;">c₁</span> − d₁)] · [<span
+            style="color:var(--accent); font-weight:bold;">c₀</span> + d₀ + G − <span
+            style="color:var(--accent); font-weight:bold;">c₁ T</span> − d₂ r]</span></h4>
+      <p>Blanchard's consumption function is the linear relation</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+        <div style="flex: 1;"></div>
+        <div style="flex: 2; text-align: center;">C = c₀ + c₁ Y_D</div>
+        <div style="flex: 1; text-align: right; color: #888;">(eq. 3.2)</div>
+      </div>
+      <p>with disposable income defined by the identity Y_D ≡ Y − T, so that</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+        <div style="flex: 1;"></div>
+        <div style="flex: 2; text-align: center;">C = c₀ + c₁ (Y − T)</div>
+        <div style="flex: 1; text-align: right; color: #888;">(eq. 3.3)</div>
+      </div>
+      <p>c₁ is the propensity to consume, restricted to 0 < c₁ < 1 (eq. 3.2 discussion). Blanchard's empirical estimate
+          for the United States is around 0.6, with the Appendix 3 regressions yielding 0.5 and 0.8 (Ch. 3, “The size of
+          the multiplier”).</p>
+          <h3 id="investment">2.2 Investment — Chapters 3, 5, 9</h3>
+          <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+              style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − c₁ − <span
+                style="color:var(--accent); font-weight:bold;">d₁</span>)] · [c₀ + <span
+                style="color:var(--accent); font-weight:bold;">d₀</span> + G − c₁ T − <span
+                style="color:var(--accent); font-weight:bold;">d₂ r</span>]</span></h4>
+          <p>Chapter 3 takes investment as exogenous (I = Ī, eq. 3.4) purely as a simplification, explicitly flagged as
+            temporary: Blanchard notes a firm facing higher sales “might well decide they need more machines” and
+            promises a richer treatment in Chapter 5. From Chapter 5 onward investment depends on both output and the
+            interest rate:</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+            <div style="flex: 1;"></div>
+            <div style="flex: 2; text-align: center;">I = I(Y, i)</div>
+            <div style="flex: 1; text-align: right; color: #888;">(eq. 5.1) [+ in Y, − in i]</div>
+          </div>
+          <p>Chapter 9 keeps this functional form, with the real borrowing rate r + x in place of i:</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+            <div style="flex: 1;"></div>
+            <div style="flex: 2; text-align: center;">I = I(Y, r + x)</div>
+            <div style="flex: 1; text-align: right; color: #888;">(within eq. 9.1)</div>
+          </div>
+          <p>Accordingly the accelerator term (investment depending on Y) is retained in both model variants. It is
+            dropped only in Chapter 3, before the interest rate exists. We linearise as I = d₀ + d₁ Y − d₂ · r, where d₁
+            is the output (accelerator) sensitivity and d₂ the real-rate sensitivity. The linear form I = d₀ + d₁ Y is
+            exactly Blanchard's own in Ch. 18, Problem 7.</p>
+          <h3>2.3 The real interest rate — Chapter 6</h3>
+          <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+              style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − c₁ − d₁)] · [c₀ +
+              d₀ + G − c₁ T − d₂ <span style="color:var(--accent); font-weight:bold;">r</span>]</span></h4>
+          <p>The rate entering spending decisions is the real rate, related to the nominal rate by the Fisher
+            approximation</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+            <div style="flex: 1;"></div>
+            <div style="flex: 2; text-align: center;">r ≈ i − πᵉ</div>
+            <div style="flex: 1; text-align: right; color: #888;">(eq. 6.4)</div>
+          </div>
+          <p>The tool's Fisher step r = i − πᵉ matches eq. (6.4) exactly.</p>
+          <h3>2.4 Equilibrium condition — Chapter 3 / Chapter 9</h3>
+          <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+              style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;"><span
+                style="color:var(--accent); font-weight:bold;">Y =</span> [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂
+              r]</span></h4>
+          <p>Goods-market equilibrium requires production equal demand:</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+            <div style="flex: 1;"></div>
+            <div style="flex: 2; text-align: center;">Y = Z</div>
+            <div style="flex: 1; text-align: right; color: #888;">(eq. 3.6)</div>
+          </div>
+          <p>Substituting consumption, investment, and government spending gives Blanchard's short-run output equation,
+            eq. (9.1):</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+            <div style="flex: 1;"></div>
+            <div style="flex: 2; text-align: center;">Y = C(Y − T) + I(Y, r + x) + G</div>
+            <div style="flex: 1; text-align: right; color: #888;">(eq. 9.1)</div>
+          </div>
+
+          <p>Substitute the linear forms into the equilibrium condition Y = Z (eq. 3.6), setting the risk premium x = 0
+            for the baseline tool:</p>
+          <p>Y = c₀ + c₁(Y − T) + d₀ + d₁ Y − d₂ r + G</p>
+          <p>Collect the terms in Y on the left (this is Blanchard's own “move c₁Y to the left, reorganise the right”
+            step from the Ch. 3 derivation of eq. 3.8):</p>
+          <p>Y − c₁ Y − d₁ Y = c₀ + d₀ + G − c₁ T − d₂ r</p>
+          <p>(1 − c₁ − d₁) Y = [c₀ + d₀ + G − c₁ T − d₂ r]</p>
+          <p>Divide through by (1 − c₁ − d₁):</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+            <div style="flex: 1;"></div>
+            <div style="flex: 2; text-align: center;">Y = [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ r]</div>
+            <div style="flex: 1; text-align: right; color: #888;">(Economo Eq. 1.1)</div>
+          </div>
+          <p>This is the accelerator-augmented version of Blanchard's eq. (3.8). The multiplier 1/(1 − c₁ − d₁)
+            generalises his 1/(1 − c₁): the induced-spending propensity is now the sum c₁ + d₁, because both consumption
+            and investment respond to output.</p>
+          <h3 id="is-coefficients">3.1 Coefficient table (symbolic)</h3>
+          <div style="overflow-x:auto;">
+            <table
+              style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
+              <tr>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">Driver / coefficient</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">Symbolic form</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard source</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">Multiplier</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">1 / (1 − c₁ − d₁)</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">Generalises eq. (3.8); accelerator from
+                  eq. (9.1)</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂G (spending)</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">1 / (1 − c₁ − d₁)</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (3.8) / eq. (9.1)</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂T (tax)</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">− c₁ / (1 − c₁ − d₁)</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (3.8) tax-multiplier form</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂r (real rate)</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">− d₂ / (1 − c₁ − d₁)</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">investment from eq. (5.1)/(9.1)</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">r definition</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">r = i − πᵉ</td>
+                <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (6.4)</td>
+              </tr>
+            </table>
+          </div>
+          <h3>3.2 Why the tax multiplier is asymmetric</h3>
+          <p>The tax multiplier −c₁/(1 − c₁ − d₁) carries d₁ in the denominator but only c₁ in the numerator. This is
+            not an inconsistency. A tax change acts on disposable income, and in this model only consumption responds to
+            disposable income; investment responds to output (Y), not to (Y − T). So the direct first-round impact of a
+            tax rise runs through consumption alone (numerator −c₁), while the subsequent amplification runs through
+            both consumption and the investment accelerator as output falls (shared denominator 1 − c₁ − d₁).</p>
+          <p>By contrast a spending change hits demand directly and fully (numerator 1), which is why |∂Y/∂T| < ∂Y/∂G
+              and the balanced-budget multiplier is non-zero.</p>
+              <h3>3.3 The c₁ slider</h3>
+              <p>Because every IS coefficient is a function of c₁, the tool exposes c₁ as a live slider (a behavioural
+                primitive). Moving c₁ with d₁ held fixed recomputes the multiplier, the G coefficient, the T
+                coefficient, and the r coefficient simultaneously.</p>
+              <ul>
+                <li>Range 0.3–0.8 (covering Blanchard's Appendix 3 estimates of 0.5 and 0.8, centred near his point
+                  estimate of 0.6).</li>
+              </ul>
+              <ul>
+                <li>As c₁ + d₁ → 1 the multiplier diverges; the slider is capped short of this and flags instability.
+                  This connects to Blanchard's Ch. 3 “trick question” about c₁ > 1.</li>
+              </ul>
+              <ul>
+                <li>Live readouts display the implied multiplier and each reduced-form coefficient so the algebra is
+                  visible while dragging.</li>
+              </ul>
+              <h2 id="numeric-check-case-baseline-calibration"><span class="num">4</span> Numeric check-case (baseline
+                calibration)</h2>
+              <p>Baseline parameters: c₁ + d₁ = 0.6 (Blanchard's Ch. 3 estimate and the combined parameter in Ch. 18
+                Problem 7), split for display as c₁ = 0.5, d₁ = 0.1; real-rate sensitivity d₂ = 200. The split is a
+                presentational decomposition only — Blanchard never separates c₁ and d₁, since the multiplier depends
+                only on their sum.</p>
+              <div style="overflow-x:auto;">
+                <table
+                  style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Coefficient</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Formula</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Value</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Needs split?</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Multiplier</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">1/(1 − 0.6)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">2.5</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">No</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂G</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">1/(1 − 0.6)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">+2.5</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">No</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂T</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">− 0.5/(1 − 0.6)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">−1.25</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Yes</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂r</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">− 200/(1 − 0.6)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">−500</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">No</td>
+                  </tr>
+                </table>
+              </div>
+              <p>Cross-check: the multiplier 2.5 matches the value Blanchard computes in Chapter 3 for c₁ = 0.6 (1/(1 −
+                0.6) = 2.5). Only the tax multiplier depends on how the 0.6 is split between c₁ and d₁; the spending and
+                rate coefficients depend on the sum alone.</p>
+              <h3>4.1 The closed economy in the unified tool (Lower output pre-PC)</h3>
+              <p>The closed economy is not a separate engine: it is the open-economy IS with the open-only terms
+                switched off when the UIP block is locked — the import leakage m is forced to 0 and the trade terms
+                (x₁·Y* − n₁·(ε − ε_base)) are dropped. With m=0 the denominator returns the closed multiplier k = 1/(1 −
+                c₁ − d₁) = 2.5 (c₁=0.5, d₁=0.1). The gate lives inside those two functions, so solve(), the plotted IS
+                curve, its label, and its drag handle all adopt the closed form together.</p>
+              <p><strong>The Role of Inflation on Output:</strong> In the pre-PC stage (the short run), prices are fixed and there is no inflation. Because there is no inflation, the real interest rate is equal to the full nominal rate (r = i = 3%). This higher real rate makes borrowing more expensive, which lowers investment and keeps output below potential (at Y = 90).</p>
+              <p>Once the Phillips Curve unlocks (the medium run), the economy experiences a positive inflation rate of 2%. This positive inflation mathematically keeps the real interest rate lower than the nominal rate (r = 3% − 2% = 1%). This lower real rate directly spurs higher investment, which in turn boosts the overall output of the economy back up to its potential (Yₙ = 100).</p>
+              <h2 id="the-lm-mp-block-money-market-and-the-policy-rate"><span class="num">5</span> The LM / MP block
+                (money market and the policy rate)</h2>
+              <p
+                style="margin-bottom:4px; margin-top:8px; font-weight:600; color:#888; font-size:0.9em; text-transform:uppercase; letter-spacing:0.05em;">
+                LM</p>
+              <p class="eq"
+                style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">i = ī</p>
+              <p
+                style="margin-bottom:4px; margin-top:16px; font-weight:600; color:#888; font-size:0.9em; text-transform:uppercase; letter-spacing:0.05em;">
+                Taylor Rule</p>
+              <p class="eq"
+                style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">i =
+                ρ·i_prev + (1−ρ)·(ī + φ(π − π̄) + ψ(Y − Yₙ)/Yₙ)</p>
+              <p>Block 2. Blanchard modernises the LM curve across Chapters 5 and 9: the central bank sets the interest rate directly and the money stock adjusts endogenously, replacing the traditional upward-sloping LM. The tool follows this modern treatment by removing money supply and money demand entirely, taking the central bank's chosen interest rate as the sole input for the LM curve.</p>
+              <h3>5.1 The flat MP line (the rate-setting mechanism) — Chapters 5 and 9</h3>
+              <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:var(--accent); font-weight:bold;">i
+                  = ī</span></h4>
+              <p>Blanchard argues the assumption that the central bank fixes M and lets i adjust is at odds with
+                reality: central banks now choose an interest rate and adjust the money supply to achieve it (Ch. 5,
+                “Deriving the LM Curve”). The LM curve becomes a horizontal line at the rate the central bank chooses;
+                Blanchard notes the term “curve” is then a misnomer. Chapter 9 carries this through as the flat LM in
+                the IS-LM-PC model. The tool implements exactly this: the central bank sets i directly, drawn as a flat
+                MP line, and the money stock is endogenous.</p>
+              <h3 id="neutral-nominal-rate">5.2 The neutral nominal rate</h3>
+              <p>The neutral nominal rate (the rate that holds output at potential when inflation is on target) follows
+                Blanchard's Ch. 23 definition of the target nominal rate:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">ī = rₙ + π̄</div>
+                <div style="flex: 1; text-align: right; color: #888;">(neutral nominal rate, Ch. 23)</div>
+              </div>
+              <p>The neutral nominal rate is the baseline rate the Central Bank sets when the economy is perfectly balanced (output is at potential and inflation is at target). When the Taylor rule is active, the Central Bank sets its actual target interest rate by adjusting up or down from this <em>neutral baseline</em> based on the current inflation and output gaps.</p>
+              <h3>5.3 The unemployment–output-gap conversion (shared with the PC block)</h3>
+              <p>Blanchard's policy rule and his Phillips curve are written in unemployment, but the tool works in
+                output. The conversion is a single identity derived in Chapter 9 (the steps that take eq. 9.2 to eq.
+                9.3); it is recorded once here and referenced by both the Taylor rule below and the Phillips-curve
+                block.</p>
+              <p>By definition the unemployment rate is unemployment over the labour force:</p>
+              <div style="text-align: center; margin: 12px 0;">
+                <div>u ≡ U/L = (L − N)/L = 1 − N/L</div>
+                <div style="margin-top: 6px;">→ N = L(1 − u)</div>
+              </div>
+              <p>Maintaining the Chapter 7 simplification that output equals employment (Y = N):</p>
+              <div style="text-align: center; margin: 12px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;"></div>
+                  <div style="flex: 2; text-align: center;">Y = N = L(1 − u)</div>
+                  <div style="flex: 1; text-align: right; color: #888;">(eq. 7.1)</div>
+                </div>
+                <div style="margin-top: 6px;">and at the natural rate Yₙ = L(1 − uₙ)</div>
+              </div>
+              <p>Subtracting gives the deviation of output from potential:</p>
+              <p>Y − Yₙ = L[(1 − u) − (1 − uₙ)] = − L (u − uₙ)</p>
+              <p>Equivalently, the conversion identity used throughout the tool:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">(u − uₙ) = − (Y − Yₙ) / L</div>
+                <div style="flex: 1; text-align: right; color: #888;">(from eqs. 9.2–9.3)</div>
+              </div>
+              <p>Two consequences follow whenever a Blanchard relation in u is rewritten in Y: a sign flip (u and Y move
+                oppositely) and a division by L. In Blanchard's one-good setup Y ≈ N ≈ L, so dividing by L and
+                normalising by Yₙ nearly coincide; the tool normalises by Yₙ. This is the same reconciliation the
+                Phillips-curve block requires (eq. 9.3 carries the factor α/L).</p>
+              <h3 id="taylor-rule">5.4 The Taylor rule (when active) — Chapter 23</h3>
+              <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">i = ρ·i_prev + (1−ρ)·(<span
+                    style="color:var(--accent); font-weight:bold;">ī + φ(π − π̄) + ψ(Y − Yₙ)/Yₙ</span>)</span></h4>
+              <p>Blanchard's interest-rate rule sets the policy rate around its target in response to inflation and
+                unemployment gaps:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">i = ī + a(π − π̄) − b(u − uₙ)</div>
+                <div style="flex: 1; text-align: right; color: #888;">(Taylor rule, Ch. 23)</div>
+              </div>
+              <p>with a, b > 0, and crucially a > 1 — the Taylor principle: because spending depends on the real rate,
+                the nominal rate must rise more than one-for-one with inflation so that the real rate rises. Applying
+                the conversion identity from Section 5.3 to the unemployment term rewrites the rule in output-gap form:
+              </p>
+              <p>− b(u − uₙ) = − b · [−(Y − Yₙ)/L] = + (b/L)(Y − Yₙ)</p>
+              <div style="text-align: center; margin: 12px 0;">
+                <div style="margin-bottom: 6px;">⇒</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;"></div>
+                  <div style="flex: 2; text-align: center;">i = ī + a(π − π̄) + (b/L)(Y − Yₙ)</div>
+                  <div style="flex: 1; text-align: right; color: #888;">(Economo Eq. 1.2)</div>
+                </div>
+              </div>
+              <p>The tool's rule i = I_NEUTRAL + φ(π − π*) + ψ·(Y − Yₙ)/Yₙ maps onto this term by term:</p>
+              <div style="overflow-x:auto;">
+                <table
+                  style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard (Ch. 23)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Tool</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Correspondence</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">ī = rₙ + π̄</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">shock-aware neutral rate (Option B); =
+                      3% at baseline</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">exact (rₙ recomputed from IS at Y=Yₙ)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">a (π − π̄), a > 1</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">φ (π − π*), φ > 1</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">a ≡ φ (Taylor principle)</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">− b(u − uₙ)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">+ ψ (Y − Yₙ)/Yₙ, ψ = 0.25</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">ψ ≡ b·Yₙ/L via §5.3</td>
+                  </tr>
+                </table>
+              </div>
+              <p>So the tool's positive output-gap coefficient ψ = 0.25 is Blanchard's negative unemployment coefficient
+                −b, after the Okun-type conversion of Section 5.3. The sign difference is the conversion, not a
+                disagreement.</p>
+              <h3>5.5 Interest smoothing (a tested departure from the textbook rule)</h3>
+              <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">i = <span
+                    style="color:var(--accent); font-weight:bold;">ρ·i_prev + (1−ρ)</span>·(ī + φ(π − π̄) + ψ(Y −
+                  Yₙ)/Yₙ)</span></h4>
+              <p>The tool includes interest-rate smoothing (RHO_TAYLOR = 0.75 in the unified tool; the retired
+                closed-economy build used 0.8), i.e. the policy rate partially adjusts toward its rule-implied target
+                each period: iₜ = ρ·iₜ₋₁ + (1−ρ)·i. This is a standard real-world extension but is not part of
+                Blanchard's stated Ch. 23 rule, which has no lagged-rate term. It is retained deliberately to ensure model stability: without this gradual adjustment, a central bank reacting instantly to current inflation and output gaps can trigger severe period-to-period interest rate oscillations that would destabilise the interactive tool. This smoothing acts as a vital anchor for the engine's dynamics, making it a necessary and intentional departure from the textbook rule.</p>
+              <h3>5.6 LM/MP block summary</h3>
+              <div style="overflow-x:auto;">
+                <table
+                  style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Element</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard source</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Status</td>
+                  </tr>
+                  
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Flat MP line (CB sets i)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 5 / Ch. 9</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Exact conceptual match</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Neutral rate ī = rₙ + π̄ (shock-aware,
+                      Option B)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 23</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Recomputed from IS at Y=Yₙ; = 3% at
+                      baseline</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">u↔Y conversion</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eqs. 9.2–9.3</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Derived in §5.3; shared with PC</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Taylor rule, a > 1</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 23</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Matched; written in output-gap form
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Interest smoothing ρ (0.75)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">— (not in textbook)</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Extension; simulation-checked
+                      (convergence holds)</td>
+                  </tr>
+                </table>
+              </div>
+              <h2 id="the-phillips-curve-block-inflation"><span class="num">6</span> The Phillips-curve block
+                (inflation)</h2>
+              <p class="eq"
+                style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">π = πᵉ +
+                (α_tool / Yₙ)(Y − Yₙ) + z_shock</p>
+              <p>Block 3. Blanchard derives the Phillips curve from the labour-market model (Chapter 7) in Chapter 8,
+                then converts it to output space in Chapter 9. The tool follows this chain. The conversion from
+                unemployment to output uses the identity already derived in §5.3.</p>
+              <h3>6.1 From wage- and price-setting to inflation — Chapter 8</h3>
+              <p>Wage setting (eq. 7.1) with Blanchard's specific functional form F(u, z) = 1 − αu + z:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">W = Pᵉ · (1 − αu + z)</div>
+                <div style="flex: 1; text-align: right; color: #888;">(eq. 7.1, specific form)</div>
+              </div>
+              <p>Price setting (eq. 7.3): firms set price as a markup over the wage:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">P = (1 + m) · W</div>
+                <div style="flex: 1; text-align: right; color: #888;">(eq. 7.3)</div>
+              </div>
+              <p>Substituting the wage into the price equation gives the price level in terms of the expected price
+                level, the markup, the wage-push factor, and unemployment:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">P = Pᵉ (1 + m)(1 − αu + z)</div>
+                <div style="flex: 1; text-align: right; color: #888;">(eq. 8.1)</div>
+              </div>
+              <p>Rewritten in inflation terms (derivation in Blanchard's chapter appendix), with time indexes:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">πₜ = πᵉₜ + (m + z) − α uₜ</div>
+                <div style="flex: 1; text-align: right; color: #888;">(eqs. 8.2 / 8.3)</div>
+              </div>
+              <p>The two supply-side terms are distinct objects in Blanchard: m is the markup of prices over wages
+                (market power / degree of competition), and z is everything in wage-setting other than unemployment
+                (union bargaining power, unemployment-benefit generosity, employment protection). The tool exposes them
+                as two separate controls accordingly.</p>
+              <h3 id="natural-rate">6.2 The natural rate and the Phillips curve — eqs. 8.4–8.5</h3>
+              <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (α_tool / <span
+                    style="color:var(--accent); font-weight:bold;">Yₙ</span>)(Y − <span
+                    style="color:var(--accent); font-weight:bold;">Yₙ</span>) + z_shock</span></h4>
+              <p>The natural rate of unemployment is the rate at which actual inflation equals expected inflation.
+                Setting πₜ = πᵉₜ in eq. (8.3) and solving:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">uₙ = (m + z) / α</div>
+                <div style="flex: 1; text-align: right; color: #888;">(eq. 8.4)</div>
+              </div>
+              <p>This is the key cross-block link: m and z move the natural rate, and therefore potential output. A rise
+                in either raises uₙ and so lowers Yₙ = L(1 − uₙ). They are substitutes (eq. 8.4 depends on m + z), so a
+                markup shock can be offset by a fall in z — e.g. a reduction in union bargaining power restoring
+                potential output. This is a genuine medium-run rebalancing (Yₙ is restored), not a temporary
+                cancellation of an inflation blip.</p>
+              <p>Substituting eq. (8.4) back into eq. (8.3) gives the Phillips curve in unemployment space:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">πₜ − πᵉₜ = − α (uₜ − uₙ)</div>
+                <div style="flex: 1; text-align: right; color: #888;">(eq. 8.5)</div>
+              </div>
+              <h3 id="pc-conversion">6.3 Conversion to output space — Chapter 9, eq. 9.3</h3>
+              <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (<span
+                    style="color:var(--accent); font-weight:bold;">α_tool</span> / Yₙ)<span
+                    style="color:var(--accent); font-weight:bold;">(Y − Yₙ)</span> + z_shock</span></h4>
+              <p>Applying the unemployment–output identity from §5.3, (u − uₙ) = −(Y − Yₙ)/L, to eq. (8.5):</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">πₜ − πᵉₜ = −α · [−(Y − Yₙ)/L] = (α/L)(Y − Yₙ)</div>
+                <div style="flex: 1; text-align: right; color: #888;">(eq. 9.3)</div>
+              </div>
+              <p>Blanchard's output-space slope is therefore α/L. The tool normalises the output gap by potential output
+                Yₙ rather than the labour force L, writing the slope as α/Yₙ. Since Yₙ = L(1 − uₙ), the two
+                normalisations are related by:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">α_tool / Yₙ = α_struct / L</div>
+                <div style="flex: 1; text-align: right; color: #888;">⇒ α_tool = α_struct · (Yₙ/L) = α_struct · (1 − uₙ)
+                </div>
+              </div>
+              <p>With a natural rate uₙ ≈ 5%, the factor (1 − uₙ) ≈ 0.95: the tool's α equals Blanchard's structural α
+                to within about 5%. Normalising by Yₙ (rather than L) is deliberate, for consistency with the IS and MP
+                blocks, which all use Yₙ = 100. This factor is the entirety of the “α/L vs α/Yₙ” reconciliation flagged
+                earlier; it is a relabelling, not a discrepancy.</p>
+                            <h3>6.4 Distinguishing tool variables from textbook parameters</h3>
+              <p>The interactive nature of the tool requires slightly different notation from the textbook to distinguish structural parameters (which determine the natural rate) from transitory shocks (which hit the economy at a given natural rate). The tool uses:</p>
+              <ul>
+                <li><strong>α_struct</strong>: The structural sensitivity of wages to unemployment in the WS relation (Blanchard's α). It determines the natural rate of unemployment uₙ.</li>
+                <li><strong>α_tool</strong>: The output-gap slope of the Phillips curve used by the tool. As derived in §6.3, it is simply α_struct rescaled by (1 − uₙ) to map from unemployment space to output space.</li>
+                <li><strong>z_struct (or z)</strong>: The structural wage-push factor (e.g. employment protection, minimum wage, unemployment benefits) that sits permanently in the WS relation. A change in z_struct permanently shifts the natural rate of unemployment uₙ and therefore potential output Yₙ.</li>
+                <li><strong>z_shock</strong>: A transitory, independent cost-push shock (e.g. a sudden oil price spike or supply chain disruption) that shifts the Phillips curve directly without altering the underlying structural labour-market balance (the WS-PS crossing). It fades over time and does not change uₙ or Yₙ.</li>
+              </ul>
+              <p>Separating these two types of <em>z</em> allows the user to simulate both permanent structural shifts (which move Yₙ) and temporary inflation shocks (which move π at a fixed Yₙ).</p>
+              <h3>6.5 The α slider, and why steepness is carried by credibility</h3>
+              <p>α is exposed as a slider with default 0.3 and a cap of 0.5 (range ~0.1–0.5). This is the empirically
+                supported range for the structural slope. Careful cross-sectional estimates put it around 0.3 (Hazell,
+                Herreño, Nakamura & Steinsson, QJE 2022, find a 1-point rise in unemployment lowers inflation by about
+                0.34 points, and that the slope was small even in the early 1980s); recent US price-Phillips-curve
+                estimates sit around 0.18–0.26 in normal labour markets. A structural α near 1.0 is not empirically
+                supported, which is why the slider is capped at 0.5.</p>
+              <p>Crucially, this matches Blanchard's own treatment: across the historical mutations of the Phillips
+                curve he holds α fixed and varies θ (the expectations/de-anchoring parameter), not α. Eqs.
+                (8.5)→(8.8)→(8.9) walk through this with the same α throughout: at θ = 0 the original level trade-off
+                (eq. 8.6); at 0 < θ < 1 inflation depends on both the gap and last year's inflation (eq. 8.8); at θ=1
+                  the accelerationist form πₜ − πₜ₋₁=−α(uₜ − uₙ) (eq. 8.9), where the gap drives the change in
+                  inflation. Blanchard's Figure 8-4 plots estimated θ over time: it rose from the mid-1960s, stayed near
+                  1 until the late 1990s, then fell back toward zero by 2020. The apparent steepening and flattening of
+                  the curve over decades is therefore a θ story, not an α story.</p>
+                  <p>Design consequence: a steep, spiralling, “slope-looks-like-1” curve is reproduced in the tool by
+                    lowering credibility (lowering θ_eff toward 0), not by raising α. The credibility slider carries the
+                    steepness; α stays at its modest structural value. This is faithful to Blanchard and to the
+                    empirical evidence, both of which attribute the 1970s steepness to de-anchored expectations rather
+                    than a larger structural slope.</p>
+                  <p>Note also that the α slider has a genuine medium-run effect beyond the curve's steepness: via the
+                    natural-rate relation uₙ = (m+z)/α (eq. 8.4), a change in α also moves potential output, so it is
+                    not a purely cosmetic control.</p>
+                  <h3>6.6 Inflation expectations and anchoring — eq. 8.7</h3>
+                  <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                      style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = <span
+                        style="color:var(--accent); font-weight:bold;">πᵉ</span> + (α_tool / Yₙ)(Y − Yₙ) +
+                      z_shock</span></h4>
+                  <p>Expected inflation is a weighted average of an anchor (the target) and last period's inflation:</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">πᵉₜ = (1 − θ) π̄ + θ πₜ₋₁</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(eq. 8.7)</div>
+                  </div>
+                  <p>θ is the de-anchoring parameter: θ = 0 gives fully anchored expectations (πᵉ = target, the original
+                    Phillips curve of eq. 8.6), θ = 1 gives fully adaptive expectations (πᵉ = last year's inflation).
+                    The tool's anchoring slider (θ, 'max anchoring ceiling') and Blanchard's θ in eq. (8.7) use the same
+                    symbol for inverse concepts: Blanchard's θ is the weight on last period's <em>actual</em> inflation
+                    (high θ = more adaptive = less anchored); the tool's θ is anchoring <em>capacity</em> (high θ = more
+                    anchored = more credible). The tool's effective anchoring θ_eff = θ × credibility corresponds to
+                    Blanchard's (1 − θ_Blanchard), not to θ_Blanchard directly. This is a deliberate UI choice — 'higher
+                    slider = more central-bank credibility' is the more intuitive direction for a policy-facing control
+                    — but the tool's θ is not literally identical to Blanchard's θ, and this document should not
+                    describe it as such.</p>
+                  <h3>6.6 Supply shocks: two distinct channels — Section 8-3</h3>
+                  <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                      style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (α_tool / Yₙ)(Y
+                      − Yₙ) + <span style="color:var(--accent); font-weight:bold;">z_shock</span></span></h4>
+                  <p>Blanchard's Section 8-3 (the Covid and 1970s episodes) establishes that supply shocks come in two
+                    forms, and the tool models both:</p>
+                  <ul>
+                    <li>Transitory cost-push pulse (the oil / Covid shock button). Blanchard finds the 2020–22 inflation
+                      came largely through the markup m — energy prices and supply-chain shortages raised firms' costs
+                      given wages — but that it faded: “when commodity prices started turning around, so did inflation.”
+                      This is a temporary m spike that decays (the tool's existing pulse with decay), lifting the PC
+                      while active but leaving the natural rate unchanged.</li>
+                  </ul>
+                  <ul>
+                    <li>Permanent structural shift (the m and z sliders). A lasting change in market power (m,
+                      <strong>e.g., increased monopoly power</strong>) or wage-setting institutions (z, <strong>e.g.,
+                        increased union strength</strong>) moves the natural rate via eq. (8.4) and therefore relocates
+                      potential output Yₙ. This is the channel the rebalancing scenario uses, and it persists until
+                      changed.
+                    </li>
+                  </ul>
+                  <p>The de-anchoring link ties the two together: Blanchard notes the 1970s oil shock de-anchored
+                    expectations (θ rose), amplifying a transitory shock into sustained ~17% inflation, whereas the
+                    Covid shock did not de-anchor (credibility held) and so faded. With the tool's credibility slider,
+                    the same cost-push pulse can be run both ways: credibility high → fades (Covid-like); credibility
+                    low / de-anchoring on → spirals (1970s-like). The spiral is the accelerationist regime of eq. (8.9):
+                    when θ_eff → 0 the gap drives the change in inflation, so inflation rises period-on-period rather
+                    than settling at a higher level. This is a behaviour to verify when the dynamics are tested.</p>
+                  <h3>6.8 Phillips-curve block summary</h3>
+                  <div style="overflow-x:auto;">
+                    <table
+                      style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Element</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard source</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Status</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Wage/price → inflation</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eqs. 7.1, 7.3, 8.1–8.3</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Derived in full</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Natural rate uₙ = (m+z)/α</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (8.4)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Drives Yₙ; m,z as sliders</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">PC π−πᵉ = −α(u−uₙ)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (8.5)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Converted to output via §5.3</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Output-space slope α/Yₙ</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (9.3) carries α/L</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">α_tool = α_struct(1−uₙ); ≈5%</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">α slider (def. 0.3, cap 0.5)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eqs. 8.5–8.9</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Steepness via θ, not α (Fig. 8-4)
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Expectations πᵉ=(1−θ)π̄+θπ₋₁</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (8.7)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Inverted mapping: tool's
+                          credibility runs opposite to Blanchard's θ</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Transitory cost-push pulse</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Section 8-3 (Covid m)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Decaying pulse; Yₙ fixed</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Structural m, z shift</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Section 8-3 / eq. 8.4</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Permanent; moves Yₙ</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <h2 id="the-open-economy-block-exchange-rate-and-foreign-output"><span class="num">7</span> The
+                    open-economy block (exchange rate and foreign output)</h2>
+                  <p class="eq"
+                    style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">Y = Yₙ
+                    + [1 / (1 − c₁ − d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + x₁(Y*−Y₀) ]</p>
+                  <p>Block 4 (open-economy stage only). Blanchard's Chapter 19 adds the exchange rate to the IS-LM
+                    model: net exports depend on the real exchange rate and on foreign output, and the exchange rate
+                    itself is pinned by uncovered interest parity. This block replaces the tool's ad hoc −100·(ε−1) term
+                    with a coefficient derived from eq. (19.2), and adds a foreign-output channel.</p>
+                  <h3 id="uip">7.1 Uncovered interest parity — Chapters 17 and 19</h3>
+                  <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                      style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ −
+                      d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(<span
+                        style="color:var(--accent); font-weight:bold;">ε</span>−1) + x₁(Y*−Y₀) ]</span></h4>
+                  <p>Investors arbitrage between domestic and foreign bonds, equalising expected returns. This is the
+                    uncovered interest parity (UIP) condition:</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">(1 + i) = (1 + i*) · (E / Eᵉ)</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(eq. 17.2 / 19.3)</div>
+                  </div>
+                  <p>Solving for the current exchange rate, with the expected future rate Eᵉ taken as given:</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">E = Eᵉ · (1 + i) / (1 + i)</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(eq. 19.5)</div>
+                  </div>
+                  <p>The tool's UIP relation E = Eᵉ·(1+i)/(1+i) is verbatim eq. (19.5) — the cleanest match in the
+                    model, no discrepancy. A higher domestic rate appreciates the currency (E rises); a higher foreign
+                    rate depreciates it. The approximate form (eq. 17.4), i ≈ i − (Eᵉ − E)/E, is the same relation: the
+                    domestic rate equals the foreign rate minus the expected appreciation.</p>
+                  <h3 id="open-is">7.2 The open-economy IS with net exports — eq. 19.1 / 19.2</h3>
+                  <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                      style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ −
+                      d₁ + <span style="color:var(--accent); font-weight:bold;">m₁</span>)] · [ (G−G₀) − c₁(T−T₀) −
+                      d₂(r−r₀) − n₁(ε−1) + <span style="color:var(--accent); font-weight:bold;">x₁</span>(Y*−Y₀)
+                      ]</span></h4>
+                  <p>Net exports are exports minus the value of imports, decreasing in the real exchange rate:</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">NX(Y, Y*, ε) = X(Y*, ε) − IM(Y, ε)/ε</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(eq. 19.1)</div>
+                  </div>
+                  <p>The open-economy goods-market equilibrium adds net exports to the closed IS:</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">Y = C(Y−T) + I(Y, r) + G + NX(Y, Y*, ε)</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(eq. 19.1)</div>
+                  </div>
+                  <p>Blanchard then simplifies (eq. 19.2): choosing P = P* = 1 so that ε = E (real and nominal exchange
+                    rates coincide), and — since the price level is fixed in the short run — r = i. The baseline is ε =
+                    1, matching the tool's centring of the exchange-rate term on (ε − 1).</p>
+                  <h3 id="linearising-net-exports">7.3 Linearising net exports (Marshall–Lerner)</h3>
+                  <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                      style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ −
+                      d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − <span
+                        style="color:var(--accent); font-weight:bold;">n₁(ε−1)</span> + x₁(Y*−Y₀) ]</span></h4>
+                  <h4 style="margin-top:0;">Subtitle: <span class="eq"
+                      style="display:inline-block; margin:8px 0; padding:6px 12px;"><span
+                        style="color:var(--accent);">NX</span> = x₁Y* − m₁Y − n₁(ε−1)</span></h4>
+                  <p>Following Blanchard's own linear trade system (Ch. 18, Problem 7/8), linearise the components of
+                    net exports:</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">X = x₁ Y*</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(exports rise with foreign output)</div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">IM = m₁ Y</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(imports rise with domestic output; ε=1 ⇒ IM/ε
+                      = IM)</div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">NX = x₁ Y* − m₁ Y − n₁ (ε − 1)</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(Economo Eq. 1.4)</div>
+                  </div>
+                  <p>Here n₁ > 0 is the sensitivity of net exports to the real exchange rate. The condition n₁ > 0 is
+                    precisely the Marshall–Lerner condition, which Blanchard assumes holds throughout Chapter 19.
+                    Economically, a real appreciation has two opposing effects on net exports: it reduces export volumes
+                    and increases import volumes (quantity effect, both pushing NX down) but it cheapens each imported
+                    good in domestic-currency terms (valuation effect, pushing NX up). Marshall–Lerner is the condition
+                    that the volume effects dominate the valuation effect, so that on net a real appreciation worsens
+                    net exports — i.e. n₁ > 0.. Marshall–Lerner is the condition that the volume effects dominate, so
+                    that on net a real appreciation worsens net exports — i.e. n₁ > 0.</p>
+                  <p>In this linearisation n₁ is a constant: the response of net exports to ε does not vary with the
+                    level of ε. The J-curve (net exports worsening before improving after a depreciation, because
+                    volumes adjust more slowly than prices) and any elasticity-dependence of the response are dynamic
+                    effects outside the scope of this static linear term; they are not modelled. What is retained is the
+                    sign and the constant magnitude, which is what eq. (19.2) requires under Marshall–Lerner.</p>
+                  <h3 id="reduced-form-coefficients">7.4 Deriving the reduced-form coefficients</h3>
+                  <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                      style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + <span
+                        style="color:var(--accent); font-weight:bold;">[1 / (1 − c₁ − d₁ + m₁)]</span> · [ (G−G₀) −
+                      c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + x₁(Y*−Y₀) ]</span></h4>
+                  <p>Substitute the linear net-export terms into the open IS (eq. 19.2), retaining the investment
+                    accelerator (§2.2) and with x = 0:</p>
+                  <p>Y = c₀ + c₁(Y−T) + d₀ + d₁Y − d₂ r + G + x₁Y* − m₁Y − n₁(ε−1)</p>
+                  <p>Collect the Y terms. The import term −m₁Y now joins the left side, adding to the leakage:</p>
+                  <p>(1 − c₁ − d₁ + m₁) Y = [autonomous] − n₁(ε−1) + x₁Y*</p>
+                  <p>Divide through. The open multiplier carries the extra +m₁ leakage in its denominator:</p>
+                  <p>k_open = 1 / (1 − c₁ − d₁ + m₁)</p>
+                  <p>Because m₁ > 0, k_open is smaller than the closed multiplier 1/(1−c₁−d₁): imports leak out of the
+                    multiplier, the algebraic counterpart of Blanchard's “AA is flatter than DD” (Ch. 18). Every demand
+                    term — G, T, r, ε, and Y* — passes through this same k_open. The full open IS is:</p>
+                  <p>Y = Yₙ + k_open·(G−G₀) − c₁·k_open·(T−T₀)</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">*</div>
+                    <div style="flex: 1; text-align: right; color: #888;">− d₂·k_open·(r−r₀) − n₁·k_open·(ε−1) +
+                      x₁·k_open·(Y−Y₀)*</div>
+                  </div>
+                  <p>The reduced-form exchange-rate coefficient is therefore ∂Y/∂ε = −n₁·k_open, exactly parallel to the
+                    real-rate coefficient ∂Y/∂r = −d₂·k_open. Like d₂, the value of n₁ is calibration: Blanchard gives
+                    only its sign (Marshall–Lerner), no magnitude. The recommended documentation move is identical to
+                    the r coefficient — surface n₁ as the structural primitive and present the reduced-form ε
+                    coefficient as −n₁·k_open, rather than asserting a free-standing number.</p>
+                  <h3>7.5 Numeric check-case (open economy)</h3>
+                  <p>Baseline open-economy parameters: c₁ = 0.5, d₁ = 0.1 (as closed), plus m₁ = 0.3 and x₁ = 0.3
+                    (Blanchard Ch. 18, Problem 8: IM = 0.3Y, X = 0.3Y*). Net-export–exchange-rate sensitivity n₁ ≈ 70.
+                  </p>
+                  <div style="overflow-x:auto;">
+                    <table
+                      style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Coefficient</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Formula</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Value</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Source of magnitude</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open multiplier k_open</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">1/(1−0.5−0.1+0.3)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">1.43</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">from c₁,d₁,m₁</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂G</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">k_open</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">+1.43</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">vs closed +2.5</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂T</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">−c₁·k_open</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">−0.71</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">c₁ = 0.5</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂r</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">−d₂·k_open</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">−286</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">d₂ = 200</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂ε</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">−n₁·k_open</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">≈−100</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">n₁ ≈ 70 (calibration)</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂Y*</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">x₁·k_open</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">+0.43</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">x₁ = 0.3</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p>
+                  <p>At the pre-PC comparison point (r=3%, Y=90), NX = 30 − 0.3(90) = 3 &gt; 0, and it shrinks to
+                    exactly zero as Y reaches 100. This explains why the open baseline output is slightly higher than
+                    the closed baseline pre-PC.</p>
+                  <p>The headline result: opening the economy cuts the spending multiplier from 2.5 to 1.43 — the import
+                    leakage m₁ = 0.3 makes fiscal policy markedly less powerful, exactly Blanchard's Ch. 18 point. The
+                    exchange-rate coefficient ≈−100 is preserved (via n₁ ≈ 70) but it is
+                    now derived as −n₁·k_open rather than asserted.</p>
+                  <h3>7.6 The foreign-output channel</h3>
+                  <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
+                      style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ −
+                      d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + <span
+                        style="color:var(--accent); font-weight:bold;">x₁(Y*−Y₀)</span> ]</span></h4>
+                  <p>The term +x₁·k_open·(Y − Y₀) gives the spillover from foreign output. A fall in foreign output Y (a
+                    foreign recession) reduces domestic exports, cutting demand, amplified through the open multiplier.
+                    At x₁ = 0.3 and k_open = 1.43, a unit drop in Y lowers domestic output by 0.43. Y* is exposed as a
+                    control so a student can run a foreign-recession spillover directly.</p>
+                  <p>This unlocks a genuine three-channel external-shock lesson: a foreign recession (Y* down) and a
+                    real appreciation (ε up) both reduce net exports and can be compared as substitute sources of an
+                    external demand shock; and monetary policy can respond — cutting i depreciates E via UIP (§7.1),
+                    partially offsetting a loss of foreign demand. This is the cross-block interaction (goods market,
+                    interest rate, exchange rate) that Chapter 19 is built around.</p>
+                  <h3>7.7 Open-economy block summary</h3>
+                  <div style="overflow-x:auto;">
+                    <table
+                      style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Element</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard source</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Status</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">UIP E = Eᵉ(1+i)/(1+i*)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (19.5)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Verbatim match</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">ε = 1 baseline (P=P*=1)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (19.2)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Exact</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open IS with NX</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (19.1)/(19.2)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Derived; accelerator kept</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open multiplier k_open=1.43</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 18 (import leakage)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">From c₁,d₁,m₁</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂ε = −n₁·k_open</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. 19.2 + Marshall–Lerner</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">n₁≈0 calibration; ≈−100</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂Y* = x₁·k_open</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. 19.2 (exports on Y*)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">x₁ = 0.3; new control</td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">J-curve / elasticity dynamics</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">—</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Out of scope (static linear)</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <h3 id="real-exchange-rate">7.8 The Real Exchange Rate and Price Evolution</h3>
+                  <p>The real exchange rate is defined as ε = E · P / P*. The model evolves prices according to domestic
+                    inflation π and a constant foreign inflation target of 2%.</p>
+    </main>
+    <footer>
+      <p><strong>Economo</strong> — IS-LM-PC Interactive Macro Lab. Built around Blanchard, <em>Macroeconomics</em>, 9th
+        Global Edition (2024). The underlying economic model is drawn from published academic work and is not claimed as
+        proprietary; this manual and the software implementation are the author's own work.</p>
+      <p>Malin Anderson · malinanderson97@gmail.com</p>
+    </footer>
   </div>
-
-
-  <h2 id="equation-index"><span class="num">0</span> Equation Index</h2>
-  <div style="overflow-x:auto;">
-  <table style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
-    <tr>
-      <th style="border: 1px solid var(--rule); padding: 8px 12px; background:var(--surface-2);">Graph Line</th>
-      <th style="border: 1px solid var(--rule); padding: 8px 12px; background:var(--surface-2);">Concept</th>
-      <th style="border: 1px solid var(--rule); padding: 8px 12px; background:var(--surface-2);">Tool Equation</th>
-      <th style="border: 1px solid var(--rule); padding: 8px 12px; background:var(--surface-2);">Reference</th>
-    </tr>
-    <!-- ISLM -->
-    <tr>
-      <td rowspan="7" style="border: 1px solid var(--rule); padding: 8px 12px; font-weight:600; vertical-align: middle;">ISLM</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Closed IS Equation</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">Y = [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ r]</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#is-equilibrium">§2</a></td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Closed Multiplier</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">k = 1 / (1 − c₁ − d₁)</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#is-equilibrium">§3</a></td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open Multiplier</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">k_o = 1 / (1 − c₁ − d₁ + m₁)</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#reduced-form-coefficients">§7.4</a></td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Consumption</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">C = c₀ + c₁(Y − T)</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#consumption">§2.1</a></td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Investment</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">I = d₀ + d₁Y − d₂r</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#investment">§2.2</a></td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Net Exports</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">NX = x₁Y* − m₁Y − n₁(ε−1)</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#linearising-net-exports">§7.3</a></td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Taylor Rule</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">i = ρ·i_prev + (1−ρ)·(ī + φ(π − π̄) + ψ(Y − Yₙ)/Yₙ)</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#taylor-rule">§5.4</a></td>
-    </tr>
-    <!-- Open IS -->
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px; font-weight:600; vertical-align: middle;">Open IS</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open IS Equation</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">Y = Yₙ + [1 / (1 − c₁ − d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + x₁(Y*−Y₀) ]</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#reduced-form-coefficients">§7.4</a></td>
-    </tr>
-    <!-- UIP -->
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px; font-weight:600; vertical-align: middle;">UIP</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Uncovered Interest Parity (UIP)</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">E = Eᵉ(1+i)/(1+i*)</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#uip">§7.1</a></td>
-    </tr>
-    <!-- PC -->
-    <tr>
-      <td rowspan="3" style="border: 1px solid var(--rule); padding: 8px 12px; font-weight:600; vertical-align: middle;">PC</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Phillips Curve Equation</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">π = πᵉ + (α_tool / Yₙ)(Y − Yₙ) + z_shock</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#the-phillips-curve-block-inflation">§6</a></td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Phillips Curve Component</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">π = πᵉ + (α_tool / Yₙ)(Y − Yₙ) + z_shock</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#pc-conversion">§6.3</a></td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;">Natural Rate of Unemployment</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">uₙ = (m + z_struct) / α_WS</td>
-      <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#natural-rate">§6.2</a></td>
-    </tr>
-  </table>
-  </div>
-
-<h2 id="scope-and-anchoring"><span class="num">1</span> Scope and anchoring</h2>
-<p>The tool is a single progressive teaching application; the closed and open economy are two stages of one engine, each anchored to a different part of Blanchard:</p>
-<ul><li>Closed-economy stage: anchored to Chapter 9 (the IS-LM-PC model), which is where Blanchard links the goods market, the interest rate, and inflation. The IS block derives from eq. (9.1).</li></ul>
-<ul><li>Open-economy stage: the IS block and the exchange-rate channel are anchored to Chapters 18–19 (the open-economy goods market and the IS relation with net exports), eq. (18.4); the Phillips-curve block is carried over from Chapter 9. Blanchard has no single chapter combining an open-economy IS with a Phillips curve, so this variant is an explicit synthesis of Ch. 18–19 (IS + UIP) and Ch. 9 (PC), documented as such rather than transcribed from one chapter.</li></ul>
-<p>Sections 2–4 cover the closed-economy IS block; §5 the LM/MP block; §6 the Phillips curve; §7 the open-economy exchange-rate and foreign-output channel. §8 is the consolidated implementation prompt.</p>
-<h2 id="is-equilibrium"><span class="num">2</span> The Closed-Economy IS Equation (reduced form)</h2>
-<p class="eq" style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">Y = [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ r]</p>
-<h3 id="is-derivation">2.1 Derivation from Blanchard's building blocks</h3>
-<h3 id="consumption">2.1 Consumption — Chapter 3</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − <span style="color:var(--accent); font-weight:bold;">c₁</span> − d₁)] · [<span style="color:var(--accent); font-weight:bold;">c₀</span> + d₀ + G − <span style="color:var(--accent); font-weight:bold;">c₁ T</span> − d₂ r]</span></h4>
-<p>Blanchard's consumption function is the linear relation</p>
-<p>C = c₀ + c₁ Y_D            (eq. 3.2)</p>
-<p>with disposable income defined by the identity Y_D ≡ Y − T, so that</p>
-<p>C = c₀ + c₁ (Y − T)        (eq. 3.3)</p>
-<p>c₁ is the propensity to consume, restricted to 0 < c₁ < 1 (eq. 3.2 discussion). Blanchard's empirical estimate for the United States is around 0.6, with the Appendix 3 regressions yielding 0.5 and 0.8 (Ch. 3, “The size of the multiplier”).</p>
-<h3 id="investment">2.2 Investment — Chapters 3, 5, 9</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − c₁ − <span style="color:var(--accent); font-weight:bold;">d₁</span>)] · [c₀ + <span style="color:var(--accent); font-weight:bold;">d₀</span> + G − c₁ T − <span style="color:var(--accent); font-weight:bold;">d₂ r</span>]</span></h4>
-<p>Chapter 3 takes investment as exogenous (I = Ī, eq. 3.4) purely as a simplification, explicitly flagged as temporary: Blanchard notes a firm facing higher sales “might well decide they need more machines” and promises a richer treatment in Chapter 5. From Chapter 5 onward investment depends on both output and the interest rate:</p>
-<p>I = I(Y, i)               (eq. 5.1)   [+ in Y, − in i]</p>
-<p>Chapter 9 keeps this functional form, with the real borrowing rate r + x in place of i:</p>
-<p>I = I(Y, r + x)           (within eq. 9.1)</p>
-<p>Accordingly the accelerator term (investment depending on Y) is retained in both model variants. It is dropped only in Chapter 3, before the interest rate exists. We linearise as I = d₀ + d₁ Y − d₂ · r, where d₁ is the output (accelerator) sensitivity and d₂ the real-rate sensitivity. The linear form I = d₀ + d₁ Y is exactly Blanchard's own in Ch. 18, Problem 7.</p>
-<h3>2.3 The real interest rate — Chapter 6</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ <span style="color:var(--accent); font-weight:bold;">r</span>]</span></h4>
-<p>The rate entering spending decisions is the real rate, related to the nominal rate by the Fisher approximation</p>
-<p>r ≈ i − πᵉ              (eq. 6.4)</p>
-<p>The tool's Fisher step r = i − πᵉ matches eq. (6.4) exactly.</p>
-<h3>2.4 Equilibrium condition — Chapter 3 / Chapter 9</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;"><span style="color:var(--accent); font-weight:bold;">Y =</span> [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ r]</span></h4>
-<p>Goods-market equilibrium requires production equal demand:</p>
-<p>Y = Z                     (eq. 3.6)</p>
-<p>Substituting consumption, investment, and government spending gives Blanchard's short-run output equation, eq. (9.1):</p>
-<p>Y = C(Y − T) + I(Y, r + x) + G    (eq. 9.1)</p>
-
-<p>Substitute the linear forms into the equilibrium condition Y = Z (eq. 3.6), setting the risk premium x = 0 for the baseline tool:</p>
-<p>Y = c₀ + c₁(Y − T) + d₀ + d₁ Y − d₂ r + G</p>
-<p>Collect the terms in Y on the left (this is Blanchard's own “move c₁Y to the left, reorganise the right” step from the Ch. 3 derivation of eq. 3.8):</p>
-<p>Y − c₁ Y − d₁ Y = c₀ + d₀ + G − c₁ T − d₂ r</p>
-<p>(1 − c₁ − d₁) Y = [c₀ + d₀ + G − c₁ T − d₂ r]</p>
-<p>Divide through by (1 − c₁ − d₁):</p>
-<p>Y = [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ r]</p>
-<p>This is the accelerator-augmented version of Blanchard's eq. (3.8). The multiplier 1/(1 − c₁ − d₁) generalises his 1/(1 − c₁): the induced-spending propensity is now the sum c₁ + d₁, because both consumption and investment respond to output.</p>
-<h3 id="is-coefficients">3.1 Coefficient table (symbolic)</h3>
-<div style="overflow-x:auto;">
-<table style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Driver / coefficient</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Symbolic form</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard source</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Multiplier</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">1 / (1 − c₁ − d₁)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Generalises eq. (3.8); accelerator from eq. (9.1)</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂G  (spending)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">1 / (1 − c₁ − d₁)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (3.8) / eq. (9.1)</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂T  (tax)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">− c₁ / (1 − c₁ − d₁)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (3.8) tax-multiplier form</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂r  (real rate)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">− d₂ / (1 − c₁ − d₁)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">investment from eq. (5.1)/(9.1)</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">r definition</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">r = i − πᵉ</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (6.4)</td>
-  </tr>
-</table>
-</div>
-<h3>3.2 Why the tax multiplier is asymmetric</h3>
-<p>The tax multiplier −c₁/(1 − c₁ − d₁) carries d₁ in the denominator but only c₁ in the numerator. This is not an inconsistency. A tax change acts on disposable income, and in this model only consumption responds to disposable income; investment responds to output (Y), not to (Y − T). So the direct first-round impact of a tax rise runs through consumption alone (numerator −c₁), while the subsequent amplification runs through both consumption and the investment accelerator as output falls (shared denominator 1 − c₁ − d₁).</p>
-<p>By contrast a spending change hits demand directly and fully (numerator 1), which is why |∂Y/∂T| < ∂Y/∂G and the balanced-budget multiplier is non-zero.</p>
-<h3>3.3 The c₁ slider</h3>
-<p>Because every IS coefficient is a function of c₁, the tool exposes c₁ as a live slider (a behavioural primitive). Moving c₁ with d₁ held fixed recomputes the multiplier, the G coefficient, the T coefficient, and the r coefficient simultaneously.</p>
-<ul><li>Range 0.3–0.8 (covering Blanchard's Appendix 3 estimates of 0.5 and 0.8, centred near his point estimate of 0.6).</li></ul>
-<ul><li>As c₁ + d₁ → 1 the multiplier diverges; the slider is capped short of this and flags instability. This connects to Blanchard's Ch. 3 “trick question” about c₁ > 1.</li></ul>
-<ul><li>Live readouts display the implied multiplier and each reduced-form coefficient so the algebra is visible while dragging.</li></ul>
-<h2 id="numeric-check-case-baseline-calibration"><span class="num">4</span> Numeric check-case (baseline calibration)</h2>
-<p>Baseline parameters: c₁ + d₁ = 0.6 (Blanchard's Ch. 3 estimate and the combined parameter in Ch. 18 Problem 7), split for display as c₁ = 0.5, d₁ = 0.1; real-rate sensitivity d₂ = 200. The split is a presentational decomposition only — Blanchard never separates c₁ and d₁, since the multiplier depends only on their sum.</p>
-<div style="overflow-x:auto;">
-<table style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Coefficient</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Formula</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Value</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Needs split?</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Multiplier</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">1/(1 − 0.6)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">2.5</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">No</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂G</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">1/(1 − 0.6)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">+2.5</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">No</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂T</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">− 0.5/(1 − 0.6)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">−1.25</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Yes</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂r</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">− 200/(1 − 0.6)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">−500</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">No</td>
-  </tr>
-</table>
-</div>
-<p>Cross-check: the multiplier 2.5 matches the value Blanchard computes in Chapter 3 for c₁ = 0.6 (1/(1 − 0.6) = 2.5). Only the tax multiplier depends on how the 0.6 is split between c₁ and d₁; the spending and rate coefficients depend on the sum alone.</p>
-<h3>4.1 The closed economy in the unified tool (Y=90 pre-PC)</h3>
-<p>In the unified tool the closed economy is not a separate engine: it is the open-economy IS (isOutput / isRateForOutput) with the open-only terms switched off when the UIP block is locked — the import leakage m is forced to 0 and the trade terms (x₁·Y* − n₁·(ε − ε_base)) are dropped. With m=0 the denominator returns the closed multiplier k = 1/(1 − c₁ − d₁) = 2.5 (c₁=0.5, d₁=0.1). The gate lives inside those two functions, so solve(), the plotted IS curve, its label, and its drag handle all adopt the closed form together.</p>
-<p>Pre-PC baseline is Y=90, and that is correct . The pre-PC stage (UIP and PC both locked) is Blanchard’s core fixed-price short run (Ch. 3–5): prices are constant, there is no inflation, so the nominal and real rate coincide, r = i (the πᵉ-gating override: effectivePiE returns 0 until PC unlocks). At the baseline policy rate i = 3% this gives r = 3%, and the goods market clears at Y = 90, below potential (Yₙ = 100). The Fisher distinction (r = i − πᵉ) switches on only with the PC block (the medium run), at which point the real rate falls to 1% and output returns to Yₙ = 100.</p>
-<p>Why Y=90 — the mechanism, stated correctly: Y = 90 is a real-interest-rate result, not a “the closed economy is smaller” result. The closed multiplier (2.5) is in fact larger than the open one (k_o ≈ 1.43); the closed economy is the more interest-sensitive of the two. Output sits below potential purely because, in the fixed-price short run, the real rate equals the full 3% nominal rate (no inflation to subtract), and at a 3% real rate the goods market clears below Yₙ. It self-corrects to Y = 100 once PC unlocks and the real rate drops to 1%. </p>
-<h2 id="the-lm-mp-block-money-market-and-the-policy-rate"><span class="num">5</span> The LM / MP block (money market and the policy rate)</h2>
-<p style="margin-bottom:4px; margin-top:8px; font-weight:600; color:#888; font-size:0.9em; text-transform:uppercase; letter-spacing:0.05em;">LM</p>
-<p class="eq" style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">i = ī</p>
-<p style="margin-bottom:4px; margin-top:16px; font-weight:600; color:#888; font-size:0.9em; text-transform:uppercase; letter-spacing:0.05em;">Taylor Rule</p>
-<p class="eq" style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">i = ρ·i_prev + (1−ρ)·(ī + φ(π − π̄) + ψ(Y − Yₙ)/Yₙ)</p>
-<p>Block 2. Blanchard modernises the LM curve across Chapters 5 and 9: the central bank sets the interest rate directly and the money stock adjusts endogenously, replacing the traditional upward-sloping LM. The tool follows this modern treatment. Money demand is retained only as a descriptive relation behind the chosen rate, not as the rate-setting mechanism.</p>
-<h3>5.1 Money demand and the LM relation — Chapters 4–5</h3>
-<p>The demand for money is proportional to nominal income times a decreasing function of the interest rate:</p>
-<p>Mᵈ = $Y · L(i)            (eq. 4.1)   [L decreasing in i]</p>
-<p>Dividing by the price level P gives the relation in real terms, which Blanchard names the LM relation:</p>
-<p>M / P = Y · L(i)          (eq. 5.3)</p>
-<p>The tool adopts this multiplicative form (income and the interest-rate function multiply), matching eq. (5.3) exactly in structure. Blanchard keeps L(i) as a general decreasing function and never gives it a numerical form, so any linearisation is ours, not his. We linearise L(i) as:</p>
-<p>L(i) = λ₀ − λ₁ i      →   M / P = Y · (λ₀ − λ₁ i)</p>
-<p>Note the structural consequence of the multiplicative form: the interest-sensitivity term (−λ₁ i) is scaled by income Y, so money demand becomes more interest-elastic (in level terms) as output rises. This differs from a purely additive specification, in which the income and interest terms are separate. The numerical values of λ₀ and λ₁ are deferred and will be announced when the HTML panel is updated; they will be chosen to match the panel's behaviour at the baseline (Y = 100).</p>
-
-<h3>5.2 The flat MP line (the rate-setting mechanism) — Chapters 5 and 9</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:var(--accent); font-weight:bold;">i = ī</span></h4>
-<p>Blanchard argues the assumption that the central bank fixes M and lets i adjust is at odds with reality: central banks now choose an interest rate and adjust the money supply to achieve it (Ch. 5, “Deriving the LM Curve”). The LM curve becomes a horizontal line at the rate the central bank chooses; Blanchard notes the term “curve” is then a misnomer. Chapter 9 carries this through as the flat LM in the IS-LM-PC model. The tool implements exactly this: the central bank sets i directly, drawn as a flat MP line, and the money stock is endogenous.</p>
-<p>The neutral nominal rate (the rate that holds output at potential when inflation is on target) follows Blanchard's Ch. 23 definition of the target nominal rate:</p>
-<p>ī = rₙ + π̄          (neutral nominal rate, Ch. 23)</p>
-<p>In the tool, the neutral rate is computed shock-aware each period (the "Option B" anchor): rather than fixing it at a constant 3%, the Taylor rule anchors to the rate that holds output at potential given the current fiscal stance and exchange rate — i.e. it inverts the IS block at Y = Yₙ for the prevailing G, T (and, in v19, ε): rₙ = isRateForOutput(Yₙ, G, T, ε), then ī = rₙ + π̄. At the baseline (G = T = 20, ε = 1) this evaluates to exactly r + π = 1% + 2% = 3%, consistent with the IS block's baseline real rate r₀ = 1%. Away from baseline it tracks the moving target. The earlier fixed-3% formulation (still present as the named constant I_NEUTRAL) was a proportional-control approximation: because it ignored shifts in G/T/ε, the economy settled at a small residual gap rather than precisely at Yₙ. The shock-aware anchor removes that residual, so the medium-run equilibrium converges exactly to potential (verified by the "Taylor convergence" and "Taylor anchors to I_NEUTRAL not i_target" regression checks).</p>
-<h3>5.3 The unemployment–output-gap conversion (shared with the PC block)</h3>
-<p>Blanchard's policy rule and his Phillips curve are written in unemployment, but the tool works in output. The conversion is a single identity derived in Chapter 9 (the steps that take eq. 9.2 to eq. 9.3); it is recorded once here and referenced by both the Taylor rule below and the Phillips-curve block.</p>
-<p>By definition the unemployment rate is unemployment over the labour force:</p>
-<p>u ≡ U/L = (L − N)/L = 1 − N/L      →   N = L(1 − u)</p>
-<p>Maintaining the Chapter 7 simplification that output equals employment (Y = N):</p>
-<p>Y = N = L(1 − u)        and at the natural rate   Yₙ = L(1 − uₙ)</p>
-<p>Subtracting gives the deviation of output from potential:</p>
-<p>Y − Yₙ = L[(1 − u) − (1 − uₙ)] = − L (u − uₙ)</p>
-<p>Equivalently, the conversion identity used throughout the tool:</p>
-<p>(u − uₙ) = − (Y − Yₙ) / L          (from eqs. 9.2–9.3)</p>
-<p>Two consequences follow whenever a Blanchard relation in u is rewritten in Y: a sign flip (u and Y move oppositely) and a division by L. In Blanchard's one-good setup Y ≈ N ≈ L, so dividing by L and normalising by Yₙ nearly coincide; the tool normalises by Yₙ. This is the same reconciliation the Phillips-curve block requires (eq. 9.3 carries the factor α/L).</p>
-<h3 id="taylor-rule">5.4 The Taylor rule (when active) — Chapter 23</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">i = ρ·i_prev + (1−ρ)·(<span style="color:var(--accent); font-weight:bold;">ī + φ(π − π̄) + ψ(Y − Yₙ)/Yₙ</span>)</span></h4>
-<p>Blanchard's interest-rate rule sets the policy rate around its target in response to inflation and unemployment gaps:</p>
-<p>i = ī + a(π − π̄) − b(u − uₙ)        (Taylor rule, Ch. 23)</p>
-<p>with a, b > 0, and crucially a > 1 — the Taylor principle: because spending depends on the real rate, the nominal rate must rise more than one-for-one with inflation so that the real rate rises. Applying the conversion identity from Section 5.3 to the unemployment term rewrites the rule in output-gap form:</p>
-<p>− b(u − uₙ) = − b · [−(Y − Yₙ)/L] = + (b/L)(Y − Yₙ)</p>
-<p>⇒   i = ī + a(π − π̄) + (b/L)(Y − Yₙ)</p>
-<p>The tool's rule i = I_NEUTRAL + φ(π − π*) + ψ·(Y − Yₙ)/Yₙ maps onto this term by term:</p>
-<div style="overflow-x:auto;">
-<table style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard (Ch. 23)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Tool</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Correspondence</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">ī = rₙ + π̄</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">shock-aware neutral rate (Option B); = 3% at baseline</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">exact (rₙ recomputed from IS at Y=Yₙ)</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">a (π − π̄), a > 1</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">φ (π − π*), φ > 1</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">a ≡ φ (Taylor principle)</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">− b(u − uₙ)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">+ ψ (Y − Yₙ)/Yₙ, ψ = 0.25</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">ψ ≡ b·Yₙ/L  via §5.3</td>
-  </tr>
-</table>
-</div>
-<p>So the tool's positive output-gap coefficient ψ = 0.25 is Blanchard's negative unemployment coefficient −b, after the Okun-type conversion of Section 5.3. The sign difference is the conversion, not a disagreement.</p>
-<h3>5.5 Interest smoothing (a tested departure from the textbook rule)</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">i = <span style="color:var(--accent); font-weight:bold;">ρ·i_prev + (1−ρ)</span>·(ī + φ(π − π̄) + ψ(Y − Yₙ)/Yₙ)</span></h4>
-<p>The tool includes interest-rate smoothing (RHO_TAYLOR = 0.75 in the unified tool; the retired closed-economy build used 0.8), i.e. the policy rate partially adjusts toward its rule-implied target each period: iₜ = ρ·iₜ₋₁ + (1−ρ)·i. This is a standard real-world extension but is not* part of Blanchard's stated Ch. 23 rule, which has no lagged-rate term. It is retained deliberately; its effect on dynamics and stability has now been checked by the regression harness (all presets remain finite and converge over 300 periods), so it is no longer a pending item — it is a documented and tested departure from the textbook rule.</p>
-<h3>5.6 LM/MP block summary</h3>
-<div style="overflow-x:auto;">
-<table style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Element</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard source</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Status</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Linearised form of L(i)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (4.1) / (5.3)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Form matched; L(i) linearised by us</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Flat MP line (CB sets i)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 5 / Ch. 9</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Exact conceptual match</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Neutral rate ī = rₙ + π̄ (shock-aware, Option B)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 23</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Recomputed from IS at Y=Yₙ; = 3% at baseline</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">u↔Y conversion</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eqs. 9.2–9.3</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Derived in §5.3; shared with PC</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Taylor rule, a > 1</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 23</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Matched; written in output-gap form</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Interest smoothing ρ (0.8 v16 / 0.75 v19)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">— (not in textbook)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Extension; simulation-checked (convergence holds)</td>
-  </tr>
-</table>
-</div>
-<h2 id="the-phillips-curve-block-inflation"><span class="num">6</span> The Phillips-curve block (inflation)</h2>
-<p class="eq" style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">π = πᵉ + (α_tool / Yₙ)(Y − Yₙ) + z_shock</p>
-<p>Block 3. Blanchard derives the Phillips curve from the labour-market model (Chapter 7) in Chapter 8, then converts it to output space in Chapter 9. The tool follows this chain. The conversion from unemployment to output uses the identity already derived in §5.3.</p>
-<h3>6.1 From wage- and price-setting to inflation — Chapter 8</h3>
-<p>Wage setting (eq. 7.1) with Blanchard's specific functional form F(u, z) = 1 − αu + z:</p>
-<p>W = Pᵉ · (1 − αu + z)        (eq. 7.1, specific form)</p>
-<p>Price setting (eq. 7.3): firms set price as a markup over the wage:</p>
-<p>P = (1 + m) · W           (eq. 7.3)</p>
-<p>Substituting the wage into the price equation gives the price level in terms of the expected price level, the markup, the wage-push factor, and unemployment:</p>
-<p>P = Pᵉ (1 + m)(1 − αu + z)   (eq. 8.1)</p>
-<p>Rewritten in inflation terms (derivation in Blanchard's chapter appendix), with time indexes:</p>
-<p>πₜ = πᵉₜ + (m + z) − α uₜ     (eqs. 8.2 / 8.3)</p>
-<p>The two supply-side terms are distinct objects in Blanchard: m is the markup of prices over wages (market power / degree of competition), and z is everything in wage-setting other than unemployment (union bargaining power, unemployment-benefit generosity, employment protection). The tool exposes them as two separate controls accordingly.</p>
-<h3 id="natural-rate">6.2 The natural rate and the Phillips curve — eqs. 8.4–8.5</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (α_tool / <span style="color:var(--accent); font-weight:bold;">Yₙ</span>)(Y − <span style="color:var(--accent); font-weight:bold;">Yₙ</span>) + z_shock</span></h4>
-<p>The natural rate of unemployment is the rate at which actual inflation equals expected inflation. Setting πₜ = πᵉₜ in eq. (8.3) and solving:</p>
-<p>uₙ = (m + z) / α            (eq. 8.4)</p>
-<p>This is the key cross-block link: m and z move the natural rate, and therefore potential output. A rise in either raises uₙ and so lowers Yₙ = L(1 − uₙ). They are substitutes (eq. 8.4 depends on m + z), so a markup shock can be offset by a fall in z — e.g. a reduction in union bargaining power restoring potential output. This is a genuine medium-run rebalancing (Yₙ is restored), not a temporary cancellation of an inflation blip.</p>
-<p>Substituting eq. (8.4) back into eq. (8.3) gives the Phillips curve in unemployment space:</p>
-<p>πₜ − πᵉₜ = − α (uₜ − uₙ)        (eq. 8.5)</p>
-<h3 id="pc-conversion">6.3 Conversion to output space — Chapter 9, eq. 9.3</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (<span style="color:var(--accent); font-weight:bold;">α_tool</span> / Yₙ)<span style="color:var(--accent); font-weight:bold;">(Y − Yₙ)</span> + z_shock</span></h4>
-<p>Applying the unemployment–output identity from §5.3, (u − uₙ) = −(Y − Yₙ)/L, to eq. (8.5):</p>
-<p>πₜ − πᵉₜ = −α · [−(Y − Yₙ)/L] = (α/L)(Y − Yₙ)   (eq. 9.3)</p>
-<p>Blanchard's output-space slope is therefore α/L. The tool normalises the output gap by potential output Yₙ rather than the labour force L, writing the slope as α/Yₙ. Since Yₙ = L(1 − uₙ), the two normalisations are related by:</p>
-<p>α_tool / Yₙ = α_struct / L     ⇒   α_tool = α_struct · (Yₙ/L) = α_struct · (1 − uₙ)</p>
-<p>With a natural rate uₙ ≈ 5%, the factor (1 − uₙ) ≈ 0.95: the tool's α equals Blanchard's structural α to within about 5%. Normalising by Yₙ (rather than L) is deliberate, for consistency with the IS and MP blocks, which all use Yₙ = 100. This factor is the entirety of the “α/L vs α/Yₙ” reconciliation flagged earlier; it is a relabelling, not a discrepancy.</p>
-<h3>6.4 The α slider, and why steepness is carried by credibility</h3>
-<p>α is exposed as a slider with default 0.3 and a cap of 0.5 (range ~0.1–0.5). This is the empirically supported range for the structural slope. Careful cross-sectional estimates put it around 0.3 (Hazell, Herreño, Nakamura & Steinsson, QJE 2022, find a 1-point rise in unemployment lowers inflation by about 0.34 points, and that the slope was small even in the early 1980s); recent US price-Phillips-curve estimates sit around 0.18–0.26 in normal labour markets. A structural α near 1.0 is not empirically supported, which is why the slider is capped at 0.5.</p>
-<p>Crucially, this matches Blanchard's own treatment: across the historical mutations of the Phillips curve he holds α fixed and varies θ (the expectations/de-anchoring parameter), not α. Eqs. (8.5)→(8.8)→(8.9) walk through this with the same α throughout: at θ = 0 the original level trade-off (eq. 8.6); at 0 < θ < 1 inflation depends on both the gap and last year's inflation (eq. 8.8); at θ = 1 the accelerationist form πₜ − πₜ₋₁ = −α(uₜ − uₙ) (eq. 8.9), where the gap drives the change in inflation. Blanchard's Figure 8-4 plots estimated θ over time: it rose from the mid-1960s, stayed near 1 until the late 1990s, then fell back toward zero by 2020. The apparent steepening and flattening of the curve over decades is therefore a θ story, not an α story.</p>
-<p>Design consequence: a steep, spiralling, “slope-looks-like-1” curve is reproduced in the tool by lowering credibility (lowering θ_eff toward 0), not by raising α. The credibility slider carries the steepness; α stays at its modest structural value. This is faithful to Blanchard and to the empirical evidence, both of which attribute the 1970s steepness to de-anchored expectations rather than a larger structural slope.</p>
-<p>Note also that the α slider has a genuine medium-run effect beyond the curve's steepness: via the natural-rate relation uₙ = (m+z)/α (eq. 8.4), a change in α also moves potential output, so it is not a purely cosmetic control.</p>
-<h3>6.5 Inflation expectations and anchoring — eq. 8.7</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = <span style="color:var(--accent); font-weight:bold;">πᵉ</span> + (α_tool / Yₙ)(Y − Yₙ) + z_shock</span></h4>
-<p>Expected inflation is a weighted average of an anchor (the target) and last period's inflation:</p>
-<p>πᵉₜ = (1 − θ) π̄ + θ πₜ₋₁       (eq. 8.7)</p>
-<p>θ is the de-anchoring parameter: θ = 0 gives fully anchored expectations (πᵉ = target, the original Phillips curve of eq. 8.6), θ = 1 gives fully adaptive expectations (πᵉ = last year's inflation). The tool's anchoring slider (θ, 'max anchoring ceiling') and Blanchard's θ in eq. (8.7) use the same symbol for inverse concepts: Blanchard's θ is the weight on last period's <em>actual</em> inflation (high θ = more adaptive = less anchored); the tool's θ is anchoring <em>capacity</em> (high θ = more anchored = more credible). The tool's effective anchoring θ_eff = θ × credibility corresponds to Blanchard's (1 − θ_Blanchard), not to θ_Blanchard directly. This is a deliberate UI choice — 'higher slider = more central-bank credibility' is the more intuitive direction for a policy-facing control — but the tool's θ is not literally identical to Blanchard's θ, and this document should not describe it as such.</p>
-<h3>6.6 Supply shocks: two distinct channels — Section 8-3</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (α_tool / Yₙ)(Y − Yₙ) + <span style="color:var(--accent); font-weight:bold;">z_shock</span></span></h4>
-<p>Blanchard's Section 8-3 (the Covid and 1970s episodes) establishes that supply shocks come in two forms, and the tool models both:</p>
-<ul><li>Transitory cost-push pulse (the oil / Covid shock button). Blanchard finds the 2020–22 inflation came largely through the markup m — energy prices and supply-chain shortages raised firms' costs given wages — but that it faded: “when commodity prices started turning around, so did inflation.” This is a temporary m spike that decays (the tool's existing pulse with decay), lifting the PC while active but leaving the natural rate unchanged.</li></ul>
-<ul><li>Permanent structural shift (the m and z sliders). A lasting change in market power (m, <strong>e.g., increased monopoly power</strong>) or wage-setting institutions (z, <strong>e.g., increased union strength</strong>) moves the natural rate via eq. (8.4) and therefore relocates potential output Yₙ. This is the channel the rebalancing scenario uses, and it persists until changed.</li></ul>
-<p>The de-anchoring link ties the two together: Blanchard notes the 1970s oil shock de-anchored expectations (θ rose), amplifying a transitory shock into sustained ~17% inflation, whereas the Covid shock did not de-anchor (credibility held) and so faded. With the tool's credibility slider, the same cost-push pulse can be run both ways: credibility high → fades (Covid-like); credibility low / de-anchoring on → spirals (1970s-like). The spiral is the accelerationist regime of eq. (8.9): when θ_eff → 0 the gap drives the change in inflation, so inflation rises period-on-period rather than settling at a higher level. This is a behaviour to verify when the dynamics are tested.</p>
-<h3>6.7 Phillips-curve block summary</h3>
-<div style="overflow-x:auto;">
-<table style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Element</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard source</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Status</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Wage/price → inflation</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eqs. 7.1, 7.3, 8.1–8.3</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Derived in full</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Natural rate uₙ = (m+z)/α</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (8.4)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Drives Yₙ; m,z as sliders</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">PC π−πᵉ = −α(u−uₙ)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (8.5)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Converted to output via §5.3</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Output-space slope α/Yₙ</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (9.3) carries α/L</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">α_tool = α_struct(1−uₙ); ≈5%</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">α slider (def. 0.3, cap 0.5)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eqs. 8.5–8.9</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Steepness via θ, not α (Fig. 8-4)</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Expectations πᵉ=(1−θ)π̄+θπ₋₁</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (8.7)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Inverted mapping: tool's credibility runs opposite to Blanchard's θ</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Transitory cost-push pulse</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Section 8-3 (Covid m)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Decaying pulse; Yₙ fixed</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Structural m, z shift</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Section 8-3 / eq. 8.4</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Permanent; moves Yₙ</td>
-  </tr>
-</table>
-</div>
-<h2 id="the-open-economy-block-exchange-rate-and-foreign-output"><span class="num">7</span> The open-economy block (exchange rate and foreign output)</h2>
-<p class="eq" style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">Y = Yₙ + [1 / (1 − c₁ − d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + x₁(Y*−Y₀) ]</p>
-<p>Block 4 (open-economy stage only). Blanchard's Chapter 19 adds the exchange rate to the IS-LM model: net exports depend on the real exchange rate and on foreign output, and the exchange rate itself is pinned by uncovered interest parity. This block replaces the tool's ad hoc −100·(ε−1) term with a coefficient derived from eq. (19.2), and adds a foreign-output channel.</p>
-<h3 id="uip">7.1 Uncovered interest parity — Chapters 17 and 19</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ − d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(<span style="color:var(--accent); font-weight:bold;">ε</span>−1) + x₁(Y*−Y₀) ]</span></h4>
-<p>Investors arbitrage between domestic and foreign bonds, equalising expected returns. This is the uncovered interest parity (UIP) condition:</p>
-<p>(1 + i) = (1 + i*) · (E / Eᵉ)      (eq. 17.2 / 19.3)</p>
-<p>Solving for the current exchange rate, with the expected future rate Eᵉ taken as given:</p>
-<p>*E = Eᵉ · (1 + i) / (1 + i)        (eq. 19.5)**</p>
-<p>The tool's UIP relation E = Eᵉ·(1+i)/(1+i) is verbatim eq. (19.5) — the cleanest match in the model, no discrepancy. A higher domestic rate appreciates the currency (E rises); a higher foreign rate depreciates it. The approximate form (eq. 17.4), i ≈ i − (Eᵉ − E)/E, is the same relation: the domestic rate equals the foreign rate minus the expected appreciation.</p>
-<h3 id="open-is">7.2 The open-economy IS with net exports — eq. 19.1 / 19.2</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ − d₁ + <span style="color:var(--accent); font-weight:bold;">m₁</span>)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + <span style="color:var(--accent); font-weight:bold;">x₁</span>(Y*−Y₀) ]</span></h4>
-<p>Net exports are exports minus the value of imports, decreasing in the real exchange rate:</p>
-<p class="eq">NX(Y, Y*, ε) = X(Y*, ε) − IM(Y, ε)/ε     <span class="ref">(eq. 19.1)</span></p>
-<p>The open-economy goods-market equilibrium adds net exports to the closed IS:</p>
-<p>Y = C(Y−T) + I(Y, r) + G + NX(Y, Y*, ε)   (eq. 19.1)</p>
-<p>Blanchard then simplifies (eq. 19.2): choosing P = P* = 1 so that ε = E (real and nominal exchange rates coincide), and — since the price level is fixed in the short run — r = i. The baseline is ε = 1, matching the tool's centring of the exchange-rate term on (ε − 1).</p>
-<h3 id="linearising-net-exports">7.3 Linearising net exports (Marshall–Lerner)</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ − d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − <span style="color:var(--accent); font-weight:bold;">n₁(ε−1)</span> + x₁(Y*−Y₀) ]</span></h4>
-<h4 style="margin-top:0;">Subtitle: <span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px;"><span style="color:var(--accent);">NX</span> = x₁Y* − m₁Y − n₁(ε−1)</span></h4>
-<p>Following Blanchard's own linear trade system (Ch. 18, Problem 7/8), linearise the components of net exports:</p>
-<p>X = x₁ Y*        (exports rise with foreign output)</p>
-<p>IM = m₁ Y       (imports rise with domestic output; ε=1 ⇒ IM/ε = IM)</p>
-<p class="eq">NX = x₁ Y* − m₁ Y − n₁ (ε − 1)</p>
-<p>Here n₁ > 0 is the sensitivity of net exports to the real exchange rate. The condition n₁ > 0 is precisely the Marshall–Lerner condition, which Blanchard assumes holds throughout Chapter 19. Economically, a real appreciation has two opposing effects on net exports: it reduces export volumes and increases import volumes (quantity effect, both pushing NX down) but it cheapens each imported good in domestic-currency terms (valuation effect, pushing NX up). Marshall–Lerner is the condition that the volume effects dominate the valuation effect, so that on net a real appreciation worsens net exports — i.e. n₁ > 0.. Marshall–Lerner is the condition that the volume effects dominate, so that on net a real appreciation worsens net exports — i.e. n₁ > 0.</p>
-<p>In this linearisation n₁ is a constant: the response of net exports to ε does not vary with the level of ε. The J-curve (net exports worsening before improving after a depreciation, because volumes adjust more slowly than prices) and any elasticity-dependence of the response are dynamic effects outside the scope of this static linear term; they are not modelled. What is retained is the sign and the constant magnitude, which is what eq. (19.2) requires under Marshall–Lerner.</p>
-<h3 id="reduced-form-coefficients">7.4 Deriving the reduced-form coefficients</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + <span style="color:var(--accent); font-weight:bold;">[1 / (1 − c₁ − d₁ + m₁)]</span> · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + x₁(Y*−Y₀) ]</span></h4>
-<p>Substitute the linear net-export terms into the open IS (eq. 19.2), retaining the investment accelerator (§2.2) and with x = 0:</p>
-<p>Y = c₀ + c₁(Y−T) + d₀ + d₁Y − d₂ r + G + x₁Y* − m₁Y − n₁(ε−1)</p>
-<p>Collect the Y terms. The import term −m₁Y now joins the left side, adding to the leakage:</p>
-<p>(1 − c₁ − d₁ + m₁) Y = [autonomous] − n₁(ε−1) + x₁Y*</p>
-<p>Divide through. The open multiplier carries the extra +m₁ leakage in its denominator:</p>
-<p>k_open = 1 / (1 − c₁ − d₁ + m₁)</p>
-<p>Because m₁ > 0, k_open is smaller than the closed multiplier 1/(1−c₁−d₁): imports leak out of the multiplier, the algebraic counterpart of Blanchard's “AA is flatter than DD” (Ch. 18). Every demand term — G, T, r, ε, and Y* — passes through this same k_open. The full open IS is:</p>
-<p>Y = Yₙ + k_open·(G−G₀) − c₁·k_open·(T−T₀)</p>
-<p>*      − d₂·k_open·(r−r₀) − n₁·k_open·(ε−1) + x₁·k_open·(Y−Y₀)*</p>
-<p>The reduced-form exchange-rate coefficient is therefore ∂Y/∂ε = −n₁·k_open, exactly parallel to the real-rate coefficient ∂Y/∂r = −d₂·k_open. Like d₂, the value of n₁ is calibration: Blanchard gives only its sign (Marshall–Lerner), no magnitude. The recommended documentation move is identical to the r coefficient — surface n₁ as the structural primitive and present the reduced-form ε coefficient as −n₁·k_open, rather than asserting a free-standing number.</p>
-<h3>7.5 Numeric check-case (open economy)</h3>
-<p>Baseline open-economy parameters: c₁ = 0.5, d₁ = 0.1 (as closed), plus m₁ = 0.3 and x₁ = 0.3 (Blanchard Ch. 18, Problem 8: IM = 0.3Y, X = 0.3Y*). Net-export–exchange-rate sensitivity n₁ ≈ 70.</p>
-<div style="overflow-x:auto;">
-<table style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Coefficient</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Formula</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Value</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Source of magnitude</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open multiplier k_open</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">1/(1−0.5−0.1+0.3)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">1.43</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">from c₁,d₁,m₁</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂G</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">k_open</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">+1.43</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">vs closed +2.5</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂T</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">−c₁·k_open</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">−0.71</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">c₁ = 0.5</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂r</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">−d₂·k_open</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">−286</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">d₂ = 200</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂ε</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">−n₁·k_open</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">≈−100</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">n₁ ≈ 70 (calibration)</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂Y*</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">x₁·k_open</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">+0.43</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">x₁ = 0.3</td>
-  </tr>
-</table>
-</div>
-<p><p>At the pre-PC comparison point (r=3%, Y=90), NX = 30 − 0.3(90) = 3 &gt; 0, and it shrinks to exactly zero as Y reaches 100. This explains why the open baseline output is slightly higher than the closed baseline pre-PC.</p>
-<p>The headline result: opening the economy cuts the spending multiplier from 2.5 to 1.43 — the import leakage m₁ = 0.3 makes fiscal policy markedly less powerful, exactly Blanchard's Ch. 18 point. The exchange-rate coefficient ≈−100 is preserved (via n₁ ≈ 70) so v19 behaviour does not jump, but it is now derived as −n₁·k_open rather than asserted.</p>
-<h3>7.6 The foreign-output channel</h3>
-<h4 style="margin-top:0; font-weight:normal;"><span class="eq" style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ − d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + <span style="color:var(--accent); font-weight:bold;">x₁(Y*−Y₀)</span> ]</span></h4>
-<p>The term +x₁·k_open·(Y − Y₀) gives the spillover from foreign output. A fall in foreign output Y (a foreign recession) reduces domestic exports, cutting demand, amplified through the open multiplier. At x₁ = 0.3 and k_open = 1.43, a unit drop in Y lowers domestic output by 0.43. Y* is exposed as a control so a student can run a foreign-recession spillover directly.</p>
-<p>This unlocks a genuine three-channel external-shock lesson: a foreign recession (Y* down) and a real appreciation (ε up) both reduce net exports and can be compared as substitute sources of an external demand shock; and monetary policy can respond — cutting i depreciates E via UIP (§7.1), partially offsetting a loss of foreign demand. This is the cross-block interaction (goods market, interest rate, exchange rate) that Chapter 19 is built around.</p>
-<h3>7.7 Open-economy block summary</h3>
-<div style="overflow-x:auto;">
-<table style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Element</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard source</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Status</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">UIP E = Eᵉ(1+i)/(1+i*)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (19.5)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Verbatim match</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">ε = 1 baseline (P=P*=1)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (19.2)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Exact</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open IS with NX</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (19.1)/(19.2)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Derived; accelerator kept</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open multiplier k_open=1.43</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 18 (import leakage)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">From c₁,d₁,m₁</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂ε = −n₁·k_open</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. 19.2 + Marshall–Lerner</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">n₁≈0 calibration; ≈−100</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">∂Y/∂Y* = x₁·k_open</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. 19.2 (exports on Y*)</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">x₁ = 0.3; new control</td>
-  </tr>
-  <tr>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">J-curve / elasticity dynamics</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">—</td>
-    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Out of scope (static linear)</td>
-  </tr>
-</table>
-</div>
-<h3 id="real-exchange-rate">7.8 The Real Exchange Rate and Price Evolution</h3>
-<p>The real exchange rate is defined as ε = E · P / P*. The model evolves prices according to domestic inflation π and a constant foreign inflation target of 2%.</p>
-</main>
-<footer>
-  <p><strong>Economo</strong> — IS-LM-PC Interactive Macro Lab. Built around Blanchard, <em>Macroeconomics</em>, 9th Global Edition (2024). The underlying economic model is drawn from published academic work and is not claimed as proprietary; this manual and the software implementation are the author's own work.</p>
-  <p>Malin Anderson · malinanderson97@gmail.com</p>
-</footer>
-</div>
 </body>
+
 </html>

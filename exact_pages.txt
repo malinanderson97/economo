@@ -1,0 +1,61 @@
+--- BOOK PAGE 384 (PDF 406) ---
+405 ---
+
+Depreciation and the Trade Balance:
+The Marshall–Lerner Condition
+Return to the definition of net exports:
+NX = X −IM ε
+More concretely, if the dollar Replace X and IM by their expressions from equations (18.2) and (18.3):
+depreciates vis-à-vis the yen
+by 10%: c NX = X(Y*,ε)−IM(Y,ε) ε
+US goods will be cheaper
+in Japan, leading to a larger As the real exchange rate ε enters the right side of the equation in three places,
+quantity of US exports to it is clear that the real depreciation affects the trade balance through three separate
+Japan. channels:
+Japanese goods will be
+more expensive in the ■ Exports, X, increase. The real depreciation makes US goods relatively less expensive
+United States, leading to a abroad. This leads to an increase in foreign demand for US goods—an increase in US
+smaller quantity of imports
+exports.
+of Japanese goods to the
+■ Imports, IM, decrease. The real depreciation makes foreign goods relatively more
+United States and a higher
+import bill for a given quantity expensive in the United States. This leads to a shift in domestic demand toward
+of imports of Japanese domestic goods and to a decrease in the quantity of imports.
+goods to the United States. ■ The relative price of foreign goods in terms of domestic goods, 1ε, increases. For given
+IM, this increases the import bill, IM ε. The same quantity of imports now costs
+more to buy (in terms of domestic goods).
+For the trade balance to improve following a depreciation, exports must increase
+enough and imports must decrease enough to compensate for the increase in the price
+of imports. The condition under which a real depreciation leads to an increase in net
+exports is known as the Marshall–Lerner condition. (It is derived formally in the
+appendix, “Derivation of the Marshall–Lerner Condition,” at the end of this chapter.)
+The condition is named after
+It turns out that this condition is satisfied in reality. So, for the rest of this book, I shall
+the two economists, Alfred
+assume that a real depreciation—a decrease in ε—leads to an increase in net exports—
+Marshall and Abba Lerner,
+who first derived it.c an increase in NX.
+The Effects of a Real Depreciation
+Thus far, we have looked at the direct effects of a depreciation on the trade balance—that
+is, the effects given US and foreign output. But the effects do not end there. The change in
+net exports changes domestic output, which further affects net exports.
+Because the effects of a real depreciation are much like those of an increase in for-
+eign output, we can use Figure 18-4 to show the effects of an increase in foreign output.
+Just like an increase in foreign output, a depreciation leads to an increase in net
+exports (assuming, as we do, that the Marshall–Lerner condition holds) at any level
+of output. Both the demand relation (ZZ in Figure 18-4(a)) and the net exports rela-
+tion (NX in Figure 18-4(b)) shift up. The equilibrium moves from A to A′, and output
+increases from Y to Y′. By the same argument we used previously, the trade balance
+improves. The increase in imports induced by the increase in output is smaller than the
+direct improvement in the trade balance induced by the depreciation.
+To summarize: The depreciation leads to a shift in demand, both foreign and domes-
+tic, toward domestic goods. This shift in demand leads, in turn, to both an increase in
+domestic output and an improvement in the trade balance.
+Although a depreciation and an increase in foreign output have the same effect
+on domestic output and the trade balance, there is a subtle but important difference
+between the two. A depreciation works by making foreign goods relatively more expen-
+sive. But this means that, for a given income, people—who now pay more to buy foreign
+384 The Open Economy Extensions
+
+

@@ -1,0 +1,208 @@
+--- PDF 149 (has 127) ---
+148 ---
+
+120 Figure 6-8
+US Consumer and
+100 Business Confidence,
+2007–2011
+80 The financial crisis led to a
+sharp drop in confidence,
+which bottomed in early 2009.
+60
+Source: Bloomberg L.P.
+40
+Consumer Confidence
+20
+0
+01/2007 07/2007 01/2008 07/2008 01/2009 07/2009 01/2010 07/2010 01/2011 07/2011
+Financial Policies
+The most urgent measures were aimed at strengthening the financial system:
+■ To prevent a run by depositors, federal deposit insurance was increased from
+$100,000 to $250,000 per account. Recall, however, that much of banks’ funding
+came not from deposits but from the issuance of short-term debt to investors. To
+allow the banks to continue to fund themselves through wholesale funding, the
+federal government offered a program guaranteeing new debt issues by banks.
+■ The Federal Reserve provided funds to the financial system. We have seen that, if
+investors wanted to take their funds back, the banks had to sell some of their assets, often
+at fire sale prices. In many cases, this would have meant bankruptcy. To avoid this out-
+come, the Fed put in place a number of liquidity facilities to make it easier for banks
+and other financial intermediaries to borrow from the Fed. The Fed also increased
+the set of assets that financial institutions could use as collateral when borrowing
+from the Fed (collateral refers to the asset a borrower pledges when borrowing from a
+lender; if the borrower defaults, the asset goes to the lender). Together, these facilities
+allowed banks and financial intermediaries to pay back investors without having to
+sell their assets. They also decreased the incentives of investors to ask for their funds by
+decreasing the risk that banks and financial intermediaries would go bankrupt.
+■ In addition, the government introduced the Troubled Asset Relief Program (TARP),
+aimed at cleaning up banks. The initial goal of the $700 billion program, introduced
+in October 2008, was to remove the complex assets from bank balance sheets, thus
+decreasing uncertainty, reassuring investors, and making it easier to assess the health
+of each bank. The Treasury, however, faced the same problems as private investors. If
+the complex assets were going to be exchanged for, say, Treasury bills, at what price
+should the exchange be done? Within a few weeks, it became clear that the task of
+assessing the value of each of these assets was extremely hard and would take a long
+time, and the initial goal was abandoned. The new goal became to increase the capital
+of banks. This was done by the government’s acquiring shares and thus providing
+funds to most of the largest US banks. By increasing their capital ratio, and thus
+decreasing their leverage, the banks could avoid bankruptcy and, over time, return to
+normal. As of the end of September 2009, total spending under the TARP was $360
+billion, of which $200 billion was spent through the purchase of shares in banks.
+Fiscal and monetary policies were used aggressively as well.
+Chapter 6 Financial Markets II: The Extended IS-LM Model 127
+)001
+5
+7002
+yraunaJ(
+ecnedfinoC
+fo
+xednI
+Business Confidence
+All banks have now bought
+back their shares and
+reimbursed the government.
+Indeed, in the final estima-
+tion, TARP actually has made
+ba small profit.
+
+
+--- PDF 151 (has 127) ---
+150 ---
+
+shift, so that, instead of shifting to IS′, the economy shifted to IS′′. And monetary policy It is difficult to know what
+led to a shift of the LM down, from LM to LM′, so the resulting equilibrium was at point would have happened in the
+absence of those policies.
+A′. At that point, the zero lower bound on the nominal policy rate implied that the real
+It is reasonable to think, but
+policy rate could not be decreased further. The result was a decrease in output from Y to
+impossible to prove, that the
+Y′. The initial shock was so large that the combination of financial, fiscal, and monetary decrease in output would
+measures was just not enough to avoid a large decrease in output. US GDP fell by 4% in have been much larger,
+2008–2009 and recovered only slowly thereafter. b leading to a repeat of the
+Great Depression.
+SUMMARY
+■ The nominal interest rate tells you how many dollars you ■ The higher the leverage ratio, or the more illiquid the assets,
+need to repay in the future in exchange for one dollar or the more liquid the liabilities, the higher the risk of a bank
+today. run or a run on financial intermediaries.
+■ The real interest rate tells you how many goods you need to ■ The IS-LM model must be extended to take into account the
+repay in the future in exchange for one good today. difference between the nominal and the real interest rate,
+■ The real interest rate is approximately equal to the nominal and the difference between the policy rate chosen by the
+rate minus expected inflation. central bank and the interest rate at which firms and people
+■ The zero lower bound on the nominal interest rate implies can borrow.
+that the real interest rate cannot be lower than expected ■ A shock to the financial system leads to an increase in the
+inflation. interest rate at which people and firms can borrow for a
+■ The interest rate on a bond depends both on the risk that the given policy rate. It leads to a decrease in output.
+bond issuer will default and on the bond holder’s degree of ■ The Global Financial Crisis of the late 2000s was triggered
+risk aversion. A higher probability or a higher degree of risk by a decrease in housing prices. It was amplified by the
+aversion leads to a higher interest rate. financial system.
+■ Financial intermediaries receive funds from investors and ■ At the time of the crisis, financial intermediaries were highly
+then lend these funds to others. In choosing their lever- leveraged. Because of securitization, their assets were hard to
+age ratio, financial intermediaries trade off expected profit assess and thus illiquid. Because of wholesale funding, their
+against the risk of insolvency. liabilities were liquid. Runs forced financial intermediaries to
+■ Because of leverage, the financial system is exposed to both reduce lending, with strong adverse effects on output.
+in solvency and illiquidity risks. Both may lead financial ■ Financial, fiscal, and monetary policies were used. They
+intermediaries to decrease lending. were not enough, however, to prevent a deep recession.
+KEY TERMS
+nominal interest rate, 110 borrowing rate, 121
+real interest rate, 110 mortgage lenders, 124
+risk premium, 114 subprime mortgages, or subprimes, 124
+risk aversion, 114 underwater, 124
+direct finance, 115 structured investment vehicles (SIVs), 124
+shadow banking, 116 securitization, 125
+capital ratio, 116 mortgage-backed security (MBS), 125
+leverage ratio, 116 senior securities, 125
+insolvency, 117 junior securities, 125
+liquid, 117 collateralized debt obligations (CDOs), 125
+illiquid, 117 rating agencies, 125
+demand deposits, 117 toxic assets, 125
+maturity mismatch, 118 wholesale funding, 126
+fire sale prices, 118 liquidity facilities, 127
+bank runs, 118 collateral, 127
+narrow banking, 119 Troubled Asset Relief Program (TARP), 127
+federal deposit insurance, 119 unconventional monetary policy, 128
+liquidity provision, 119 American Recovery and Reinvestment Act, 128
+policy rate, 121
+Chapter 6 Financial Markets II: The Extended IS-LM Model 129
+
+
+--- PDF 413 (has 391) ---
+412 ---
+
+effect, assume that US exports decrease by 5% (as a result the government). We explore the effectiveness of changes in G under
+of changes in foreign output) in one year. What is the effect alternative assumptions about the propensity to import.
+of a 5% drop in exports on US GDP? a. Write the equilibrium condition in the market for domestic
+d. Comment on this statement. “If Europe has a major slump, goods and solve for Y.
+US growth will also grind to a halt.” b. Suppose government purchases increase by one
+4. A further look at Table 18-1 unit. What is the effect on output? (Assume that
+Table 18-1 has four entries. Using Figure 18-5 as a guide, 0<m 1 <c 1 +d 1 <1.) Explain why.
+draw the situations illustrated in each of the four entries in c. How do net exports change when government purchases
+Table 18-1. Be sure you understand why the direction of change increase by one unit?
+in government spending and the real exchange rate is labeled as Now consider two economies, one with m = 0.5 and the other with
+1
+ambiguous in each entry. m = 0.1. Each economy is characterized by (c +d )= 0.6
+1 1 1
+d. Suppose one of the economies is much larger than the
+other. Which economy do you expect to have the larger
+DIG DEEPER
+value of m ? Explain.
+1
+5. Net exports and foreign demand e. Calculate your answers to parts b and c for each economy
+a. Suppose there is an increase in foreign output. Show the by substituting the appropriate parameter values.
+effect on the domestic economy (i.e., replicate Figure 18-4). f. In which economy will fiscal policy have a larger effect on
+What is the effect on domestic output? On domestic net output? In which economy will fiscal policy have a larger
+exports? effect on net exports?
+b. If the interest rate remains constant, what will happen to
+8. Policy coordination and the world economy
+domestic investment? If taxes are fixed, what will happen
+Consider an open economy in which the real exchange rate
+to the domestic budget deficit?
+is fixed and equal to one. Consumption, investment, government
+c. Using equation (18.5), what must happen to private sav-
+spending, and taxes are given by
+ing? Explain.
+d. Foreign output does not appear in equation (18.5), yet it C =10+0.8(Y−T),I =10,G =10,andT =10
+evidently affects net exports. Explain how this is possible.
+Imports and exports are given by
+6. Eliminating a trade deficit
+a. Consider an economy with a trade deficit (NX <0) and IM = 0.3Y andX = 0.3Y*
+with output equal to its natural level. Suppose that, even
+though output may deviate from its natural level in the where Y* denotes foreign output.
+short run, it returns to its natural level in the medium a. Solve for equilibrium output in the domestic economy,
+run. Assume that the natural level is unaffected by the real given Y*. What is the multiplier in this economy? If we were
+exchange rate. What must happen to the real exchange to close the economy—so that exports and imports were
+rate over the medium run to eliminate the trade deficit (i.e., identically equal to zero—what would the multiplier be?
+to increase NX to 0)? Why would the multiplier be different in a closed economy?
+b. Assume that the foreign economy is characterized by the
+b. Now write down the national income identity. Assume
+same equations as the domestic economy (with asterisks
+again that output returns to its natural level in the medium
+reversed). Use the two sets of equations to solve for the
+run. If NX increases to 0, what must happen to domestic
+equilibrium output of each country. (Hint: Use the equa-
+demand (C+I+G) in the medium run? What govern-
+ment policies are available to reduce domestic demand in tions for the foreign economy to solve for Y* as a function of
+the medium run? Identify which components of domestic Y and substitute this solution for Y* in part a.) What is the
+demand each of these policies affects. multiplier for each country now? Why is it different from
+the open economy multiplier in part a?
+7. Multipliers, openness, and fiscal policy
+c. Assume that the domestic government, G, has a target level
+Consider an open economy characterized by the following
+of output of 125. Assuming that the foreign government
+equations:
+does not change G*, what is the increase in G necessary to
+C = c +c (Y−T) achieve the target output in the domestic economy? Solve
+0 1
+for net exports and the budget deficit in each country.
+I = d +d Y
+0 1 d. Suppose each government has a target level of output of
+IM = m Y
+1 125 and that each government increases government
+X = x 1 Y* spending by the same amount. What is the common
+increase in G and G* necessary to achieve the target output
+The parameters m and x are the propensities to import and in both countries? Solve for net exports and the budget defi-
+1 1
+export. Assume that the real exchange rate is fixed at a value of 1 cit in each country.
+and treat foreign income, Y*, as fixed. Also assume that taxes are e. Why is fiscal coordination, such as the common increase in
+fixed and that government purchases are exogenous (i.e., decided by G and G* in part d, difficult to achieve in practice?
+Chapter 18 The Goods Market in an Open Economy 391
+
+

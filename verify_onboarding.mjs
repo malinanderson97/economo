@@ -699,7 +699,7 @@ check('INV-9 BAD-fixture: Non-EQ_COL literal caught', caughtInv9);
 const staticChecks = [
   { id: 'drill-pc-wsps', ref: '8.4' },
   { id: 'drill-pc-okun', ref: 'p.179' },
-  { id: 'drill-pc-phillips', ref: '9.3' }
+  { id: 'drill-pc-phillips', ref: 'Economo Eq. 1.3' }
 ];
 let inv10Passed = true;
 staticChecks.forEach(chk => {
@@ -713,7 +713,7 @@ staticChecks.forEach(chk => {
 });
 check('Inv #10: Drill-down layout + references', inv10Passed);
 
-const badInv10Html = html.replace('Blanchard eq. 8.4', 'Blanchard eq. 9.3'); // mislabel
+const badInv10Html = html.replace('Blanchard eq. 8.4', 'Economo Eq. 1.3'); // mislabel
 let caughtInv10 = false;
 staticChecks.forEach(chk => {
   const idx = badInv10Html.indexOf(`id="${chk.id}"`);

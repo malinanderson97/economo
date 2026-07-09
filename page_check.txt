@@ -1,0 +1,353 @@
+
+
+--- PDF Page 145 (offset 18) ---
+144 ---
+
+say 5%, then a zero nominal rate implies a real rate of −5%, which is likely to be low
+enough to offset the increase in x. But if inflation is low or even negative, then the lowest
+real rate the central bank can achieve may not be enough to offset the increase in x. It
+may not be enough to return the economy to its equilibrium. As we shall see, two char-
+acteristics of the Global Financial Crisis were indeed a large increase in x and low actual
+and expected inflation, limiting how much central banks could use monetary policy to
+offset the increase in x.
+We now have the elements we need to understand what triggered the Global
+Financial Crisis in 2008 and how it morphed into a major macroeconomic crisis. This is
+the topic of the next and last section of this chapter.
+6-5 THE GLOBAL FINANCIAL CRISIS:
+FROM A HOUSING PROBLEM TO A
+FINANCIAL CRISIS
+Some forecasters consist-
+ently predict impending
+When housing prices started declining in the United States in 2006, most economists
+catastrophes and have
+forecast that this would lead to a decrease in demand and a slowdown in growth. Few taken credit for predicting the
+
+--- PDF Page 146 (offset 19) ---
+145 ---
+
+Even if people did not finance Was the sharp price increase from 2000 to 2006 justified? In retrospect, and given
+the purchase of a house by the ensuing collapse, surely not. But at the time, when prices were increasing, econo-
+taking a mortgage, low inter-
+mists were not so sure. Some increase in prices was clearly justified:
+est rates would lead to an
+increase in the price of houses. ■ The 2000s were a period of unusually low interest rates. Mortgage rates were low,
+More on this when we c increasing the demand for housing and thus pushing up the price.
+discuss present discounted
+■ Other factors were also at work. Mortgage lenders became increasingly willing
+values in Chapter 14.
+to make loans to riskier borrowers. These mortgages, known as subprime mort-
+gages (subprimes), had existed since the mid-1990s but became more prevalent
+in the 2000s. By 2006, about 20% of all US mortgages were subprimes. Was this
+necessarily bad? Again, at the time, most economists viewed it as a mostly positive
+development. It allowed more poor people to buy homes, and under the assumption
+Some economists were that housing prices would continue to increase, so the value of the mortgage would
+worried even as hous- decrease over time relative to the price of the house, it looked safe for both lenders
+ing prices were going up.
+
+--- PDF Page 147 (offset 20) ---
+146 ---
+
+that they would get repaid, SIVs typically had a guarantee from the bank that had cre-
+ated them that, if needed, the bank would provide funds to the SIV. Although the first
+SIV was set up by Citigroup in 1988, SIVs rapidly grew in the 2000s. You may ask why
+banks did not simply do all these things on their own balance sheet rather than create a
+separate vehicle. The main reason was to be able to increase leverage. If the banks had
+done these operations themselves, the operations would have appeared on their balance
+sheet and would have been subject to regulatory capital requirements, forcing them to
+hold enough capital to limit the risk of bankruptcy. Doing these operations through a SIV
+did not require banks to put down capital. For that reason, by setting up an SIV, banks
+could increase leverage and increase expected profits, and they did.
+When housing prices started declining and many mortgages turned out to be bad,
+the securities held by SIVs dropped in value. Questions arose about the solvency of the
+SIVs, and given the banks’ guarantee to provide funds to the SIVs if needed, questions
+arose about the solvency of the banks themselves. Then, two other factors, securitization
+and wholesale funding, came into play.
+Securitization and Illiquidity of Assets
+An important financial development of the 1990s and 2000s was the growth of securi-
+tization. Traditionally, the financial intermediaries that made loans or issued mortgages
+
+--- PDF Page 148 (offset 21) ---
+147 ---
+
+Wholesale Funding and Liquidity of Liabilities
+Yet another development of the 1990s and 2000s was the emergence of sources of
+finance other than checkable deposits by banks. Increasingly, banks relied on borrow-
+ing from other banks or other investors, in the form of short-term debt, to finance the
+purchase of their assets, a process known as wholesale funding. SIVs, the financial
+entities set up by banks, were entirely funded through such wholesale funding.
+Wholesale funding again would seem like a good idea, giving banks more flexibility
+in the amount of funds they could use to make loans or buy assets. But it too had a cost,
+which became clear during the crisis. Although holders of checkable deposits were pro-
+tected by deposit insurance and did not have to worry about the value of their deposits,
+this was not the case for other investors. Thus, when those investors worried about the
+value of the assets held by the banks or SIVs, they asked for their funds back. Banks and
+SIVs had liquid liabilities, much more liquid than their assets.
+The combination of high leverage, illiquid assets, and liquid liabilities led to a major
+financial crisis. As housing prices declined and some mortgages went bad, high leverage
+implied a sharp decline in the capital of banks and SIVs. This forced them to sell some of
+their assets. Because these assets were often hard to value, the banks had to sell them at fire
+sale prices. This, in turn, decreased the value of similar assets remaining on their balance
+
+--- PDF Page 149 (offset 22) ---
+148 ---
+
+120 Figure 6-8
+US Consumer and
+100 Business Confidence,
+2007–2011
+80 The financial crisis led to a
+sharp drop in confidence,
+which bottomed in early 2009.
+60
+Source: Bloomberg L.P.
+40
+Consumer Confidence
+20
+0
+01/2007 07/2007 01/2008 07/2008 01/2009 07/2009 01/2010 07/2010 01/2011 07/2011
+Financial Policies
+The most urgent measures were aimed at strengthening the financial system:
+■ To prevent a run by depositors, federal deposit insurance was increased from
+$100,000 to $250,000 per account. Recall, however, that much of banks’ funding
+
+--- PDF Page 150 (offset 23) ---
+149 ---
+
+Monetary Policy
+In the summer of 2007, the Fed had begun to worry about a slowdown in growth and
+started decreasing the policy rate, slowly at first, faster later as evidence of the crisis
+mounted. The evolution of the federal funds rate from 1990 on was shown in Figure 1 of
+the Focus Box “The Liquidity Trap in Action” in Chapter 4. By December 2008, the rate
+Recall that the interest rate was down to zero. But monetary policy was constrained by the zero lower bound, and
+faced by borrowers is given the policy rate could not be decreased further. The Fed then turned to what has become
+by r + x. You can think of known as unconventional monetary policy, buying other assets so as to directly
+conventional monetary policy
+affect the rate faced by borrowers. We shall explore the various dimensions of uncon-
+as the choice of r, and
+ventional monetary policy at more length in Chapter 23. Suffice it to say that, although
+unconventional monetary
+policy as measures to reduce these measures were useful, the efficacy of monetary policy was nevertheless severely
+(but not eliminate) x.c constrained by the zero lower bound.
+Fiscal Policy
+When the size of the adverse shock became clear, the US government turned to fiscal
+policy. When the Obama administration assumed office in 2009, its first priority was
+
+--- PDF Page 151 (offset 24) ---
+150 ---
+
+shift, so that, instead of shifting to IS′, the economy shifted to IS′′. And monetary policy It is difficult to know what
+led to a shift of the LM down, from LM to LM′, so the resulting equilibrium was at point would have happened in the
+absence of those policies.
+A′. At that point, the zero lower bound on the nominal policy rate implied that the real
+It is reasonable to think, but
+policy rate could not be decreased further. The result was a decrease in output from Y to
+impossible to prove, that the
+Y′. The initial shock was so large that the combination of financial, fiscal, and monetary decrease in output would
+measures was just not enough to avoid a large decrease in output. US GDP fell by 4% in have been much larger,
+2008–2009 and recovered only slowly thereafter. b leading to a repeat of the
+Great Depression.
+SUMMARY
+■ The nominal interest rate tells you how many dollars you ■ The higher the leverage ratio, or the more illiquid the assets,
+need to repay in the future in exchange for one dollar or the more liquid the liabilities, the higher the risk of a bank
+today. run or a run on financial intermediaries.
+■ The real interest rate tells you how many goods you need to ■ The IS-LM model must be extended to take into account the
+repay in the future in exchange for one good today. difference between the nominal and the real interest rate,
+■ The real interest rate is approximately equal to the nominal and the difference between the policy rate chosen by the
+
+--- PDF Page 152 (offset 25) ---
+151 ---
+
+QUESTIONS AND PROBLEMS
+QUICK CHECK
+1. Using the information in this chapter, label each of the following
+statements true, false, or uncertain. Explain briefly.
+a. The nominal interest rate is measured in terms of goods;
+the real interest rate is measured in terms of money.
+b. As long as expected inflation remains roughly constant,
+the movements in the real interest rate are roughly equal
+to the movements in the nominal interest rate.
+c. The nominal policy interest rate was at the zero lower
+bound in the United States in 2019.
+d. When expected inflation increases, the real rate of interest
+falls.
+e. All bonds have equal risk of default and thus pay equal
+rates of interest.
+f. The nominal policy interest rate is set by the central bank.
+g. An increase in a bank’s leverage ratio tends to increase
+both the expected profit of the bank and the risk of the
+
+--- PDF Page 402 (offset 18) ---
+401 ---
+
+These two implications are important. In an open economy, an increase in domes-
+tic demand has a smaller effect on output than in a closed economy, and an adverse
+effect on the trade balance. Indeed, the more open the economy, the smaller the effect
+on output and the larger the adverse effect on the trade balance. Take the Netherlands,
+for example. As we saw in Chapter 17, the Netherlands’ ratio of exports to GDP is very
+high. It is also true that the Netherlands’ ratio of imports to GDP is very high. When
+domestic demand increases in the Netherlands, much of the increase in demand is likely
+to result in an increase in the demand for foreign goods rather than domestic goods. The
+effect of an increase in government spending is therefore likely to be a large increase in
+the Netherlands’ trade deficit and only a small increase in its output, making domestic
+demand expansion a rather unattractive policy for the Netherlands. Even for the United
+States, which has a much lower import ratio, an increase in demand will be associated
+with a worsening of the trade balance.
+Increases in Foreign Demand
+Consider now an increase in foreign output, that is, an increase in Y*. This could be due
+to an increase in foreign government spending, G*—the policy change we just analyzed
+but now taking place abroad. But we do not need to know where the increase in Y* comes
+from to analyze its effects on the US economy.
+
+--- PDF Page 403 (offset 19) ---
+402 ---
+
+Figure 18-4(a). The equilibrium is at point A, with output level Y. Let’s again assume
+trade is balanced, so that in Figure 18-4(b) the net exports associated with Y equal
+zero (Y = Y ).
+TB
+It will be useful below to refer to the line that shows the domestic demand for goods
+C +I +G as a function of income. This line is drawn as DD. Recall from Figure 18-1 DD is the domestic demand
+that DD is steeper than ZZ. The difference between ZZ and DD equals net exports, so that for goods. ZZ is the demand
+if trade is balanced at point A, then ZZ and DD intersect at point A. b for domestic goods. The
+difference between the two is
+Now consider the effects of an increase in foreign output, ∆Y*. (For the moment,
+equal to the trade deficit.
+ignore the line DD; we need it only later.) Higher foreign output means higher foreign
+demand, including higher foreign demand for US goods. So the direct effect of the
+increase in foreign output is an increase in US exports by some amount, which we shall
+denote by ∆X.
+■ For a given level of output, this increase in exports leads to an increase in the
+demand for US goods by ∆X, so the line showing the demand for domestic goods as a
+function of output shifts up by ∆X, from ZZ to ZZ′.
+
+--- PDF Page 404 (offset 20) ---
+403 ---
+
+The G20 and the 2009 Fiscal Stimulus
+In November 2008, the leaders of the G20 countries gath- negative growth in 2009. The issue here is one of counter-
+ered for an emergency meeting in Washington. The G20, a factuals. What would have happened in the absence of the
+group of ministers of finance and central bank governors stimulus? Many believe that, in the absence of the fiscal
+from 20 countries, including both the major advanced and stimulus, growth would have been even more negative, per-
+the major emerging countries in the world, was created in haps catastrophically so. Counterfactuals are hard to prove
+1999 but had not played a major role until the crisis. With or disprove, and thus the controversy is likely to go on.
+mounting evidence that the crisis was going to be both deep (On the issue of counterfactuals and the difference between
+and widespread, the group met to coordinate their responses economists and politicians, there is a nice quote from former
+in terms of both macroeconomic and financial policies. US congressman Barney Frank:
+On the macroeconomic front, it had become clear that
+Not for the first time, as an elected official, I envy econo-
+monetary policy would not be enough, and so the focus turned
+mists. Economists have available to them, in an analytical
+to fiscal policy. The decrease in output was going to lead to approach, the counterfactual. Economists can explain that a
+a decrease in revenues and thus an increase in budget defi- given decision was the best one that could be made, because
+cits. Dominique Strauss-Kahn, then the managing director of they can show what would have happened in the counter-
+the International Monetary Fund, argued that further fiscal factual situation. They can contrast what happened to what
+
+--- PDF Page 405 (offset 21) ---
+404 ---
+
+country might just wait for the other countries to increase their demand. This way, it gets
+the best of both worlds—higher output and an improvement in its trade balance. But if all
+the countries wait, nothing will happen, and the recession may last a long time.
+Is there a way out? There is—at least in theory. If all countries coordinate their
+macroeconomic policies so as to increase domestic demand simultaneously, each can
+increase demand and output without increasing its trade deficit (vis-à-vis the others;
+their combined trade deficit with respect to the rest of the world will still increase). The
+reason is clear. The coordinated increase in demand leads to increases in both exports
+and imports in each country. It is still true that domestic demand expansion leads to
+larger imports; but this increase in imports is offset by the increase in exports, which
+comes from the foreign demand expansions.
+In practice, however, policy coordination is not so easy to achieve.
+Some countries might have to do more than others and may not want to do so. Suppose
+that only some countries are in recession. Countries that are not in a recession will be reluc-
+tant to increase their own demand; but if they do not, the countries that expand will run a
+trade deficit vis-à-vis countries that do not. Or suppose some countries are already running
+a large budget deficit. These countries might not want to cut taxes or further increase spend-
+ing as this would further increase their deficits. They will ask other countries to take on
+
+--- PDF Page 406 (offset 22) ---
+405 ---
+
+Depreciation and the Trade Balance:
+The Marshall–Lerner Condition
+Return to the definition of net exports:
+NX = X −IM ε
+More concretely, if the dollar Replace X and IM by their expressions from equations (18.2) and (18.3):
+depreciates vis-à-vis the yen
+by 10%: c NX = X(Y*,ε)−IM(Y,ε) ε
+US goods will be cheaper
+in Japan, leading to a larger As the real exchange rate ε enters the right side of the equation in three places,
+quantity of US exports to it is clear that the real depreciation affects the trade balance through three separate
+Japan. channels:
+Japanese goods will be
+more expensive in the ■ Exports, X, increase. The real depreciation makes US goods relatively less expensive
+United States, leading to a abroad. This leads to an increase in foreign demand for US goods—an increase in US
+smaller quantity of imports
+exports.
+of Japanese goods to the
+■ Imports, IM, decrease. The real depreciation makes foreign goods relatively more
+
+--- PDF Page 407 (offset 23) ---
+406 ---
+
+goods because of the depreciation—are worse off. This mechanism is strongly felt in There is an alternative to
+countries that go through a large depreciation. Governments trying to achieve a large rioting, namely, asking for
+and obtaining an increase in
+depreciation often find themselves with strikes and riots in the streets as people react
+wages. But if wages increase,
+to the much higher prices of imported goods. This was the case in Mexico, for example,
+the prices of domestic goods
+where the large depreciation of the peso in 1994–1995—from 29 cents per peso will increase as well, leading
+in November 1994 to 17 cents per peso in May 1995—led to a large decline in workers’ to a smaller real depreciation.
+living standards and to social unrest. b To discuss this mechanism,
+we need to look at the supply
+side in more detail than we
+Combining Exchange Rate and Fiscal Policies
+have done so far. We return to
+the dynamics of depreciation,
+Suppose output is at its natural level but the economy is running a large trade deficit. The
+wage, and price movements
+government would like to reduce the trade deficit while leaving output unchanged so as
+
+--- PDF Page 408 (offset 24) ---
+407 ---
+
+The Disappearance of the Current Account Deficit
+in Greece: Good News or Bad News?
+Starting in the early 2000s, several euro periphery countries forcing it to reduce borrowing and thus to reduce its current
+ran larger and larger current account deficits. Particularly account deficit. But by 2018, the current account deficit was
+striking was the increase in Greece’s current account defi- less than 1% of GDP.
+cit. As shown in Figure 1, the current account went from It was an impressive turnaround. Was it unambiguously
+an already large deficit of 6% of GDP in 2000 to more good news? Not necessarily. There are two ways a current
+than 15% in 2008. When the Great Financial Crisis started, account may improve. The first is that the country becomes
+Greece found it increasingly difficult to borrow abroad, more competitive: The real exchange rate decreases, exports
+386 The Open Economy Extensions
+SUCOF
+Table 18-1 Exchange Rate and Fiscal Policy
+Combinations
+Initial Conditions Trade Surplus Trade Deficit
+Low output ε??GG↑ ε↓GG??
+High output ε↑GG?? ε??GG↓
+If the government wants to eliminate the trade deficit without changing output, it must
+do two things:
+
+--- PDF Page 409 (offset 25) ---
+408 ---
+
+Figure 1
+2
+The Evolution of the Greek
+0
+Current Account Deficit from
+22 2000 to 2018
+24 Source: IMF Managing Director
+Dominique Strauss-Kahn Calls
+26 G-20 Action Plan Significant Step
+toward Stronger International
+28 Cooperation, Press Release No.
+08/286, November 15, 2008.
+210
+212
+214
+216
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
+0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1

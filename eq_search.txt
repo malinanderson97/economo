@@ -1,0 +1,31 @@
+--- BOOK PAGE 127 ---
+
+
+--- BOOK PAGE 384 ---
+More concretely, if the dollar Replace X and IM by their expressions from equations (18.2) and (18.3):
+
+--- BOOK PAGE 391 ---
+
+
+--- EQUATION SEARCH ---
+PDF Page 71 ---: Y = [c + I +G−c T] (3.8)
+PDF Page 71 ---: Equation (3.8) characterizes equilibrium output, that is, the level of output such that
+PDF Page 71 ---: by $1 billion. Equation (3.8) tells us that output will increase by more than $1 billion.
+PDF Page 71 ---: We have looked at an increase in consumption, but equation (3.8) makes it
+PDF Page 79 ---: In my view, this may be one c Equation (3.12) is exactly the same as equation (3.8). This should come as no sur-
+PDF Page 79 ---: Equation (3.8) implies that the government, by choosing the level of spending (G) or the
+PDF Page 82 ---: QUICK CHECK Start from equation (3.8).
+PDF Page 181 ---: and the natural rate is also u = (8.4)
+PDF Page 181 ---: Note from equation (8.4) that the fraction on the right side is equal to u , so we can
+PDF Page 182 ---: negative relation between unemployment and inflation, corresponding to equation (8.4),
+PDF Page 186 ---: To see what this implies, go back to equation (8.4). The increase in m, given z and α, b Recall: P = (1+ m) W⇒
+PDF Page 186 ---: (8.4), z decreases, offsetting the increase in m. Or it may be that firms decide to absorb the
+PDF Page 200 ---: π−πe =(α L)(Y −Y ) (9.3)
+PDF Page 417 ---: decrease in net exports (see Y = C(Y −T)+ I(Y, r)+G+ NX(Y,Y*, ε) (19.1)
+PDF Page 417 ---: For our purposes, the main implication of equation (19.1) is that both the real inter-
+PDF Page 417 ---: For the remainder of the chapter, we shall simplify equation (19.1) in two ways:
+PDF Page 418 ---: then ε = E and we can replace ε with E in equation (19.1). bP = P* = 1, so ε = E.
+PDF Page 418 ---: we can replace the real interest rate, r, in equation (19.1) with the nominal interest rate, i.bπe = 0, so r = i.
+PDF Page 418 ---: With these two simplifications, equation (19.1) becomes bBy now, you realize that the
+PDF Page 441 ---: of prices is well described by the Phillips curve relation (Chapter 9, equation (9.3)):
+PDF Page 459 ---: derived in equation (19.1) in Chapter 19: domestic interest rate, i, must be equal to the foreign interest

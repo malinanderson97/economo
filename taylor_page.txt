@@ -1,0 +1,52 @@
+--- PDF 516 ---
+515 ---
+
+The Interest Rate Rule
+Inflation is not under the direct control of the central bank; the policy rate is. Thus, the ques-
+tion that arises is how to set the policy rate to achieve the target rate of inflation. The answer
+is a simple one: When inflation is higher than the target, increase the policy rate to decrease
+demand and the pressure on prices; when it is below the target rate of inflation, decrease the
+policy rate. With this principle in mind, in the 1990s, John Taylor, at Stanford University,
+suggested the following rule for the policy rate, a rule now known as the Taylor rule:
+■ Let π be the rate of inflation and π be the target rate of inflation.
+t
+■ Let i be the policy rate, that is, the nominal interest rate controlled by the central bank,
+t
+and let i be the target nominal interest rate—the nominal interest rate associated with
+For a refresher, go back to c the neutral rate of interest, r , and the target rate of inflation, π, so i = r +π.
+n n
+Chapter 9, Section 9-1. ■ Let u be the unemployment rate and u be the natural unemployment rate.
+t n
+Think of the central bank as choosing the nominal interest rate, i. (Recall from
+Chapter 4 that through open market operations and ignoring the liquidity trap, the cen-
+tral bank can achieve any short-term nominal interest rate that it wants.) Then, Taylor
+argued, the central bank should use the following rule:
+i = i +a(π −π)−b(u −u )
+t t t n
+where a and b are positive coefficients chosen by the central bank.
+Let’s look at what the rule says:
+■ If inflation is equal to target inflation (π = π) and the unemployment rate is equal
+t
+to the natural rate of unemployment (u = u ), then the central bank should set
+t n
+the nominal interest rate, i , equal to its target value, i. This way, the economy can
+t
+stay on the same path, with inflation equal to the target inflation rate and unem-
+ployment equal to the natural rate of unemployment.
+■ If inflation is higher than the target (π > π), the central bank should increase the
+t
+nominal interest rate, i , above i. This higher interest rate will lead to an increase in
+t
+unemployment, and this increase in unemployment will in turn lead to a decrease in
+inflation. The coefficient a should therefore reflect how much the central bank cares
+about inflation. The higher a, the more the central bank will increase the interest rate
+Some economists argue
+in response to inflation, the more the economy will slow down, the more unemploy-
+that US inflation increased
+ment will increase, and the faster inflation will return to the target inflation rate.
+in the 1970s because the
+Fed increased the nominal ■ In any case, as Taylor pointed out, a should be larger than one. Why? Because what
+interest rate less than matters for spending is the real interest rate, not the nominal interest rate. When
+one-for-one with inflation. inflation increases, the central bank, if it wants to decrease spending and output,
+The result, they argue, was
+must increase the real interest rate

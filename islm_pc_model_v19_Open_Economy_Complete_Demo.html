@@ -551,7 +551,7 @@
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-b" viewBox="0 0 160 140"></svg></div>
             </div>
             <div class="drill-col" id="drill-pc-phillips">
-              <div class="drill-eq" id="drill-eq-phillips">π = πᵉ + (α/Yₙ)(Y−Yₙ) + z <span class="ref">(Adapted from Blanchard Eq. 9.3 - see Model Correspondence for derivations)</span></div>
+              <div class="drill-eq" id="drill-eq-phillips">π = πᵉ + (α/Yₙ)(Y−Yₙ) + z <span class="ref">(Economo Eq. 1.3)</span></div>
               <div class="sub">Phillips curve</div>
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-c" viewBox="0 0 160 140"></svg></div>
             </div>
@@ -887,7 +887,9 @@ const EQ_REF = {
   'fisher': 'eq. 6.4',
   'MD': 'eq. 5.3',
   'MP': 'Ch. 23',
-  'PC': 'Adapted from Blanchard Eq. 9.3 (see Model Correspondence for derivations)',
+  'PC': 'Economo Eq. 1.3',
+  'un': 'Blanchard eq. 8.4',
+  'Yn': "Blanchard p.179; cf. Okun's Law box, eq 9B.1",
   'UIP': 'eq. 19.5',
   'NX': 'eq. 19.1 / 19.2'
 };
@@ -2174,13 +2176,13 @@ function drawEquations(eq) {
         `<span ${lne('PC')}><span class="eq-lbl">uₙ</span>`
         + `<span class="eq-sym">(m+z)/α_WS</span> = `
         + `<span class="eq-num">(${f(s.m_struct,2)} + ${f(s.z_struct,2)})/${ALPHA_WS}</span> `
-        + `= <span class="eq-res">${fpc(un,1)}</span>${endLine('PC')}</span>`
+        + `= <span class="eq-res">${fpc(un,1)}</span>${endLine('un')}</span>`
         + `<span ${lne('PC')}><span class="eq-lbl">Yₙ</span>`
         + `<span class="eq-sym">L(1−uₙ)</span> = `
         + `<span class="eq-num">${L_LABOR}(1−${fpc(un,1)})</span> `
-        + `= <span class="eq-res">${f(eq.Y_n,0)}</span>${endLine('PC')}</span>`
+        + `= <span class="eq-res">${f(eq.Y_n,0)}</span>${endLine('Yn')}</span>`
         + `<span ${lne('PC')}><span class="eq-lbl">PC</span>`
-        + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + shock</span></span>`
+        + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + z</span></span>`
         + `<span ${lne('PC')}><span class="eq-lbl"></span><span class="eq-num">= `
         + `${fpc(s.pi_e,1)} + ${f(s.alpha,2)}·(${f(eq.Y,1)}−${f(eq.Y_n,0)})/${f(eq.Y_n,0)} `
         + `+ ${fpc(eq.z_eff,2)}</span> `
