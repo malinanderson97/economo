@@ -405,6 +405,8 @@
   .eq-box, .legend-row { position: relative; z-index: 1; }
   .guide-line { stroke: #8a8f98; stroke-width: 1; stroke-dasharray: 3 4; fill: none; }
   .connector-faint { stroke: #8a8f98; stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.35; fill: none; }
+
+    .info-icon { margin-left: 2px; color: #4b5563; font-size: 0.95em; cursor: help; }
 </style>
 </head>
 <body>
@@ -450,7 +452,7 @@
       <div class="side-body">
         <div id="dynamics-controls"></div>
         <div class="control" id="speed-wrap">
-          <label>Price flex (medium-run speed) <span class="info-icon" title="How quickly prices adjust to output gaps. High flex = fast return to natural rate; low flex = persistent gaps.">ℹ</span> <span class="val" id="speed-val">0.5</span></label>
+          <label>Price flex (medium-run speed)&nbsp;<span class="info-icon" title="How quickly prices adjust to output gaps. High flex = fast return to natural rate; low flex = persistent gaps.">ⓘ</span> <span class="val" id="speed-val">0.5</span></label>
           <input type="range" id="speed" min="0.05" max="1" step="0.05" value="0.5">
         </div>
         <div class="toggle-row" id="taylor-toggle" onclick="toggleTaylor()">
@@ -549,7 +551,7 @@
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-b" viewBox="0 0 160 140"></svg></div>
             </div>
             <div class="drill-col" id="drill-pc-phillips">
-              <div class="drill-eq" id="drill-eq-phillips">π = πᵉ + (α/Yₙ)(Y−Yₙ) + z <span class="ref">(Blanchard eq. 9.3)</span></div>
+              <div class="drill-eq" id="drill-eq-phillips">π = πᵉ + (α/Yₙ)(Y−Yₙ) + z <span class="ref">(Adapted from Blanchard Eq. 9.3 - see Model Correspondence for derivations)</span></div>
               <div class="sub">Phillips curve</div>
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-c" viewBox="0 0 160 140"></svg></div>
             </div>
@@ -641,9 +643,9 @@ const IS_R_BASE  = 0.01;   // baseline (natural) real interest rate = 1%
 const IS_EPS_BASE = 1;     // baseline real exchange rate
 
 // ─── Structural IS primitives (Blanchard eq. 19.1) ───
-// c1 is slider-driven (default 0.5); d1, d1r are fixed.
+// c1 is slider-driven (default 0.5); d1, d2 are fixed.
 const d1  = 0.10;   // investment accelerator dI/dY
-const d1r = 200;    // investment rate-sensitivity |dI/dr|
+const d2 = 200;    // investment rate-sensitivity |dI/dr|
 // k = 1/(1 - c1 - d1) is the fiscal multiplier. At c1=0.5,d1=0.1: k = 2.5.
 // Do NOT hard-code 2.5 — always compute from current c1.
 
@@ -676,7 +678,7 @@ function isOutput(G, T, r, eps, c1, m1, Ystar) {
   const Ys = (Ystar !== undefined) ? Ystar : YSTAR_BASE;
   const k_o = 1 / (1 - c - d1 + m);
   const trade = openOn() ? x1*Ys - n1*(eps - IS_EPS_BASE) : 0;
-  const A = IS_C0 - c*T + IS_D0 - d1r*r + G + trade;
+  const A = IS_C0 - c*T + IS_D0 - d2*r + G + trade;
   return k_o * A;
 }
 
@@ -689,7 +691,7 @@ function isRateForOutput(Y, G, T, eps, pi_e, c1, m1, Ystar) {
   const k_o = 1 / (1 - c - d1 + m);
   const trade = openOn() ? x1*Ys - n1*(eps - IS_EPS_BASE) : 0;
   const A_without_r = IS_C0 - c*T + IS_D0 + G + trade;
-  const r = (A_without_r - Y / k_o) / d1r;
+  const r = (A_without_r - Y / k_o) / d2;
   return r + pi_e;
 }
 
@@ -811,8 +813,8 @@ function step(s) {
   return {
     ...s,
     i: new_i,
-    P: s.P * (1 + eq.pi * sp),
-    P_star: (s.P_star || 1) * (1 + PI_TARGET * sp),
+    P: tutorialState.unlocked.has('PC') ? s.P * (1 + eq.pi * sp) : s.P,
+    P_star: tutorialState.unlocked.has('PC') ? (s.P_star || 1) * (1 + PI_TARGET * sp) : (s.P_star || 1),
     pi_e: new_pi_e,
     cred: new_cred,
     E_e: (1 - 0.4 * sp) * s.E_e + 0.4 * sp * eq.E,
@@ -834,7 +836,7 @@ const CURVE_DEFS = {
 const SYMBOL_DEFS = {
   'ZLB': { meaning: 'zero lower bound', ref: 'Ch. 23', role: 'floor below which the nominal policy rate cannot fall' },
   'π': { meaning: 'inflation rate', ref: 'eq. 9.3', role: 'the rate of change of prices' },
-  'α': { meaning: 'effect of output gap on inflation', ref: 'eq. 9.3', role: 'Phillips curve slope' },
+  'α': { meaning: 'effect of output gap on inflation', ref: 'eq. 9.3', role: 'Phillips curve slope (see Model Correspondence for α_tool derivation)' },
   'πᵉ': { meaning: 'expected inflation rate', ref: 'eq. 8.7', role: 'shifts the Phillips curve' },
   'θ': { meaning: 'anchoring of expectations', ref: 'eq. 8.7', role: 'weight on target vs past inflation' },
   'Yₙ': { meaning: 'natural or potential output', ref: 'eq. 8.4', role: 'level of output where π = πᵉ' },
@@ -881,11 +883,11 @@ const SYMBOL_DEFS = {
 const EQ_REF = {
   'C': 'eq. 3.3',
   'I': 'eq. 5.1 / 9.1',
-  'anchor': 'eq. 9.1',
+  'anchor': 'eq. 9.1/19.1',
   'fisher': 'eq. 6.4',
   'MD': 'eq. 5.3',
   'MP': 'Ch. 23',
-  'PC': 'eq. 9.3 (expectations 8.7, natural rate 8.4)',
+  'PC': 'Adapted from Blanchard Eq. 9.3 (see Model Correspondence for derivations)',
   'UIP': 'eq. 19.5',
   'NX': 'eq. 19.1 / 19.2'
 };
@@ -1485,7 +1487,7 @@ HANDLES.is = (sx, sy) => {
   const r = newi - effectivePiE(state);
   const k_o = 1 / (1 - state.c1 - d1 + state.m1);
   const newG = IS_G_BASE + (newY - IS_Y_BASE + (state.c1 * k_o) * (state.T - IS_T_BASE)
-             + (d1r * k_o) * (r - IS_R_BASE) + (n1 * k_o) * (eqNow.eps - IS_EPS_BASE)
+             + (d2 * k_o) * (r - IS_R_BASE) + (n1 * k_o) * (eqNow.eps - IS_EPS_BASE)
              - (x1 * k_o) * (state.Ystar - YSTAR_BASE)) / k_o;
   state.G = clamp(newG, 10, 35);
   syncControls();
@@ -2080,7 +2082,7 @@ function drawEquations(eq) {
     const c0 = 32 - 12; // c0 = 20
     const d0 = 12;
     const C = c0 + s.c1 * (eq.Y - s.T);
-    const I = d0 + d1 * eq.Y - d1r * eq.r;
+    const I = d0 + d1 * eq.Y - d2 * eq.r;
     const G = s.G;
     const NX = x1 * s.Ystar - s.m1 * eq.Y - n1 * (eq.eps - 1);
     const Cd = f(C,2), Id = f(I,2), Gd = f(G,2), NXd = f(NX,2);
@@ -2130,7 +2132,7 @@ function drawEquations(eq) {
       + `= <span class="eq-res">${Cd}</span>${endLine('C')}</span>` : '')
       + (isUnl('I') ? `<span ${lne('I')}><span class="eq-lbl">I</span>`
       + `<span class="eq-sym">d₀ + d₁·Y − d₁ᵣ·${rateSym}</span> = `
-      + `<span class="eq-num">${d0} + ${f(d1,2)}(${f(eq.Y,1)}) − ${d1r}(${f(r,4)})</span> `
+      + `<span class="eq-num">${d0} + ${f(d1,2)}(${f(eq.Y,1)}) − ${d2}(${f(r,4)})</span> `
       + `= <span class="eq-res">${Id}</span>${endLine('I')}</span>` : '')
       + (isUnl('G') ? `<span ${lne('G')}><span class="eq-lbl">G</span>`
       + `<span class="eq-sym">government spending</span> `

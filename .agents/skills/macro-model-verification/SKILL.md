@@ -54,7 +54,7 @@ this list is the human-readable spec so you can reason about *why* a failure hap
 
 **Closed economy (v16):**
 - Multiplier `k = 1/(1-c₁-d₁) = 2.5` at baseline (`c₁=0.5, d₁=0.1`).
-- Reduced-form responses: `ΔY = +2.5·ΔG`, `ΔY = -1.25·ΔT`, `ΔY = -500·Δr` (`d1r=200`).
+- Reduced-form responses: `ΔY = +2.5·ΔG`, `ΔY = -1.25·ΔT`, `ΔY = -500·Δr` (`d2=200`).
 - Baseline `isOutput(...) = IS_Y_BASE = 100`.
 
 **Open economy (v19):**

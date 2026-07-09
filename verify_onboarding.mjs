@@ -541,7 +541,7 @@ function testReconciliation(stateOverrides, desc) {
   {
     const st = testRender.state;
     const C  = 20 + st.c1 * (eq.Y - st.T);            // c0=20
-    const I  = 12 + 0.10 * eq.Y - 200 * eq.r;         // d0=12, d1=0.10, d1r=200
+    const I  = 12 + 0.10 * eq.Y - 200 * eq.r;         // d0=12, d1=0.10, d2=200
     const G  = st.G;
     const NX = 0.30 * st.Ystar - st.m1 * eq.Y - 70 * (eq.eps - 1); // x1=0.30, n1=70
     const sum = C + I + G + NX;

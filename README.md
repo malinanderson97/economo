@@ -29,7 +29,7 @@ Three blocks, solved each period as a comparative-static equilibrium, then advan
 
 **IS (goods market).** Output is determined structurally using derived multipliers. The closed and open economy share one engine: the closed economy is the open-economy IS with the import term forced to zero and the trade terms dropped, gated on whether the UIP block is unlocked.
 
-- **Closed economy:** multiplier `k = 1/(1 − c₁ − d₁)`. At baseline (`c₁=0.5, d₁=0.1`), `k = 2.5`. Reduced-form responses: `ΔY = +2.5 ΔG`, `ΔY = −1.25 ΔT`, `ΔY = −500 Δr` (with `d1r = 200`).
+- **Closed economy:** multiplier `k = 1/(1 − c₁ − d₁)`. At baseline (`c₁=0.5, d₁=0.1`), `k = 2.5`. Reduced-form responses: `ΔY = +2.5 ΔG`, `ΔY = −1.25 ΔT`, `ΔY = −500 Δr` (with `d2 = 200`).
 - **Open economy:** multiplier `k_o = 1/(1 − c₁ − d₁ + m₁)`. At baseline (`c₁=0.5, d₁=0.1, m₁=0.3`), `k_o ≈ 1.43`. Reduced-form responses: `ΔY = +1.43 ΔG`, `ΔY = −0.71 ΔT`, `ΔY = −286 Δr`, `ΔY ≈ −100 Δε`, `ΔY = +0.43 ΔY*`.
 
 Users can drag the `c1` slider (and `m1` + `Y*` in the open economy) to alter the structural coefficients, with a live coefficient readout showing the updated multiplier and response coefficients.

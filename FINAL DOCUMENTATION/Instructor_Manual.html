@@ -39,6 +39,7 @@
   h2:first-of-type{border-top:none;padding-top:8px;}
   h2 .num{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:10px;}
   h3{font-size:15.5px;font-weight:600;margin:24px 0 4px;color:var(--ink);}
+  h4{font-size:14px;font-weight:600;margin:16px 0 4px;color:var(--ink-2);}
   p{margin:8px 0;color:var(--ink-2);}
   ul,ol{margin:8px 0 8px 22px;color:var(--ink-2);}
   li{margin:5px 0;}
@@ -58,6 +59,8 @@
   /* Equation block */
   .eq{font-family:var(--font-mono);font-size:13.5px;background:var(--surface-2);border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.9;overflow-x:auto;}
   .eq .ref{color:var(--ink-4);font-family:var(--font-ui);font-size:12px;margin-left:8px;}
+  .eq a.ref{color:var(--accent);text-decoration:none;}
+  .eq a.ref:hover{text-decoration:underline;}
 
   /* Stage table */
   table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;}
@@ -117,7 +120,7 @@
   <p>It runs in any desktop browser (the HTML isn't built for small mobile screens) with no install, no login, and no internet connection. Project it in a lecture, embed it in your VLE, or email the file to students.</p>
 
   <h2 id="stages"><span class="num">2</span>The four teaching stages</h2>
-  <p>A dropdown in the top bar (with a <strong>Next</strong> button beside it) moves between stages. Each stage unlocks one more block of the model. The order follows the course syllabus, not Blanchard's chapter order — the open economy is introduced before the Phillips curve.</p>
+  <p>A dropdown in the top bar (with a <strong>Next</strong> button beside it) moves between stages. Each stage unlocks one more block of the model. The order follows the <strong>University of Sussex</strong> course syllabus, not Blanchard's chapter order — the open economy is introduced before the Phillips curve.</p>
   <table>
     <tr><th>Stage</th><th>Model</th><th>Economy</th><th>What unlocks</th><th>Rate regime</th></tr>
     <tr><td class="stage-n">0</td><td><strong>IS-LM</strong></td><td>Closed</td><td>Goods market, IS-LM chart, policy rate</td><td><span class="mono">r = i</span> — prices fixed, no inflation</td></tr>
@@ -132,64 +135,84 @@
 
   <h2 id="interface"><span class="num">3</span>The interface at a glance</h2>
   <h3>The top bar</h3>
-  <p>The top bar carries the stage dropdown and Next button, the period counter, and the run controls: <strong>Step one period</strong> advances the economy one period so a shock can play out; <strong>Reverse</strong> steps back through the history (it shows how many steps are stored); and the controls reset cleanly when you load a new scenario.</p>
+  <p>The top bar carries the stage dropdown and Next button, the period counter, and the run controls.</p>
+  <h4>Help mode</h4>
+  <p>Click the <strong>Help Mode</strong> button in the top bar to toggle it on. When active, hovering over any symbol on the charts or equations will display its definition.</p>
+  <h4>Step controls</h4>
+  <p><strong>Step one period</strong> advances the economy one period so a shock can play out; <strong>Reverse</strong> steps back through the history (it shows how many steps are stored); and <strong>Run to rebalance</strong> runs the model forward until it reaches the medium-run equilibrium. The controls reset cleanly when you load a new scenario.</p>
+  <h4>Copy state</h4>
+  <p>Click the <strong>Copy State</strong> button to copy the current values of all variables to your clipboard. You can paste this into a spreadsheet or text document.</p>
+
   <h3>The sidebar</h3>
-  <p>The left sidebar holds every control, grouped into collapsible sections:</p>
+  <p>The left sidebar holds every control, grouped into collapsible sections by chart:</p>
   <ul>
     <li><strong>Preset scenarios</strong> — a dropdown, a Load button, and a description box.</li>
-    <li><strong>Policy &amp; exogenous variables</strong> — the main sliders: G, T, the policy rate i, and (once unlocked) the open-economy variables.</li>
-    <li><strong>Adjustment dynamics</strong> — price-flexibility (medium-run speed), expectations anchoring (θ), allow de-anchoring toggle, and the Taylor rule.</li>
-    <li><strong>Supply shocks</strong> — the structural markup, structural wage-push, and a transitory cost-push shock slider.</li>
+    <li><strong>IS-LM</strong> — the main goods-market and monetary policy levers (G, T, policy rate i, Taylor response φ, MPC c₁).</li>
+    <li><strong>UIP curve (FX)</strong> — open-economy variables (foreign rate i*, expected exchange rate Eᵉ, import propensity m₁, foreign output Y*).</li>
+    <li><strong>Phillips curve & supply side</strong> — expectations anchoring (θ and credibility), expected inflation πᵉ, Phillips curve slope α, structural markup m and wage-push z, and transitory cost-push shock z.</li>
   </ul>
   <p>Every slider has an editable value beside it: drag it, or click the number and type a value directly. Sliders for locked blocks are greyed until their stage unlocks.</p>
-
-  <h3>Help mode</h3>
-  <p>Click the <strong>Help Mode</strong> button at the bottom of the sidebar to toggle it on. When active, hovering over any symbol on the charts or equations will display its definition.</p>
 
   <h2 id="charts"><span class="num">4</span>The three charts</h2>
   <p>Curves with a hollow circle on them are draggable. Dragging changes the underlying parameter and redraws everything at once — this is the feature that makes simultaneity visible.</p>
 
-  <h3><span class="dot" style="background:var(--curve-is)"></span>ISLM — goods market &amp; policy rate</h3>
+  <h3><span class="dot" style="background:var(--curve-is)"></span><span class="dot" style="background:var(--curve-mp)"></span>ISLM — goods market &amp; policy rate</h3>
   <p>The solid blue line is the nominal LM (the policy rate). The dashed blue line is the real rate <span class="mono">r = i − πᵉ</span>, which only appears once the PC block unlocks. Drag the IS curve for fiscal policy; drag the LM line for monetary policy. A faint dashed vertical marks natural output Y<sub>n</sub> (once the PC block unlocks).</p>
 
   <h3><span class="dot" style="background:var(--curve-uip)"></span>UIP — interest rate &amp; exchange rate</h3>
-  <p>Solid green is the UIP relation in nominal terms, <span class="mono">E = Eᵉ(1+i)/(1+i*)</span>. The gold dashed line is the real exchange rate <span class="mono">ε = E·P/P*</span>. The two diverge as home prices move relative to foreign. This chart is live from stage 1 onward.</p>
+  <p>Solid green is the UIP relation in nominal terms, <span class="mono">E = Eᵉ(1+i)/(1+i*)</span>. The gold dashed line is the real exchange rate <span class="mono">ε = E·P/P*</span>. The two diverge as home prices move relative to foreign.</p>
 
   <h3><span class="dot" style="background:var(--curve-pc)"></span>Phillips curve</h3>
-  <p>Drag the curve vertically to change expected inflation πᵉ. A cost-push shock z lifts the whole curve. The derivation drill-down expands the labour market (WS-PS), the Okun bridge from unemployment to output, and the Phillips relation itself. Live from stage 2.</p>
+  <p>Drag the curve vertically to change expected inflation πᵉ. A cost-push shock z lifts the whole curve. The derivation drill-down expands the labour market (WS-PS), the Okun bridge from unemployment to output, and the Phillips relation itself.</p>
 
   <h2 id="controls"><span class="num">5</span>Controls and what they mean</h2>
   <ul>
     <li><strong>Government spending G</strong> (10–35) and <strong>Taxes T</strong> (10–35). The fiscal levers. Baseline is a balanced budget at G = T = 20 (about a 20% government share of output).</li>
     <li><strong>Policy rate i</strong> (−2% to 15%). The monetary lever throughout — the central bank sets the nominal rate directly, giving a flat policy line. When the Taylor rule is on, this is overridden by the rule.</li>
+    <li><strong>Taylor response φ</strong> (0–3). When the Taylor rule is on, the bank sets the rate by a smoothed Taylor rule. Values of φ above 1 satisfy the Taylor principle.</li>
     <li><strong>MPC c₁</strong> (0.30–0.80). The marginal propensity to consume. Raising it steepens the multiplier; the live readout shows the updated multiplier and response coefficients.</li>
-    <li><strong>Expected inflation πᵉ</strong> (−2% to 15%). <em>Unlocks at stage 2.</em> Shifts the Phillips curve and drives the real rate <span class="mono">r = i − πᵉ</span>.</li>
+    <li><strong>Foreign rate i*</strong> (0–10%), <strong>Expected exchange rate Eᵉ</strong> (0.7–1.3), <strong>Import propensity m₁</strong> (0.05–0.60), and <strong>Foreign output Y*</strong> (80–120). Open-economy variables.</li>
+    <li><strong>Expected inflation πᵉ</strong> (−2% to 15%). Shifts the Phillips curve and drives the real rate <span class="mono">r = i − πᵉ</span>.</li>
     <li><strong>PC slope α</strong> (0.05–0.50, default 0.30). How strongly the output gap feeds into inflation. Calibrated against Hazell et al. (QJE 2022).</li>
     <li><strong>Markup m</strong> and <strong>Wage push z</strong> (structural). These shift natural output Y<sub>n</sub> through the wage-setting relation, <em>not</em> the Phillips curve directly. Distinct from the transitory cost-push shock.</li>
-    <li><strong>Import propensity m₁</strong> (0.05–0.60), <strong>Foreign output Y*</strong>, <strong>Foreign rate i*</strong>, <strong>Expected exchange rate Eᵉ</strong>. <em>Open-economy, from stage 1.</em></li>
-    <li><strong>Anchoring ceiling θ</strong> (0–1) and <strong>credibility</strong>. How firmly expectations stay anchored to target. High θ damps the inflation response to shocks.</li>
-    <li><strong>Taylor rule toggle and coefficient φ</strong> (0–3). When on, the bank sets the rate by a smoothed Taylor rule. Values of φ above 1 satisfy the Taylor principle.</li>
-    <li><strong>Cost-push shock z</strong> and the <strong>oil-shock button</strong>. A transitory supply disturbance that lifts the Phillips curve and decays over time.</li>
+    <li><strong>Max anchoring (ceiling) θ</strong> (0–1) and <strong>Current credibility</strong>. How firmly expectations stay anchored to target. High θ damps the inflation response to shocks.</li>
+    <li><strong>Cost-push (PC shift) z</strong> and the <strong>oil-shock button</strong>. A transitory supply disturbance that lifts the Phillips curve and decays over time.</li>
   </ul>
 
   <h2 id="equations"><span class="num">6</span>Equations and calibration</h2>
+  <div class="note">For the complete system of equations block by block, see <a href="Model_Textbook_Correspondence.html">the Model Textbook Correspondence</a>.</div>
   <p>Output is solved each period as a comparative-static equilibrium, then advanced dynamically. The closed and open economy share one engine — the closed economy is the open-economy IS with the import term forced to zero.</p>
 
   <h3>IS (goods market)</h3>
   <div class="eq">
-    Closed: &nbsp; k = 1 / (1 − c₁ − d₁) = 2.5 &nbsp;at baseline (c₁=0.5, d₁=0.1)<br>
-    Open: &nbsp;&nbsp;&nbsp; k_o = 1 / (1 − c₁ − d₁ + m₁) ≈ 1.43 &nbsp;at baseline (+ m₁=0.3)<span class="ref">Blanchard eq. 19.1</span>
+    Y = C + I + G &nbsp;(closed)<a class="ref" href="Model_Textbook_Correspondence.html#is-equilibrium">→ Correspondence</a><br>
+    Y = C + I + G + NX &nbsp;(open)<a class="ref" href="Model_Textbook_Correspondence.html#open-is">→ Correspondence</a><br>
+    C = c₀ + c₁(Y − T)<a class="ref" href="Model_Textbook_Correspondence.html#consumption">→ Correspondence</a><br>
+    I = d₀ + d₁Y − d₂r<a class="ref" href="Model_Textbook_Correspondence.html#investment">→ Correspondence</a><br>
+    NX = x₁Y* − m₁Y − n₁(ε−1)<a class="ref" href="Model_Textbook_Correspondence.html#linearising-net-exports">→ Correspondence</a>
+  </div>
+  <p>In the UI's equation panel, the model solves for equilibrium output Y and displays the sum of its components (C + I + G + NX) to students so they can intuitively trace exactly which sector of the economy is responding to a shock.</p>
+  <p>Under the hood, the engine calculates this instantaneously using the reduced-form multiplier equation:</p>
+  <div class="eq">
+    Closed: &nbsp; k = 1 / (1 − c₁ − d₁) = 2.5 &nbsp;at baseline (c₁=0.5, d₁=0.1)<a class="ref" href="Model_Textbook_Correspondence.html#is-coefficients">→ Correspondence</a><br>
+    Open: &nbsp;&nbsp;&nbsp; k_o = 1 / (1 − c₁ − d₁ + m₁) ≈ 1.43 &nbsp;at baseline (+ m₁=0.3)<a class="ref" href="Model_Textbook_Correspondence.html#reduced-form-coefficients">→ Correspondence</a>
   </div>
   <p>The import leakage m₁ sits inside the denominator, so the open multiplier is <em>smaller</em> and the open IS curve is <em>steeper</em> than the closed one. Baseline reduced-form responses (closed): ΔY = +2.5 ΔG, −1.25 ΔT, −500 Δr.</p>
 
-  <h3>MP (monetary policy)</h3>
+  <h3>LM (monetary policy)</h3>
   <div class="eq">r = i &nbsp;(stages 0–1, prices fixed) &nbsp;→&nbsp; r = i − πᵉ &nbsp;(stage 2 onward)</div>
-  <p>The central bank sets the nominal rate i directly. In the closed stage, money demand is multiplicative, M/P = Y·(L₀ − L₁·i); in the open stage it is abstracted out.</p>
+  <p>The central bank sets the nominal rate i directly.</p>
+
+  <h3>UIP (exchange rate)</h3>
+  <div class="eq">
+    E = Eᵉ(1+i)/(1+i*)<a class="ref" href="Model_Textbook_Correspondence.html#uip">→ Correspondence</a>
+  </div>
+  <p>The nominal exchange rate is determined by the interest parity condition.</p>
 
   <h3>PC (Phillips curve) — gap form</h3>
   <div class="eq">
-    π = πᵉ + α(Y − Y<sub>n</sub>)/Y<sub>n</sub> + z<span class="ref">Blanchard eq. 9.3</span><br>
-    u<sub>n</sub> = (m + z<sub>struct</sub>) / α_WS &nbsp;;&nbsp; Y<sub>n</sub> = L(1 − u<sub>n</sub>)<span class="ref">eq. 8.4</span>
+    π = πᵉ + α(Y − Y<sub>n</sub>)/Y<sub>n</sub> + z<a class="ref" href="Model_Textbook_Correspondence.html#pc-conversion">→ Correspondence</a><br>
+    u<sub>n</sub> = (m + z<sub>struct</sub>) / α_WS &nbsp;;&nbsp; Y<sub>n</sub> = L(1 − u<sub>n</sub>)<a class="ref" href="Model_Textbook_Correspondence.html#natural-rate">→ Correspondence</a>
   </div>
   <div class="note">
     <div class="eyebrow">Why structural shocks show nothing in the PC line</div>
