@@ -293,6 +293,7 @@
   .eq-box .eq-res { color: var(--ink); font-weight: 500; }
   .eq-box .eq-lbl { color: var(--ink-4); display: inline-block; min-width: 34px; }
   .eq-box .t { font-weight: 500; }
+  .eq-footnote { font-size: 10px; color: var(--ink-4); font-family: 'Hanken Grotesk', sans-serif; display: block; margin-top: 6px; }
   .hint {
     font-size: 10.5px; color: var(--ink-3); margin-top: 4px; line-height: 1.4;
   }
@@ -464,11 +465,7 @@
           <span>Allow expectations to de-anchor</span>
         </div>
         <div class="hint" id="hint-dynamics">
-          π* = 2% target. Expectations are anchored by the product of two sliders:
-          <strong>Max anchoring θ</strong> is the ceiling (how credible this central bank can ever be),
-          and <strong>Current credibility</strong> is where anchoring sits right now (0–100% of that ceiling).
-          Effective anchoring = θ × credibility: at θ=1, full credibility pins expectations to π*; at credibility 0,
-          expectations adapt fully to past inflation.
+          π* = 2% target. <strong>Max credibility (1 − θ)</strong> is the highest anchoring this central bank can reach — a structural property of how backward-looking expectations are (Blanchard's θ, shown here as its complement). <strong>Current credibility</strong> is how much of that ceiling is realised right now. Effective anchoring = Max credibility × Current credibility = (1 − θ) × cred.
           <br><strong>Allow de-anchoring:</strong> when on, current credibility moves on its own each period —
           it erodes if inflation sits far from target for a sustained stretch, and rebuilds toward the ceiling
           when inflation returns to target. You can also drag credibility yourself at any time. When off,
@@ -529,13 +526,13 @@
 
       <div class="chart-box" id="chart-box-pc">
         <h3>Phillips curve</h3>
-        <div class="sub">Drag PC vertically to change πᵉ. Cost-push z lifts the whole curve.</div>
+        <div class="sub">Drag PC vertically to change πᵉ. Cost-push shock lifts the whole curve.</div>
         <div class="chart-wrap">
           <svg id="pc" viewBox="0 0 360 220"></svg>
           <div class="chart-chips" id="pc-chips"></div>
         </div>
         <div class="legend-row">
-          <span><span class="legend-swatch" style="background:#534ab7"></span>π = πᵉ + α(Y−Yₙ)/Yₙ + z <span class="drill-trigger" data-block="PC" onclick="toggleDrill('drill-pc')">derivation ▸</span></span>
+          <span><span class="legend-swatch" style="background:#534ab7"></span>π = πᵉ + α(Y−Yₙ)/Yₙ + shock <span class="drill-trigger" data-block="PC" onclick="toggleDrill('drill-pc')">derivation ▸</span></span>
           <span>πᵉ = <span id="pie-readout">2.0%</span></span>
         </div>
         <div class="drill-container" id="drill-pc">
@@ -551,11 +548,12 @@
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-b" viewBox="0 0 160 140"></svg></div>
             </div>
             <div class="drill-col" id="drill-pc-phillips">
-              <div class="drill-eq" id="drill-eq-phillips">π = πᵉ + (α/Yₙ)(Y−Yₙ) + z <span class="ref">(Economo Eq. 1.3)</span></div>
+              <div class="drill-eq" id="drill-eq-phillips">π = πᵉ + (α/Yₙ)(Y−Yₙ) + shock <span class="ref">(Blanchard eq. 9.3 *)</span></div>
               <div class="sub">Phillips curve</div>
               <div class="drill-svg-wrap"><svg id="svg-drill-pc-c" viewBox="0 0 160 140"></svg></div>
             </div>
           </div>
+          <div class="eq-footnote">* shock is a tool addition — Blanchard's eq. 9.3 has none. See the Model Textbook Correspondence.</div>
         </div>
         <div class="eq-box" id="box-eq-pc"><div class="eq-toggle" onclick="toggleEq('box-eq-pc')"><span class="eq-arrow">▶</span><span>Show the equations behind this chart</span></div><div class="eq-body" id="eq-pc"></div></div>
       </div>
@@ -714,11 +712,11 @@ const paramDefs = [
 ];
 
 const shockDefs = [
-  { key: 'z',        block: 'PC',    label: 'Cost-push (PC shift), z',  min: -0.03, max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%' }
+  { key: 'z',        block: 'PC',    label: 'Cost-push shock (PC shift)',  min: -0.03, max: 0.10, step: 0.0025, fmt: v => (v*100).toFixed(2)+'%' }
 ];
 
 const dynamicsDefs = [
-  { key: 'theta',    block: 'PC', label: 'Max anchoring (ceiling), θ',  min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2) },
+  { key: 'theta', block: 'PC', label: 'Max credibility (1−θ)', min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2), toDisplay: v => 1 - v, fromDisplay: d => 1 - d },
   { key: 'cred',     block: 'PC', label: 'Current credibility',        min: 0, max: 1, step: 0.05, fmt: v => v.toFixed(2), meter: 'cred' },
   { key: 'phi',      block: 'ISLM', label: 'Taylor response, φ',   min: 0, max: 3, step: 0.1,  fmt: v => v.toFixed(1) }
 ];
@@ -735,7 +733,7 @@ const initialState = {
   Ystar: 100,
   m_struct: 0.05,
   z_struct: 0.10,
-  z: 0, z_pulse: 0, theta: 1.0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: []
+  z: 0, z_pulse: 0, theta: 0.0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: []
 };
 
 let state = clone(initialState);
@@ -773,8 +771,9 @@ function solve(s) {
 }
 
 // Effective anchoring that drives expectations = the ceiling (θ) times current credibility.
-function effectiveTheta(s) {
-  return s.theta * s.cred;
+// Blanchard's θ is the ADAPTIVE weight; anchoring is (1−θ), scaled by credibility.
+function effectiveAnchoring(s) {
+  return (1 - s.theta) * s.cred;
 }
 
 // Credibility law of motion: erode when |π − π*| sits beyond the tolerance band,
@@ -805,8 +804,8 @@ function step(s) {
 
   let new_i = Math.max(ZLB, raw_i);
 
-  const theta_eff = effectiveTheta(s);
-  const pi_e_drift = theta_eff * (PI_TARGET - s.pi_e) + (1 - theta_eff) * (eq.pi - s.pi_e);
+  const anchoring = effectiveAnchoring(s);
+  const pi_e_drift = anchoring * (PI_TARGET - s.pi_e) + (1 - anchoring) * (eq.pi - s.pi_e);
   const new_pi_e = clamp(s.pi_e + sp * pi_e_drift, -0.10, 0.60);
   const new_cred = nextCredibility(s, eq.pi);
 
@@ -838,7 +837,7 @@ const SYMBOL_DEFS = {
   'π': { meaning: 'inflation rate', ref: 'eq. 9.3', role: 'the rate of change of prices' },
   'α': { meaning: 'effect of output gap on inflation', ref: 'eq. 9.3', role: 'Phillips curve slope (see Model Correspondence for α_tool derivation)' },
   'πᵉ': { meaning: 'expected inflation rate', ref: 'eq. 8.7', role: 'shifts the Phillips curve' },
-  'θ': { meaning: 'anchoring of expectations', ref: 'eq. 8.7', role: 'weight on target vs past inflation' },
+  'θ': { meaning: 'shown as Max credibility = 1 − θ; adaptiveness of expectations (Blanchard θ)', ref: 'eq. 8.7', role: 'weight on last period\'s inflation; θ=1 fully adaptive, θ=0 fully anchored' },
   'Yₙ': { meaning: 'natural or potential output', ref: 'eq. 8.4', role: 'level of output where π = πᵉ' },
   'c₁': { meaning: 'marginal propensity to consume', ref: 'eq. 3.3', role: 'multiplier effect on output' },
   'd₁ᵣ': { meaning: 'interest sensitivity of investment', ref: 'eq. 5.1', role: 'slope of the IS curve' },
@@ -846,8 +845,8 @@ const SYMBOL_DEFS = {
   'k_open': { meaning: 'open economy multiplier', ref: 'eq. 19.2', role: 'magnifies autonomous spending' },
   'm': { meaning: 'price-setting markup', ref: 'eq. 8.4 (price-setting 7.3)', role: 'firms\' markup of price over wage; raises the natural rate uₙ, lowering Yₙ' },
   'Wage push z': { meaning: 'structural wage-push factor', ref: 'eq. 8.4', role: 'everything in wage-setting other than unemployment; raises uₙ, lowering Yₙ' },
-  'Cost-push z': { meaning: 'transitory cost-push shock', ref: 'eq. 9.3', role: 'temporary supply disturbance that shifts the Phillips curve; does NOT move Yₙ' },
-  'z': { meaning: 'catch-all structural or supply shift', ref: 'Ch. 8/9', role: 'moves the PC or natural rate' },
+  'shock': { meaning: 'transitory cost-push shock', ref: 'tool addition (cf. Section 8-3)', role: 'temporary supply disturbance that shifts the Phillips curve; does NOT move Yₙ' },
+  'z': { meaning: 'structural wage-push (wage-setting relation)', ref: 'eq. 8.4', role: 'raises uₙ and lowers Yₙ; distinct from the transitory shock term' },
   'uₙ': { meaning: 'natural rate of unemployment', ref: 'eq. 8.4', role: 'unemployment rate where π = πᵉ' },
   'u': { meaning: 'unemployment rate', ref: 'eq. 7.1', role: 'fraction of labour force without a job' },
   'c₀': { meaning: 'autonomous consumption', ref: 'eq. 3.3', role: 'consumption when disposable income is zero' },
@@ -887,7 +886,7 @@ const EQ_REF = {
   'fisher': 'eq. 6.4',
   'MD': 'eq. 5.3',
   'MP': 'Ch. 23',
-  'PC': 'Economo Eq. 1.3',
+  'PC': 'eq. 9.3 *',
   'un': 'Blanchard eq. 8.4',
   'Yn': "Blanchard p.179; cf. Okun's Law box, eq 9B.1",
   'UIP': 'eq. 19.5',
@@ -1019,6 +1018,8 @@ function showTaylorSliderMsg(anchorEl) {
 
 function buildSliders(root, defs) {
   defs.forEach(p => {
+    const toDisplay = p.toDisplay || (v => v);
+    const fromDisplay = p.fromDisplay || (d => d);
     const wrap = document.createElement('div');
     wrap.className = 'control';
     if (p.block) wrap.setAttribute('data-block', p.block);
@@ -1032,8 +1033,8 @@ function buildSliders(root, defs) {
     let symHtml = splitIdx !== -1 ? labelHtml.substring(splitIdx).trim() : '';
 
     wrap.innerHTML = `
-      <label><span class="ctl-desc">${descHtml} <span class="ctl-sym">${symHtml}</span></span> <span class="val-container"><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(state[p.key])}">${suffix}</span></label>
-      <input type="range" id="ctl-${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${state[p.key]}">
+      <label><span class="ctl-desc">${descHtml} <span class="ctl-sym">${symHtml}</span></span> <span class="val-container"><input type="text" inputmode="decimal" class="val-edit" id="val-${p.key}" value="${editFmt(toDisplay(state[p.key]))}">${suffix}</span></label>
+      <input type="range" id="ctl-${p.key}" min="${p.min}" max="${p.max}" step="${p.step}" value="${toDisplay(state[p.key])}">
       ${meter}
     `;
     root.appendChild(wrap);
@@ -1043,7 +1044,7 @@ function buildSliders(root, defs) {
       if (p.key === 'i_target') {
         state.i_target = Math.max(ZLB, state.i_target);
         if (!state.taylor_on) state.i = Math.max(ZLB, state.i_target);
-        range.value = state.i_target;
+        range.value = toDisplay(state.i_target);
       }
     };
     const taylorOwnsRate = () =>
@@ -1054,9 +1055,11 @@ function buildSliders(root, defs) {
         syncControls();   // snap the thumb back to the rule's current i
         return;
       }
-      state[p.key] = parseFloat(e.target.value);
+      let raw = fromDisplay(parseFloat(e.target.value));
+      raw = clamp(raw, p.min, p.max);
+      state[p.key] = raw;
       applyITargetGuard();
-      edit.value = editFmt(state[p.key]);
+      edit.value = editFmt(toDisplay(state[p.key]));
       render();
     });
     const commit = () => {
@@ -1065,13 +1068,14 @@ function buildSliders(root, defs) {
         syncControls();   // restore the box to the rule's current i
         return;
       }
-      let raw = parse(parseFloat(edit.value));
-      if (isNaN(raw)) { edit.value = editFmt(state[p.key]); return; }
+      let rawDisp = parse(parseFloat(edit.value));
+      if (isNaN(rawDisp)) { edit.value = editFmt(toDisplay(state[p.key])); return; }
+      let raw = fromDisplay(rawDisp);
       raw = clamp(raw, p.min, p.max);
       state[p.key] = raw;
       applyITargetGuard();
-      range.value = state[p.key];
-      edit.value = editFmt(state[p.key]);
+      range.value = toDisplay(state[p.key]);
+      edit.value = editFmt(toDisplay(state[p.key]));
       render();
     };
     edit.addEventListener('change', commit);
@@ -1201,11 +1205,7 @@ function applyGraphGrouping() {
   credDrillBox.className = 'drill-container';
   credDrillBox.id = 'drill-cred';
   credDrillBox.innerHTML = `
-    π* = 2% target. Expectations are anchored by the product of two sliders:
-    <strong>Max anchoring θ</strong> is the ceiling (how credible this central bank can ever be),
-    and <strong>Current credibility</strong> is where anchoring sits right now (0–100% of that ceiling).
-    Effective anchoring = θ × credibility: at θ=1, full credibility pins expectations to π*; at credibility 0,
-    expectations adapt fully to past inflation.
+    π* = 2% target. <strong>Max credibility (1 − θ)</strong> is the highest anchoring this central bank can reach — a structural property of how backward-looking expectations are (Blanchard's θ, shown here as its complement). <strong>Current credibility</strong> is how much of that ceiling is realised right now. Effective anchoring = Max credibility × Current credibility = (1 − θ) × cred.
     <br><strong>Allow de-anchoring:</strong> when on, current credibility moves on its own each period —
     it erodes if inflation sits far from target for a sustained stretch, and rebuilds toward the ceiling
     when inflation returns to target. You can also drag credibility yourself at any time. When off,
@@ -1227,10 +1227,9 @@ function applyGraphGrouping() {
 function syncControls() {
   const allDefs = [...paramDefs, ...shockDefs, ...dynamicsDefs];
   allDefs.forEach(p => {
-    // While the Taylor rule drives the rate (same gate as step()), the policy-rate
-    // slider mirrors the rule's current i; the manual target is inert until Taylor is off.
+    const toDisplay = p.toDisplay || (v => v);
     const shown = (p.key === 'i_target' && state.taylor_on && tutorialState.unlocked.has('PC'))
-      ? state.i : state[p.key];
+      ? toDisplay(state.i) : toDisplay(state[p.key]);
     const inp = document.getElementById('ctl-' + p.key);
     if (inp) inp.value = shown;
     const lbl = document.getElementById('val-' + p.key);
@@ -1950,12 +1949,12 @@ function drawISChips(eq) {
 
   // Wicksellian instability: fixed nominal rate + weakly anchored adaptive
   // expectations is a repelling equilibrium.
-  if (!state.taylor_on && state.theta < 0.65 && tutorialState.unlocked.has('PC')) {
+  if (!state.taylor_on && state.theta > 0.35 && tutorialState.unlocked.has('PC')) {
     chips.push({
       cls: 'wicksell',
-      msg: `Weak anchoring (θ = ${state.theta.toFixed(2)} &lt; 0.65) with the Taylor rule off: `
+      msg: `Weak anchoring (θ = ${state.theta.toFixed(2)} &gt; 0.35) with the Taylor rule off: `
          + `small shifts in expected inflation can amplify rather than settle (Wicksellian instability). `
-         + `Raise θ or switch the Taylor rule on.`
+         + `Lower θ or switch the Taylor rule on.`
     });
   }
 
@@ -1975,7 +1974,7 @@ function drawISChips(eq) {
         style: `background:${bg};border-color:${bd};color:${col};`,
         pulse: sev > 0.5,
         msg: `Inflation is ${(eq.pi*100).toFixed(1)}%, outside the ±2% band around target. `
-           + `Credibility is eroding (${(state.cred*100).toFixed(0)}% of anchoring intact; effective θ = ${effectiveTheta(state).toFixed(2)}). `
+           + `Credibility is eroding (${(state.cred*100).toFixed(0)}% of anchoring intact; effective anchoring = ${effectiveAnchoring(state).toFixed(2)}). `
            + (sev > 0.7
                ? `Expectations have largely come unmoored — without the rate moving to bring inflation back, this spirals.`
                : `If inflation does not return toward target, expectations will keep de-anchoring.`)
@@ -1985,7 +1984,7 @@ function drawISChips(eq) {
         cls: 'anchor',
         style: `background:#fbeaea;border-color:#e6b8b8;color:#9a3434;`,
         pulse: false,
-        msg: `Inflation is ${(eq.pi*100).toFixed(1)}%, far from the 2% target, yet expectations are held fixed (θ = ${state.theta.toFixed(2)}). `
+        msg: `Inflation is ${(eq.pi*100).toFixed(1)}%, far from the 2% target, yet expectations are held fixed (θ = ${state.theta.toFixed(2)}, Blanchard's adaptive weight). `
            + `In reality such a sustained gap would erode credibility and de-anchor expectations. `
            + `Switch on "Allow expectations to de-anchor" to see the realistic dynamics.`
       });
@@ -2179,10 +2178,10 @@ function drawEquations(eq) {
         + `= <span class="eq-res">${fpc(un,1)}</span>${endLine('un')}</span>`
         + `<span ${lne('PC')}><span class="eq-lbl">Yₙ</span>`
         + `<span class="eq-sym">L(1−uₙ)</span> = `
-        + `<span class="eq-num">${L_LABOR}(1−${fpc(un,1)})</span> `
+        + `<span class="eq-num">${f(L_LABOR,1)}(1−${fpc(un,1)})</span> `
         + `= <span class="eq-res">${f(eq.Y_n,0)}</span>${endLine('Yn')}</span>`
         + `<span ${lne('PC')}><span class="eq-lbl">PC</span>`
-        + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + z</span></span>`
+        + `<span class="eq-sym">π = πᵉ + α(Y−Yₙ)/Yₙ + shock</span></span>`
         + `<span ${lne('PC')}><span class="eq-lbl"></span><span class="eq-num">= `
         + `${fpc(s.pi_e,1)} + ${f(s.alpha,2)}·(${f(eq.Y,1)}−${f(eq.Y_n,0)})/${f(eq.Y_n,0)} `
         + `+ ${fpc(eq.z_eff,2)}</span> `
@@ -2190,6 +2189,7 @@ function drawEquations(eq) {
         + (isUnl('gap') ? 
           `<span ${lne('gap')}><span class="eq-lbl">gap</span>`
           + `<span class="eq-num">(Y−Yₙ)/Yₙ = ${fpc(gap,1)}</span></span>` : '')
+        + `<span class="eq-footnote">* shock is a tool addition — Blanchard's eq. 9.3 has none. See the Model Textbook Correspondence for why it is included.</span>`
       );
     } else {
       pcEl.innerHTML = '';
@@ -2264,7 +2264,7 @@ function updateReverseButton() {
 function updateCredMeter(eq) {
   const m = document.getElementById('meter-cred');
   if (!m) return;
-  const eff = effectiveTheta(state);
+  const eff = effectiveAnchoring(state);
   const lost = clamp(1 - state.cred, 0, 1);
   const mix = (a, b) => Math.round(a + (b - a) * lost);
   const col = `rgb(${mix(15,192)}, ${mix(110,57)}, ${mix(86,43)})`;   // green → red
@@ -2277,7 +2277,7 @@ function updateCredMeter(eq) {
     trend = ' · fixed (de-anchoring off)';
   }
   m.innerHTML =
-    `<div class="tm-row"><span>effective θ = cap × credibility = `
+    `<div class="tm-row"><span>effective anchoring = (1 − θ) × credibility = `
     + `<strong style="color:${col}">${eff.toFixed(2)}</strong>${trend}</span></div>`;
 }
 
@@ -2405,32 +2405,32 @@ const SCENARIOS = [
   {
     id: 'taylorPrinciple',
     label: '1. The Taylor Principle',
-    narrative: 'Taylor rule ON with φ = 1.5 and partially-anchored expectations (θ=0.25), so expectations can actually move. Apply the oil shock and step: with φ = 1.5 the bank responds more than one-for-one and inflation comes smoothly back to the 2% target within the medium run. Then—without resetting—lower φ to 0.5 and shock again. Now the bank is too passive: the rate is cut to the ZLB floor and pinned there for several periods, expectations de-anchor (watch the warning chip), and the return to target takes far longer and oscillates. The contrast between the two φ settings is the Taylor principle.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.25, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
+    narrative: 'Taylor rule ON with φ = 1.5 and partially-anchored expectations (θ=0.75), so expectations can actually move. Apply the oil shock and step: with φ = 1.5 the bank responds more than one-for-one and inflation comes smoothly back to the 2% target within the medium run. Then—without resetting—lower φ to 0.5 and shock again. Now the bank is too passive: the rate is cut to the ZLB floor and pinned there for several periods, expectations de-anchor (watch the warning chip), and the return to target takes far longer and oscillates. The contrast between the two φ settings is the Taylor principle.',
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.75, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'expectationsDeAnchored',
     label: '2a. De-Anchored Expectations (1970s)',
-    narrative: 'Twin experiment, part 1 — identical to preset 2b in every field except θ. θ = 0.15: expectations are mostly adaptive. A transitory supply shock (z_pulse = +5%) hits: inflation spikes to 7% and πᵉ chases it upward (watch it climb toward 5%). The central bank now fights a moving target: rates go higher for longer, inflation stays elevated for roughly twice as long as in 2b, and the cumulative output loss is about 1.5× larger — even though the first-period dip is milder, because rising πᵉ erodes the real rate. That cushion is exactly the poison. Since the shock is transitory, output eventually returns to potential (100).',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.05, theta: 0.15, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
+    narrative: 'Twin experiment, part 1 — identical to preset 2b in every field except θ. θ = 0.85: expectations are mostly adaptive. A transitory +5% cost-push shock hits: inflation spikes to 7% and πᵉ chases it upward (watch it climb toward 5%). The central bank now fights a moving target: rates go higher for longer, inflation stays elevated for roughly twice as long as in 2b, and the cumulative output loss is about 1.5× larger — even though the first-period dip is milder, because rising πᵉ erodes the real rate. That cushion is exactly the poison. Since the shock is transitory, output eventually returns to potential (100).',
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.05, theta: 0.85, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'expectationsAnchored',
     label: '2b. Anchored Expectations (1990s)',
-    narrative: 'Twin experiment, part 2 — identical to preset 2a in every field except θ. θ = 1: credibility is absolute and πᵉ stays nailed to 2% no matter what inflation does. The same +5% transitory supply shock produces a sharper but brief slump: one decisive hike, inflation is back near target within a couple of periods, and the episode is over by around t = 12. Run this side-by-side with 2a: same economy, same shock — the only difference is whether expectations are anchored. Central-bank credibility is itself a policy tool (Blanchard Ch. 9).',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.05, theta: 1, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
+    narrative: 'Twin experiment, part 2 — identical to preset 2a in every field except θ. θ = 0: credibility is absolute and πᵉ stays nailed to 2% no matter what inflation does. The same +5% transitory supply shock produces a sharper but brief slump: one decisive hike, inflation is back near target within a couple of periods, and the episode is over by around t = 12. Run this side-by-side with 2a: same economy, same shock — the only difference is whether expectations are anchored. Central-bank credibility is itself a policy tool (Blanchard Ch. 9).',
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0.05, theta: 0, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'exchangeRateDisinflation',
     label: '3. Exchange-Rate Disinflation',
-    narrative: 'Taylor OFF, expectations mostly anchored (θ=0.7). Cut the policy rate to 1%. UIP triggers a nominal depreciation; net exports surge and Y rises above Yₙ. Over time prices climb relative to foreign, the real exchange rate appreciates, and Y drifts back. A temporary stimulus from a weak currency — and because i is held below i* indefinitely, inflation settles slightly above 2% rather than at it.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.01, i: 0.01, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.7, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
+    narrative: 'Taylor OFF, expectations mostly anchored (θ=0.3). Cut the policy rate to 1%. UIP triggers a nominal depreciation; net exports surge and Y rises above Yₙ. Over time prices climb relative to foreign, the real exchange rate appreciates, and Y drifts back. A temporary stimulus from a weak currency — and because i is held below i* indefinitely, inflation settles slightly above 2% rather than at it.',
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.01, i: 0.01, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.3, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'twinDeficits',
     label: '4. Twin Deficits & Real Appreciation',
-    narrative: 'Taylor OFF, expectations mostly anchored (θ=0.7). A modest fiscal expansion (G raised from 20 to 22, a 10% rise) with no monetary offset drives up domestic prices. The real exchange rate appreciates, crowding out net exports until Y returns to Yₙ and inflation returns to 2% — leaving ε permanently higher (≈1.03). Watch ε climb on the time series.',
-    state: { G: 22, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.7, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
+    narrative: 'Taylor OFF, expectations mostly anchored (θ=0.3). A modest fiscal expansion (G raised from 20 to 22, a 10% rise) with no monetary offset drives up domestic prices. The real exchange rate appreciates, crowding out net exports until Y returns to Yₙ and inflation returns to 2% — leaving ε permanently higher (≈1.03). Watch ε climb on the time series.',
+    state: { G: 22, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.3, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'globalRateHike',
@@ -2506,7 +2506,7 @@ function formatStateExport() {
   L.push(`  z (persistent) = ${pct(state.z)}   z_pulse = ${pct(state.z_pulse, 3)}`);
   L.push('');
   L.push('DYNAMICS');
-  L.push(`  θ (ceiling) = ${state.theta.toFixed(2)}   cred = ${state.cred.toFixed(2)}   eff θ = ${(state.theta * state.cred).toFixed(2)}`);
+  L.push(`  θ (adaptive, Blanchard) = ${state.theta.toFixed(2)}   cred = ${state.cred.toFixed(2)}   eff anchoring = ${((1-state.theta) * state.cred).toFixed(2)}`);
   L.push(`  φ (Taylor) = ${state.phi.toFixed(1)}   speed = ${state.speed.toFixed(2)}   deanchor = ${state.deanchor_on ? 'ON' : 'OFF'}`);
   L.push('');
   L.push('CURRENT EQUILIBRIUM');
