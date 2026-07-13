@@ -918,7 +918,7 @@ const badTooltip = wrapSymbols('Yₙ').replace(expectedTooltip, 'WRONG');
 check('BAD-fixture: Incorrect tooltip mapping caught', badTooltip.match(/data-tooltip="([^"]+)"/)[1] !== expectedTooltip);
 
 check('INV-C4: EQ_REF contains valid targets', typeof EQ_REF['C'] === 'string');
-const badEqRefCode = headlessCode.replace("'C': 'eq. 3.3',", "");
+const badEqRefCode = headlessCode.replace("'C': 'Blanchard eq. 3.3',", "");
 const badEqRefApi = new Function(badEqRefCode + '\nfunction render() {}\nreturn { EQ_REF };')();
 check('BAD-fixture: Empty EQ_REF caught', typeof badEqRefApi.EQ_REF['C'] !== 'string');
 
@@ -934,13 +934,18 @@ check('BAD-fixture: endLine creates garbage for missing ref caught', badEndLineA
 
 const expC = `<span class="sym" data-sym="C" data-tooltip="${SYMBOL_DEFS['C'].meaning}; ${SYMBOL_DEFS['C'].ref}; ${SYMBOL_DEFS['C'].role}">C</span>`;
 const expI = `<span class="sym" data-sym="I" data-tooltip="${SYMBOL_DEFS['I'].meaning}; ${SYMBOL_DEFS['I'].ref}; ${SYMBOL_DEFS['I'].role}">I</span>`;
-const expPiStar = `<span class="sym" data-sym="π*" data-tooltip="${SYMBOL_DEFS['π*'].meaning}; ${SYMBOL_DEFS['π*'].ref}; ${SYMBOL_DEFS['π*'].role}">π*</span>`;
+const expPiStar = `<span class="sym" data-sym="π*" data-tooltip="${SYMBOL_DEFS['π*'].meaning}; ${SYMBOL_DEFS['π*'].ref}; ${SYMBOL_DEFS['π*'].role}"><span class="barred">π</span></span>`;
 const exp_i = `<span class="sym" data-sym="i" data-tooltip="${SYMBOL_DEFS['i'].meaning}; ${SYMBOL_DEFS['i'].ref}; ${SYMBOL_DEFS['i'].role}">i</span>`;
 const expPi = `<span class="sym" data-sym="π" data-tooltip="${SYMBOL_DEFS['π'].meaning}; ${SYMBOL_DEFS['π'].ref}; ${SYMBOL_DEFS['π'].role}">π</span>`;
 
 const s1Expected = `<div>${expC} and ${expI} and <span>${expPiStar}</span> and ${exp_i}, ${expPi}</div>`;
+  const actualS1 = testRender.wrapSymbols('<div>C and I and <span>π*</span> and i, π</div>');
+  if (actualS1 !== s1Expected) {
+    console.log("EXPECTED:\n" + s1Expected);
+    console.log("ACTUAL:\n" + actualS1);
+  }
 check('INV-S1: wrapSymbols is pure and string-to-string (headless)',
-  testRender.wrapSymbols('<div>C and I and <span>π*</span> and i, π</div>') === s1Expected &&
+  actualS1 === s1Expected &&
   testRender.wrapSymbols('no match here') === 'no match here' &&
   testRender.findSymbols('no match here').length === 0 &&
   testRender.findSymbols('i, π').length === 2 &&

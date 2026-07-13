@@ -270,6 +270,7 @@
   }
   .legend-row span { display: inline-flex; align-items: center; gap: 4px; }
   .legend-swatch { width: 12px; height: 2.5px; border-radius: 2px; display: inline-block; }
+  .barred { text-decoration: overline; }
   .eq-box {
     margin: 6px 4px 2px; padding: 0; background: var(--surface-2);
     border: 1px solid var(--rule); border-radius: 10px;
@@ -469,7 +470,7 @@
           <span>Allow expectations to de-anchor</span>
         </div>
         <div class="hint" id="hint-dynamics">
-          π* = 2% target. <strong>Max credibility (1 − θ)</strong> is the highest anchoring this central bank can reach — a structural property of how backward-looking expectations are (Blanchard's θ, shown here as its complement). <strong>Current credibility</strong> is how much of that ceiling is realised right now. Effective anchoring = Max credibility × Current credibility = (1 − θ) × cred.
+          <span class="barred">π</span> = 2% target. <strong>Max credibility (1 − θ)</strong> is the highest anchoring this central bank can reach — a structural property of how backward-looking expectations are (Blanchard's θ, shown here as its complement). <strong>Current credibility</strong> is how much of that ceiling is realised right now. Effective anchoring = Max credibility × Current credibility = (1 − θ) × cred.
           <br><strong>Allow de-anchoring:</strong> when on, current credibility moves on its own each period —
           it erodes if inflation sits far from target for a sustained stretch, and rebuilds toward the ceiling
           when inflation returns to target. You can also drag credibility yourself at any time. When off,
@@ -875,7 +876,7 @@ const SYMBOL_DEFS = {
   'i_N': { meaning: 'neutral nominal interest rate', ref: 'Ch. 23', role: 'nominal rate when Y = Yₙ and π = π*' },
   'φ': { meaning: 'Taylor rule inflation response', ref: 'Ch. 23', role: 'strength of reaction to inflation gap' },
   'ψ': { meaning: 'Taylor rule output response', ref: 'Ch. 23', role: 'strength of reaction to output gap' },
-  'π*': { meaning: 'target inflation rate', ref: 'Ch. 23', role: 'central bank inflation goal' },
+  'π*': { display: '<span class="barred">π</span>', meaning: 'target inflation rate', ref: 'Ch. 23', role: 'central bank inflation goal' },
   'Y*': { meaning: 'foreign output', ref: 'eq. 19.1', role: 'drives exports' },
   'NX': { meaning: 'net exports', ref: 'eq. 19.1', role: 'trade balance' },
   'C': { meaning: 'consumption', ref: 'eq. 3.3', role: 'household spending' },
@@ -893,32 +894,41 @@ const SYMBOL_DEFS = {
 };
 
 const EQ_REF = {
-  'C': 'eq. 3.3',
-  'I': 'eq. 5.1 / 9.1',
-  'anchor': 'eq. 9.1/19.1',
-  'fisher': 'eq. 6.4',
-  'MD': 'eq. 5.3',
-  'MP': 'Ch. 23',
-  'PC': 'eq. 9.3 *',
+  'C': 'Blanchard eq. 3.3',
+  'I': 'Blanchard eq. 5.1 / 9.1',
+  'G': 'exogenous (Blanchard Ch. 3)',
+  'Y': 'Blanchard eq. 3.1 / 9.1',
+  'eps': 'ε = E·P/P* (Blanchard Ch. 17)',
+  'anchor': 'Blanchard eq. 9.1/19.1',
+  'fisher': 'Blanchard eq. 6.4',
+  'MD': 'Blanchard eq. 5.3',
+  'MP': 'Blanchard Ch. 23',
+  'PC': 'Blanchard eq. 9.3 *',
   'un': 'Blanchard eq. 8.4',
   'Yn': "Blanchard p.179; cf. Okun's Law box, eq 9B.1",
-  'UIP': 'eq. 19.5',
-  'NX': 'eq. 19.1 / 19.2'
+  'UIP': 'Blanchard eq. 19.5',
+  'NX': 'Blanchard eq. 19.1 / 19.2',
+  'pi_e': 'Model Textbook Correspondence 6.6',
+  'gap': 'output gap — cf. Blanchard eq. 9.2',
+  'P_prime': 'Correspondence §7.8 *',
+  'P_star_prime': 'Correspondence §7.8 *',
+  'Ee_prime': 'Correspondence §7.8 * (adaptive)',
+  'taylor': 'Blanchard Ch. 23 * (smoothing added)'
 };
 
 function findSymbols(text) {
-    if (!text) return [];
-    
-    // Explicit manual overrides for edge cases where SVG strings differ from SYMBOL_DEFS keys
-    if (text === 'Eᵉ') return [{ token: 'Eᵉ', def: SYMBOL_DEFS['E\'e'] }];
-    if (text === 'Y\'T' || text === 'Y\'T') return [{ token: 'Yₙ', def: SYMBOL_DEFS['Yₙ'] }];
-    
-    const sortedTokens = Object.keys(SYMBOL_DEFS).sort((a, b) => b.length - a.length);
+  if (!text) return [];
+  
+  // Explicit manual overrides for edge cases where SVG strings differ from SYMBOL_DEFS keys
+  if (text === 'Eᵉ') return [{ token: 'Eᵉ', def: SYMBOL_DEFS["E'e"] }];
+  if (text === "Y'T" || text === "Y'T") return [{ token: 'Yₙ', def: SYMBOL_DEFS['Yₙ'] }];
+  
+  const sortedTokens = Object.keys(SYMBOL_DEFS).sort((a, b) => b.length - a.length);
   let t = text;
   let matches = [];
   for (let j = 0; j < sortedTokens.length; j++) {
     const token = sortedTokens[j];
-    const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escaped = token.replace(/[.*+?^$\{\}()|[\]\\]/g, '\\$&');
     const isWord = /^[a-zA-Z0-9_]+$/.test(token[0]) && /^[a-zA-Z0-9_]+$/.test(token[token.length - 1]);
     const regex = isWord 
       ? new RegExp('\\b' + escaped + '\\b', 'g') 
@@ -941,7 +951,7 @@ function wrapSymbols(htmlOrText) {
     let t = parts[i];
     for (let j = 0; j < sortedTokens.length; j++) {
       const token = sortedTokens[j];
-      const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const escaped = token.replace(/[.*+?^$\{\}()|[\]\\]/g, '\\$&');
       const isWord = /^[a-zA-Z0-9_]+$/.test(token[0]) && /^[a-zA-Z0-9_]+$/.test(token[token.length - 1]);
       const regex = isWord 
         ? new RegExp('\\b' + escaped + '\\b', 'g') 
@@ -956,12 +966,12 @@ function wrapSymbols(htmlOrText) {
     const def = SYMBOL_DEFS[token];
     if (result.includes('%%SYM' + j + '%%')) {
       const tooltip = def.meaning + '; ' + def.ref + '; ' + def.role;
-      result = result.split('%%SYM' + j + '%%').join('<span class="sym" data-sym="' + token + '" data-tooltip="' + tooltip + '">' + token + '</span>');
+      const displayStr = def.display || token;
+      result = result.split('%%SYM' + j + '%%').join('<span class="sym" data-sym="' + token + '" data-tooltip="' + tooltip + '">' + displayStr + '</span>');
     }
   }
   return result;
 }
-
 function svgTitle(textEl, label) {
   if (typeof document === 'undefined') return;
   if (!document.body || !document.body.classList) return;
@@ -1103,6 +1113,7 @@ function buildControls() {
   document.getElementById('speed').addEventListener('input', e => {
     state.speed = parseFloat(e.target.value);
     document.getElementById('speed-val').textContent = state.speed.toFixed(2);
+    render();
   });
 }
 
@@ -1218,7 +1229,7 @@ function applyGraphGrouping() {
   credDrillBox.className = 'drill-container';
   credDrillBox.id = 'drill-cred';
   credDrillBox.innerHTML = `
-    π* = 2% target. <strong>Max credibility (1 − θ)</strong> is the highest anchoring this central bank can reach — a structural property of how backward-looking expectations are (Blanchard's θ, shown here as its complement). <strong>Current credibility</strong> is how much of that ceiling is realised right now. Effective anchoring = Max credibility × Current credibility = (1 − θ) × cred.
+    <span class="barred">π</span> = 2% target. <strong>Max credibility (1 − θ)</strong> is the highest anchoring this central bank can reach — a structural property of how backward-looking expectations are (Blanchard's θ, shown here as its complement). <strong>Current credibility</strong> is how much of that ceiling is realised right now. Effective anchoring = Max credibility × Current credibility = (1 − θ) × cred.
     <br><strong>Allow de-anchoring:</strong> when on, current credibility moves on its own each period —
     it erodes if inflation sits far from target for a sustained stretch, and rebuilds toward the ceiling
     when inflation returns to target. You can also drag credibility yourself at any time. When off,
@@ -1599,13 +1610,34 @@ function drawUIP() {
   { const _t = el('text', { x: lx, y: labelY(ly, o), class: 'curve-label label-uip', 'text-anchor': lAnchor }, svg); _t.textContent = 'UIP'; svgTitle(_t, 'UIP'); }
 
   const cE = clamp(eq.E, o.xMin, o.xMax);
+  const ceps = clamp(eq.eps, o.xMin, o.xMax);
   const ci = clamp(eq.i, o.yMin, o.yMax);
+  
   el('circle', { cx: xScale(cE, o), cy: yScale(ci, o), r: 4.5, class: 'eq-point' }, svg);
   el('line', { x1: xScale(cE, o), x2: xScale(cE, o), y1: yScale(ci, o), y2: H - P.b, class: 'guide-line' }, svg);
-  let ex = xScale(cE, o);
-  let eAnchor = 'start';
-  if (ex > W - P.r - 12) { ex -= 4; eAnchor = 'end'; } else { ex += 3; }
-  { const _t = el('text', { x: ex, y: H - P.b - 4, class: 'axis-label', fill: '#666', 'text-anchor': eAnchor }, svg); _t.textContent = 'E'; svgTitle(_t, 'E'); }
+  
+  if (Math.abs(cE - ceps) > 0.001) {
+    el('circle', { cx: xScale(ceps, o), cy: yScale(ci, o), r: 3, fill: '#666' }, svg);
+    el('line', { x1: xScale(ceps, o), x2: xScale(ceps, o), y1: yScale(ci, o), y2: H - P.b, class: 'guide-line' }, svg);
+  }
+
+  if (Math.abs(cE - ceps) < 0.025) {
+    let ex = xScale(cE, o);
+    let eAnchor = 'start';
+    if (ex > W - P.r - 24) { ex -= 4; eAnchor = 'end'; } else { ex += 3; }
+    const _t = el('text', { x: ex, y: H - P.b - 4, class: 'axis-label', fill: '#666', 'text-anchor': eAnchor }, svg);
+    _t.textContent = 'E, ε'; svgTitle(_t, 'E, ε');
+  } else {
+    let ex = xScale(cE, o);
+    let eAnchor = 'start';
+    if (ex > W - P.r - 12) { ex -= 4; eAnchor = 'end'; } else { ex += 3; }
+    { const _t = el('text', { x: ex, y: H - P.b - 4, class: 'axis-label', fill: '#666', 'text-anchor': eAnchor }, svg); _t.textContent = 'E'; svgTitle(_t, 'E'); }
+
+    let epsX = xScale(ceps, o);
+    let epsAnchor = 'start';
+    if (epsX > W - P.r - 12) { epsX -= 4; epsAnchor = 'end'; } else { epsX += 3; }
+    { const _t = el('text', { x: epsX, y: H - P.b - 4, class: 'axis-label', fill: '#666', 'text-anchor': epsAnchor }, svg); _t.textContent = 'ε'; svgTitle(_t, 'ε'); }
+  }
 
   const handle_i = 0.06;
   const uipHandleE = state.E_e * (1 + handle_i) / (1 + state.i_star);
@@ -1651,7 +1683,7 @@ function drawPC() {
 
   const target_y = yScale(PI_TARGET, o);
   el('line', { x1: P.l, x2: W - P.r, y1: target_y, y2: target_y, class: 'curve-target' }, svg);
-  { const _t = el('text', { x: W - P.r - 4, y: target_y - 3, class: 'axis-label', 'text-anchor': 'end', fill: '#666' }, svg); _t.textContent = 'π*=2%'; svgTitle(_t, 'π*=2%'); }
+  { const _t = el('text', { x: W - P.r - 4, y: target_y - 3, class: 'axis-label', 'text-anchor': 'end', fill: '#666' }, svg); _t.innerHTML = '<tspan text-decoration="overline">π</tspan>=2%'; svgTitle(_t, 'pi_target=2%'); }
 
   const pe_y = yScale(state.pi_e, o);
   if (state.pi_e >= o.yMin && state.pi_e <= o.yMax) {
@@ -2120,7 +2152,8 @@ function drawEquations(eq) {
     const nxLine = (showNX && isUnl('NX')) ?
         `<span ${lne('NX')}><span class="eq-lbl">NX</span>`
       + `<span class="eq-sym">x₁·Y* − m₁·Y − n₁·(ε−1)</span> = `
-      + `<span class="eq-num">${f(x1,2)}(${f(s.Ystar,0)}) − ${f(s.m1,2)}(${f(eq.Y,1)}) − ${n1}(${f(eq.eps,3)}−1)</span> `
+      + `<span class="eq-num">${f(x1,2)}(${f(s.Ystar,0)}) − ${f(s.m1,2)}(${f(eq.Y,1)}) − ${n1}(${f(eq.eps,3)}−1)</span></span>`
+      + `<span class="eq-line" style="color:${c('NX')}" data-term="NX"><span class="eq-lbl"></span>`
       + `= <span class="eq-res">${NXd}</span>${endLine('NX')}`
       : '';
 
@@ -2190,6 +2223,9 @@ function drawEquations(eq) {
     if (isUnl('PC')) {
       const gap = (eq.Y - eq.Y_n) / eq.Y_n;
       const un = (s.m_struct + s.z_struct) / ALPHA_WS;
+      const anchoring = effectiveAnchoring(s);
+      const pi_e_drift = anchoring * (PI_TARGET - s.pi_e) + (1 - anchoring) * (eq.pi - s.pi_e);
+      const new_pi_e = clamp(s.pi_e + s.speed * pi_e_drift, -0.10, 0.60);
       pcEl.innerHTML = wrapSymbols(
         `<span ${lne('PC')}><span class="eq-lbl">uₙ</span>`
         + `<span class="eq-sym">(m+z)/α_WS</span> = `
@@ -2207,7 +2243,7 @@ function drawEquations(eq) {
         + `= <span class="eq-res">${fpc(eq.pi,1)}</span>${endLine('PC')}</span>`
         + (isUnl('gap') ? 
           `<span ${lne('gap')}><span class="eq-lbl">gap</span>`
-          + `<span class="eq-num">(Y−Yₙ)/Yₙ = ${fpc(gap,1)}</span></span>` : '')
+          + `<span class="eq-num">(Y−Yₙ)/Yₙ = ${fpc(gap,1)}</span>${endLine('gap')}` : '')
         + `<span class="eq-footnote">* shock is a tool addition — Blanchard's eq. 9.3 has none. See the Model Textbook Correspondence for why it is included.</span>`
       );
     } else {
@@ -2223,19 +2259,19 @@ function drawEquations(eq) {
       html += `<span ${lne('fisher')}><span class="eq-lbl" style="margin-right:8px;">Fisher</span>`
         + `<span class="eq-sym">r = i − πᵉ</span> = `
         + `<span class="eq-num">${fpc(eq.i,2)} − ${fpc(s.pi_e,1)}</span> `
-        + `= <span class="eq-res">${fpc(r,2)}</span></span>`;
+        + `= <span class="eq-res">${fpc(r,2)}</span><span class="eq-ref">(${EQ_REF['fisher']})</span></span>`;
     }
     if (isUnl('P_prime')) {
       html += `<span ${lne('P_prime')}><span class="eq-lbl">P′</span>`
         + `<span class="eq-sym">P(1 + π·speed)</span> = `
         + `<span class="eq-num">${f(s.P,3)}(1 + ${fpc(eq.pi,1)}·${f(s.speed,2)})</span> `
-        + `= <span class="eq-res">${f(s.P*(1+eq.pi*s.speed),3)}</span></span>`;
+        + `= <span class="eq-res">${f(s.P*(1+eq.pi*s.speed),3)}</span><span class="eq-ref">(${EQ_REF['P_prime']})</span></span>`;
     }
     if (isUnl('P_star_prime') && openOn()) {
       html += `<span ${lne('P_star_prime')}><span class="eq-lbl">P*′</span>`
         + `<span class="eq-sym">P*(1 + π*·speed)</span> = `
         + `<span class="eq-num">${f(s.P_star || 1,3)}(1 + ${fpc(PI_TARGET,1)}·${f(s.speed,2)})</span> `
-        + `= <span class="eq-res">${f((s.P_star || 1)*(1+PI_TARGET*s.speed),3)}</span> (foreign)</span>`;
+        + `= <span class="eq-res">${f((s.P_star || 1)*(1+PI_TARGET*s.speed),3)}</span> (foreign)<span class="eq-ref">(${EQ_REF['P_star_prime']})</span></span>`;
     }
     if (isUnl('Ee_prime') && openOn()) {
       html += `<span ${lne('Ee_prime')}><span class="eq-lbl">Eᵉ′</span>`
@@ -2243,7 +2279,7 @@ function drawEquations(eq) {
         + `<span ${lne('Ee_prime')}><span class="eq-lbl"></span>`
         + `= <span class="eq-num">(1−0.4·${f(s.speed,2)})(${f(s.E_e,3)}) + 0.4·${f(s.speed,2)}(${f(eq.E,3)})</span></span>`
         + `<span ${lne('Ee_prime')}><span class="eq-lbl"></span>`
-        + `= <span class="eq-res">${f(E_e_next,3)}</span> (adaptive)</span>`;
+        + `= <span class="eq-res">${f(E_e_next,3)}</span> (adaptive)<span class="eq-ref">(${EQ_REF['Ee_prime']})</span></span>`;
     }
     if (tutorialState.unlocked.has('PC')) {
       const gap        = (eq.Y - eq.Y_n) / eq.Y_n;
@@ -2260,14 +2296,15 @@ function drawEquations(eq) {
         + `<span class="eq-line" style="color:${c('MP')}" data-term="MP"><span class="eq-lbl"></span>`
         + `<span${op}>= </span><span class="eq-num"${op}>${fpc(neutral_i,1)} + ${f(s.phi,1)}(${fpc(eq.pi-PI_TARGET,1)}) + 0.25(${fpc(gap,1)})</span></span>`
         + `<span class="eq-line" style="color:${c('MP')}" data-term="MP"><span class="eq-lbl"></span>`
-        + `<span${op}>= </span><span class="eq-res"${op}>${fpc(taylor_i,2)}</span>${offTag}</span>`;
+        + `<span${op}>= </span><span class="eq-res"${op}>${fpc(taylor_i,2)}</span>${offTag}<span class="eq-ref">(${EQ_REF['taylor']})</span></span>`;
+    }
+    if (html) {
+      html += `<span class="eq-footnote">* tool addition or modification — no verbatim Blanchard equation. See the Model Textbook Correspondence (§7.8 price/expectations dynamics; §5.5 interest smoothing).</span>`;
     }
     tsEl.innerHTML = wrapSymbols(html);
   }
 }
 
-// -------------------------------------------------------------------------
-// Master render
 // -------------------------------------------------------------------------
 function render() {
   const eq = solve(state);
@@ -2444,7 +2481,7 @@ const SCENARIOS = [
     id: 'taylorPrinciple',
     label: '1. The Taylor Principle',
     narrative: 'Taylor rule ON with φ = 1.5 and partially-anchored expectations (θ=0.75), so expectations can actually move. Apply the oil shock and step: with φ = 1.5 the bank responds more than one-for-one and inflation comes smoothly back to the 2% target within the medium run. Then—without resetting—lower φ to 0.5 and shock again. Now the bank is too passive: the rate is cut to the ZLB floor and pinned there for several periods, expectations de-anchor (watch the warning chip), and the return to target takes far longer and oscillates. The contrast between the two φ settings is the Taylor principle.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.75, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0, theta: 0.75, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'expectationsDeAnchored',
@@ -2462,19 +2499,19 @@ const SCENARIOS = [
     id: 'exchangeRateDisinflation',
     label: '3. Exchange-Rate Disinflation',
     narrative: 'Taylor OFF, expectations mostly anchored (θ=0.3). Cut the policy rate to 1%. UIP triggers a nominal depreciation; net exports surge and Y rises above Yₙ. Over time prices climb relative to foreign, the real exchange rate appreciates, and Y drifts back. A temporary stimulus from a weak currency — and because i is held below i* indefinitely, inflation settles slightly above 2% rather than at it.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.01, i: 0.01, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.3, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.01, i: 0.01, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0, theta: 0.3, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'twinDeficits',
     label: '4. Twin Deficits & Real Appreciation',
     narrative: 'Taylor OFF, expectations mostly anchored (θ=0.3). A modest fiscal expansion (G raised from 20 to 22, a 10% rise) with no monetary offset drives up domestic prices. The real exchange rate appreciates, crowding out net exports until Y returns to Yₙ and inflation returns to 2% — leaving ε permanently higher (≈1.03). Watch ε climb on the time series.',
-    state: { G: 22, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.3, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
+    state: { G: 22, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0, theta: 0.3, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, history: [] }
   },
   {
     id: 'globalRateHike',
     label: '5. Global Rate Hike Spillover',
     narrative: 'Foreign rates jump to 6%. UIP wants a weaker domestic currency unless the CB matches the hike. With Taylor ON, the domestic rule sees the inflationary depreciation and hikes i. Because the rule anchors to the structurally computed neutral rate, the economy converges cleanly: i settles at the new world rate (6%), inflation returns to the 2% target, and the lasting cost is a persistently weaker nominal E. The lesson: under UIP, a small open economy with a credible rule ends up importing the world interest rate — the exchange rate, not the inflation rate, absorbs the shock.',
-    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.06, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
+    state: { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.06, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, alpha: 0.3, z: 0, z_pulse: 0, theta: 0, cred: 1.0, deanchor_on: true, phi: 1.5, taylor_on: true, speed: 0.5, period: 0, history: [] }
   }
 ];
 

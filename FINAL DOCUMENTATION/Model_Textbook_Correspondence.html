@@ -397,12 +397,10 @@
         <ol>
           <li><a href="#equation-index">Equation Index</a></li>
           <li><a href="#scope-and-anchoring">Scope and anchoring</a></li>
-          <li><a href="#blanchard-s-building-blocks-with-equation-numbers">Blanchard's building blocks (with equation
-              numbers)</a></li>
-          <li><a href="#is-equilibrium">Derivation of the closed-economy IS coefficients (symbolic)</a></li>
+          <li><a href="#is-equilibrium">The closed-economy IS equation (reduced form)</a></li>
+          <li><a href="#is-coefficients-block">IS coefficients and multipliers</a></li>
           <li><a href="#numeric-check-case-baseline-calibration">Numeric check-case (baseline calibration)</a></li>
-          <li><a href="#the-lm-mp-block-money-market-and-the-policy-rate">The LM / MP block (money market and the policy
-              rate)</a></li>
+          <li><a href="#the-lm-mp-block-money-market-and-the-policy-rate">The LM / MP block (the policy rate)</a></li>
           <li><a href="#the-phillips-curve-block-inflation">The Phillips-curve block (inflation)</a></li>
           <li><a href="#the-open-economy-block-exchange-rate-and-foreign-output">The open-economy block (exchange rate
               and foreign output)</a></li>
@@ -436,7 +434,7 @@
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Closed Multiplier</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">k = 1 / (1 − c₁ − d₁)</td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#is-coefficients">§2.5</a></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#is-coefficients">§3.1</a></td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-lin">LINEARISED</span></td>
           </tr>
           <tr>
@@ -598,14 +596,14 @@
         the rest of this document matters — each piece is anchored to its own source even though the assembled model
         has no single textbook home.</p>
 
-      <p>The block-by-block correspondence follows. §2 covers the closed-economy IS block (derivation, coefficients,
-        and the §4 numeric check-case); §5 the LM/MP block; §6 the Phillips curve; §7 the open-economy exchange-rate
-        and foreign-output channel.</p>
+      <p>The block-by-block correspondence follows. §2 derives the closed-economy IS block from Blanchard's building blocks; §3 collects its coefficients and
+        multipliers; §4 is the numeric check-case; §5 the LM/MP block; §6 the Phillips curve; §7 the open-economy
+        exchange-rate and foreign-output channel.</p>
       <h2 id="is-equilibrium"><span class="num">2</span> The Closed-Economy IS Equation (reduced form)</h2>
       <p class="eq" style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">Y = [1
         / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ r]</p>
       <p id="is-derivation" style="margin-top:20px; font-weight:600; color:var(--text);">Derivation from Blanchard's building blocks</p>
-      <p style="margin-top:-4px;">Each term of the reduced form above is one of Blanchard's standard building blocks. The subsections below take them in turn — consumption, investment, the real interest rate, and the equilibrium condition — then §2.5 collects the resulting coefficients.</p>
+      <p style="margin-top:-4px;">Each term of the reduced form above is one of Blanchard's standard building blocks. The subsections below take them in turn — consumption, investment, the real interest rate, and the equilibrium condition — then §3 collects the resulting coefficients.</p>
       <h3 id="consumption">2.1 Consumption — Chapter 3</h3>
       <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
           style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − <span
@@ -720,7 +718,8 @@
           <p>This is the accelerator-augmented version of Blanchard's eq. (3.8). The multiplier 1/(1 − c₁ − d₁)
             generalises his 1/(1 − c₁): the induced-spending propensity is now the sum c₁ + d₁, because both consumption
             and investment respond to output.</p>
-          <h3 id="is-coefficients">2.5 Coefficient table (symbolic)</h3>
+          <h2 id="is-coefficients-block"><span class="num">3</span> IS Coefficients and Multipliers</h2>
+      <h3 id="is-coefficients">3.1 Coefficient table (symbolic)</h3>
           <div style="overflow-x:auto;">
             <table
               style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
@@ -757,7 +756,7 @@
               </tr>
             </table>
           </div>
-          <h3>2.6 Why the tax multiplier is asymmetric</h3>
+          <h3>3.2 Why the tax multiplier is asymmetric</h3>
           <p>The tax multiplier −c₁/(1 − c₁ − d₁) carries d₁ in the denominator but only c₁ in the numerator. This is
             not an inconsistency. A tax change acts on disposable income, and in this model only consumption responds to
             disposable income; investment responds to output (Y), not to (Y − T). So the direct first-round impact of a
@@ -765,7 +764,7 @@
             both consumption and the investment accelerator as output falls (shared denominator 1 − c₁ − d₁).</p>
           <p>By contrast a spending change hits demand directly and fully (numerator 1), which is why |∂Y/∂T| < ∂Y/∂G
               and the balanced-budget multiplier is non-zero.</p>
-              <h3>2.7 The c₁ slider</h3>
+              <h3>3.3 The c₁ slider</h3>
               <p>Because every IS coefficient is a function of c₁, the tool exposes c₁ as a live slider (a behavioural
                 primitive). Moving c₁ with d₁ held fixed recomputes the multiplier, the G coefficient, the T
                 coefficient, and the r coefficient simultaneously.</p>
@@ -838,7 +837,7 @@
               <p><strong>The Role of Inflation on Output:</strong> In the pre-PC stage (the short run), prices are fixed and there is no inflation. Because there is no inflation, the real interest rate is equal to the full nominal rate (r = i = 3%). This higher real rate makes borrowing more expensive, which lowers investment and keeps output below potential (at Y = 90).</p>
               <p>Once the Phillips Curve unlocks (the medium run), the economy experiences a positive inflation rate of 2%. This positive inflation mathematically keeps the real interest rate lower than the nominal rate (r = 3% − 2% = 1%). This lower real rate directly spurs higher investment, which in turn boosts the overall output of the economy back up to its potential (Yₙ = 100).</p>
               <h2 id="the-lm-mp-block-money-market-and-the-policy-rate"><span class="num">5</span> The LM / MP block
-                (money market and the policy rate)</h2>
+                (the policy rate)</h2>
               <p
                 style="margin-bottom:4px; margin-top:8px; font-weight:600; color:#888; font-size:0.9em; text-transform:uppercase; letter-spacing:0.05em;">
                 LM</p>
@@ -972,8 +971,13 @@
                   style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">i = <span
                     style="color:var(--accent); font-weight:bold;">ρ·i_prev + (1−ρ)</span>·(ī + φ(π − <span class="barred">π</span>) + ψ(Y −
                   Yₙ)/Yₙ)</span></h4>
-              <p>The tool includes interest-rate smoothing (RHO_TAYLOR = 0.75 in the unified tool; the retired
-                closed-economy build used 0.8), i.e. the policy rate partially adjusts toward its rule-implied target
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">i = ρ·i₋₁ + (1 − ρ)·(ī + φ(π − <span class="barred">π</span>) + ψ(Y − Yₙ)/Yₙ), &nbsp; ρ = 0.75</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">iₜ = ī + a(πₜ − <span class="barred">π</span>) − b(uₜ − uₙ) &nbsp;(Ch. 23) — no lagged-rate term</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-add">TOOL ADDITION</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Partial adjustment toward the rule-implied target each period. Blanchard's stated rule sets the rate outright; smoothing is a standard real-world extension retained here for numerical stability (see below).</span></div>
+              </div>
+              <p>The tool includes interest-rate smoothing (ρ = 0.75), i.e. the policy rate partially adjusts toward its rule-implied target
                 each period: iₜ = ρ·iₜ₋₁ + (1−ρ)·i. This is a standard real-world extension but is not part of
                 Blanchard's stated Ch. 23 rule, which has no lagged-rate term. It is retained deliberately to ensure model stability: without this gradual adjustment, a central bank reacting instantly to current inflation and output gaps can trigger severe period-to-period interest rate oscillations that would destabilise the interactive tool. This smoothing acts as a vital anchor for the engine's dynamics, making it a necessary and intentional departure from the textbook rule.</p>
               <h3>5.6 LM/MP block summary</h3>
@@ -1510,7 +1514,7 @@
                         style="color:var(--accent); font-weight:bold;">x₁(Y*−Y₀)</span> ]</span></h4>
                   <p>The term +x₁·k_open·(Y* − Y₀) gives the spillover from foreign output. A fall in foreign output Y* (a
                     foreign recession) reduces domestic exports, cutting demand, amplified through the open multiplier.
-                    At x₁ = 0.3 and k_open = 1.43, a unit drop in Y lowers domestic output by 0.43. Y* is exposed as a
+                    At x₁ = 0.3 and k_open = 1.43, a unit drop in Y* lowers domestic output by 0.43. Y* is exposed as a
                     control so a student can run a foreign-recession spillover directly.</p>
                   <p>This unlocks a genuine three-channel external-shock lesson: a foreign recession (Y* down) and a
                     real appreciation (ε up) both reduce net exports and can be compared as substitute sources of an
