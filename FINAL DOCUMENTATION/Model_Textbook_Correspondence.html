@@ -235,6 +235,23 @@
       overflow-x: auto;
     }
 
+    .barred {
+      text-decoration: overline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0;
+    }
+
+    .eq-inline {
+      font-family: var(--font-mono);
+      font-size: 0.92em;
+      background: var(--surface-2);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 0.5px 5px;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
     .eq .ref {
       color: var(--ink-4);
       font-family: var(--font-ui);
@@ -349,65 +366,15 @@
     a {
       color: var(--accent);
     }
-
-    .corr-card {
-      border: 1px solid var(--rule);
-      border-left: 3px solid var(--accent);
-      border-radius: 6px;
-      padding: 10px 14px;
-      margin: 12px 0 18px;
-      background: var(--surface-2);
-    }
-
-    .corr-row {
-      display: flex;
-      gap: 12px;
-      margin: 4px 0;
-      align-items: baseline;
-    }
-
-    .corr-lab {
-      flex: 0 0 96px;
-      font-size: 0.7em;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: var(--rule-strong);
-      text-transform: uppercase;
-    }
-
-    .corr-val {
-      flex: 1;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 1px 9px;
-      border-radius: 10px;
-      font-size: 0.72em;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      vertical-align: middle;
-    }
-
-    .badge-exact {
-      background: #E6F4EA;
-      color: #137333;
-    }
-
-    .badge-lin {
-      background: #E8F0FE;
-      color: #1A56B8;
-    }
-
-    .badge-add {
-      background: #FEF3E0;
-      color: #B26A00;
-    }
-
-    .badge-dev {
-      background: #FDECEA;
-      color: #C5221F;
-    }
+    .corr-card { border:1px solid var(--rule); border-left:3px solid var(--accent); border-radius:6px; padding:10px 14px; margin:12px 0 18px; background:var(--surface-2); }
+    .corr-row { display:flex; gap:12px; margin:4px 0; align-items:baseline; }
+    .corr-lab { flex:0 0 96px; font-size:0.7em; font-weight:700; letter-spacing:0.08em; color:var(--rule-strong); text-transform:uppercase; }
+    .corr-val { flex:1; }
+    .badge { display:inline-block; padding:1px 9px; border-radius:10px; font-size:0.72em; font-weight:700; letter-spacing:0.05em; vertical-align:middle; }
+    .badge-exact { background:#E6F4EA; color:#137333; }
+    .badge-lin   { background:#E8F0FE; color:#1A56B8; }
+    .badge-add   { background:#FEF3E0; color:#B26A00; }
+    .badge-dev   { background:#FDECEA; color:#C5221F; }
   </style>
 </head>
 
@@ -434,7 +401,7 @@
               numbers)</a></li>
           <li><a href="#is-equilibrium">Derivation of the closed-economy IS coefficients (symbolic)</a></li>
           <li><a href="#numeric-check-case-baseline-calibration">Numeric check-case (baseline calibration)</a></li>
-          <li><a href="#the-lm-mp-block-money-market-and-the-policy-rate">The LM block (money market and the policy
+          <li><a href="#the-lm-mp-block-money-market-and-the-policy-rate">The LM / MP block (money market and the policy
               rate)</a></li>
           <li><a href="#the-phillips-curve-block-inflation">The Phillips-curve block (inflation)</a></li>
           <li><a href="#the-open-economy-block-exchange-rate-and-foreign-output">The open-economy block (exchange rate
@@ -464,53 +431,45 @@
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">Y = [1 / (1 − c₁ − d₁)] · [c₀ + d₀
               + G − c₁ T − d₂ r]</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#is-equilibrium">§2</a></td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span
-                class="badge badge-lin">LINEARISED</span></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-lin">LINEARISED</span></td>
           </tr>
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Closed Multiplier</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">k = 1 / (1 − c₁ − d₁)</td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#is-coefficients">§2.6</a></td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span
-                class="badge badge-lin">LINEARISED</span></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#is-coefficients">§2.5</a></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-lin">LINEARISED</span></td>
           </tr>
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Open Multiplier</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">k_o = 1 / (1 − c₁ − d₁ + m₁)</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#reduced-form-coefficients">§7.4</a>
             </td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span
-                class="badge badge-lin">LINEARISED</span></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-lin">LINEARISED</span></td>
           </tr>
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Consumption</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">C = c₀ + c₁(Y − T)</td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#consumption">§2.2</a></td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-exact">EXACT</span>
-            </td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#consumption">§2.1</a></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-exact">EXACT</span></td>
           </tr>
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Investment</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">I = d₀ + d₁Y − d₂r</td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#investment">§2.3</a></td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span
-                class="badge badge-lin">LINEARISED</span></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#investment">§2.2</a></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-lin">LINEARISED</span></td>
           </tr>
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Net Exports</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">NX = x₁Y* − m₁Y − n₁(ε−1)</td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#linearising-net-exports">§7.3</a>
-            </td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span
-                class="badge badge-lin">LINEARISED</span></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#linearising-net-exports">§7.3</a></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-lin">LINEARISED</span></td>
           </tr>
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Taylor Rule</td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">i = ρ·i_prev + (1−ρ)·(ī + φ(π − π̄)
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">i = ρ·i_prev + (1−ρ)·(ī + φ(π − <span class="barred">π</span>)
               + ψ(Y − Yₙ)/Yₙ)</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#taylor-rule">§5.4</a></td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-add">TOOL
-                ADDITION</span></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-add">TOOL ADDITION</span></td>
           </tr>
           <!-- Open IS -->
           <tr>
@@ -521,8 +480,7 @@
               [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + x₁(Y*−Y₀) ]</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#reduced-form-coefficients">§7.4</a>
             </td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span
-                class="badge badge-lin">LINEARISED</span></td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-lin">LINEARISED</span></td>
           </tr>
           <!-- UIP -->
           <tr>
@@ -531,8 +489,7 @@
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Uncovered Interest Parity (UIP)</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">E = Eᵉ(1+i)/(1+i*)</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#uip">§7.1</a></td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-exact">EXACT</span>
-            </td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-exact">EXACT</span></td>
           </tr>
           <!-- PC -->
           <tr>
@@ -543,70 +500,123 @@
               shock</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a
                 href="#the-phillips-curve-block-inflation">§6</a></td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-dev">DEVIATION</span>
-            </td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-dev">DEVIATION</span></td>
           </tr>
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Phillips Curve Component</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">π = πᵉ + (α / Yₙ)(Y − Yₙ) +
               shock</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#pc-conversion">§6.3</a></td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-dev">DEVIATION</span>
-            </td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-dev">DEVIATION</span></td>
           </tr>
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Natural Rate of Unemployment</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">uₙ = (m + z_struct) / α_WS</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#natural-rate">§6.2</a></td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-exact">EXACT</span>
-            </td>
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-exact">EXACT</span></td>
           </tr>
         </table>
       </div>
-      <p style="font-size:0.9em; line-height:2;"><span class="badge badge-exact">EXACT</span> Blanchard&#8217;s
-        equation, symbol for symbol.&ensp;
-        <span class="badge badge-lin">LINEARISED</span> Blanchard&#8217;s functional form given linear coefficients,
-        following his own end-of-chapter practice.&ensp;
+      <p style="font-size:0.9em; line-height:2;"><span class="badge badge-exact">EXACT</span> Blanchard&#8217;s equation, symbol for symbol.&ensp;
+        <span class="badge badge-lin">LINEARISED</span> Blanchard&#8217;s functional form given linear coefficients, following his own end-of-chapter practice.&ensp;
         <span class="badge badge-add">TOOL ADDITION</span> a term or mechanism Blanchard does not have.&ensp;
-        <span class="badge badge-dev">DEVIATION</span> a deliberate departure from the textbook&#8217;s own account,
-        explained in its section.
-      </p>
+        <span class="badge badge-dev">DEVIATION</span> a deliberate departure from the textbook&#8217;s own account, explained in its section.</p>
 
       <h2 id="scope-and-anchoring"><span class="num">1</span> Scope and anchoring</h2>
-      <p>The tool is a single progressive teaching application; the closed and open economy are two stages of one
-        engine, each anchored to a different part of Blanchard:</p>
+      <p>The tool is a single progressive teaching application, not four separate models. One engine runs throughout;
+        a stage selector unlocks blocks in sequence, and two internal gates decide what that engine actually computes
+        at each step. Everything below — the IS reduced form, the policy rate, the Phillips curve, the exchange rate —
+        is the same code; the stages simply switch parts of it on and off.</p>
+
+      <h3 id="the-two-gates">1.1 The two gates that drive every stage</h3>
+      <p>The whole progression is governed by exactly two switches in the engine. Understanding them makes every stage
+        transition below predictable rather than arbitrary:</p>
       <ul>
-        <li>Closed-economy stage: anchored to Chapter 9 (the IS-LM-PC model), which is where Blanchard links the goods
-          market, the interest rate, and inflation. The IS block derives from eq. (9.1).</li>
+        <li><strong>The open/closed gate</strong> (<span class="eq-inline">openOn()</span>, true when the current stage's
+          economy is <em>open</em>). When open, the exchange-rate channel is live: the net-export terms
+          x₁Y* − n₁(ε−1) are added to the IS equation and the UIP panel is active. When closed, those trade terms are
+          dropped and the exchange-rate machinery is inert. This gate <strong>oscillates</strong> across the four
+          stages — off, on, off, on — which is why the exchange rate appears, disappears, and returns.</li>
+        <li><strong>The inflation gate</strong> (<span class="eq-inline">effectivePiE()</span>, true once the Phillips-curve
+          block is unlocked). It decides whether the model uses expected inflation at all. While locked, the engine
+          computes the real rate as <span class="eq-inline">r = i</span> — Blanchard's fixed-price short run, where nominal and
+          real rates coincide. Once unlocked, it computes <span class="eq-inline">r = i − πᵉ</span> and the Fisher wedge opens.
+          Unlike the open/closed gate, this one <strong>latches</strong>: it turns on at stage 3 and stays on.</li>
       </ul>
-      <ul>
-        <li>Open-economy stage: the IS block and the exchange-rate channel are anchored to Chapters 18–19 (the
-          open-economy goods market and the IS relation with net exports), eq. (18.4); the Phillips-curve block is
-          carried over from Chapter 9. Blanchard has no single chapter combining an open-economy IS with a Phillips
-          curve, so this variant is an explicit synthesis of Ch. 18–19 (IS + UIP) and Ch. 9 (PC), documented as such
-          rather than transcribed from one chapter.</li>
-      </ul>
-      <p>§2 covers the closed-economy IS block (derivation, coefficients, and the §4 numeric check-case); §5 the LM/MP
-        block; §6 the Phillips curve; §7 the open-economy
-        exchange-rate and foreign-output channel. §8 is the consolidated implementation prompt.</p>
+      <p>The four stages are just the four combinations of these two gates that the syllabus walks through. Note the
+        order follows the <em>teaching</em> sequence, not Blanchard's chapter order: the exchange rate (Ch. 17–19) is
+        introduced before inflation (Ch. 9) because the open-economy IS is a natural second step from the closed IS,
+        whereas the Phillips curve is a larger conceptual jump. This is deliberate and is <em>not</em> a fidelity
+        error.</p>
+
+      <h3 id="the-four-stages">1.2 The four stages</h3>
+
+      <div class="corr-card">
+        <div class="corr-row"><span class="corr-lab">Stage 1</span><span class="corr-val"><strong>IS-LM</strong> &nbsp;·&nbsp; closed economy &nbsp;·&nbsp; <span class="eq-inline">r = i</span></span></div>
+        <div class="corr-row"><span class="corr-lab">Unlocked</span><span class="corr-val">Goods market (the Y = C + I + G equilibrium and multiplier) and the LM / policy-rate line.</span></div>
+        <div class="corr-row"><span class="corr-lab">Engine</span><span class="corr-val">Both gates <em>off</em>. No trade terms, no inflation: the IS equation is the closed reduced form and the real rate equals the nominal rate. This is Blanchard's Chapter 5 short-run IS-LM verbatim.</span></div>
+      </div>
+      <p>The starting point: a closed economy with fixed prices. Output is determined by the goods market and the
+        central bank's rate; there is no exchange rate and no inflation. Because prices are fixed, r = i and the
+        distinction between nominal and real rates has not yet appeared. At the baseline rate the goods market clears
+        below potential (Y ≈ 90 &lt; Yₙ = 100) — a genuine short-run result of r = i, not a calibration quirk (see §4.1).</p>
+
+      <div class="corr-card">
+        <div class="corr-row"><span class="corr-lab">Stage 2</span><span class="corr-val"><strong>IS-LM-UIP</strong> &nbsp;·&nbsp; open economy &nbsp;·&nbsp; <span class="eq-inline">r = i</span></span></div>
+        <div class="corr-row"><span class="corr-lab">Unlocks</span><span class="corr-val">The exchange-rate channel: uncovered interest parity (UIP) and net exports.</span></div>
+        <div class="corr-row"><span class="corr-lab">Engine</span><span class="corr-val">Open/closed gate flips <em>on</em>; inflation gate still off. Trade terms x₁Y* − n₁(ε−1) enter the IS equation and the UIP panel activates. Prices remain fixed, so r = i still holds.</span></div>
+      </div>
+      <p>The economy opens. The interest rate now also drives the exchange rate through UIP (a higher domestic rate
+        appreciates the currency), and the exchange rate feeds back into output through net exports. This is the
+        open-economy IS of Chapters 18–19. Inflation is still absent — the point of this stage is to isolate the
+        exchange-rate mechanism before adding price dynamics on top of it. The open multiplier is smaller than the
+        closed one (import leakage), so the IS curve is steeper here than in stage 1.</p>
+
+      <div class="corr-card">
+        <div class="corr-row"><span class="corr-lab">Stage 3</span><span class="corr-val"><strong>IS-LM-PC</strong> &nbsp;·&nbsp; closed economy &nbsp;·&nbsp; <span class="eq-inline">r = i − πᵉ</span></span></div>
+        <div class="corr-row"><span class="corr-lab">Unlocks</span><span class="corr-val">The Phillips-curve block: expected inflation πᵉ, the Fisher relation, and the natural rate Yₙ as an active target.</span></div>
+        <div class="corr-row"><span class="corr-lab">Engine</span><span class="corr-val">Inflation gate latches <em>on</em> (permanently); open/closed gate flips back <em>off</em>. The engine switches to r = i − πᵉ, so the Fisher line appears for the first time. The exchange rate is locked again and greyed out — the trade terms leave the IS equation.</span></div>
+      </div>
+      <p>Prices come alive. The model returns to a closed economy so the student can study inflation and the
+        nominal–real rate distinction without the exchange rate as a confound. This is the stage where the engine's
+        real-rate calculation genuinely changes: expected inflation now drives a wedge between the nominal rate the
+        central bank sets and the real rate that determines output, and the Phillips curve links the output gap to
+        inflation. With the real rate free to fall below the nominal rate, output can now reach potential (Y returns
+        to 100). This is Blanchard's Chapter 9 IS-LM-PC model. UIP is switched off here deliberately: it returns,
+        unchanged, at stage 4.</p>
+
+      <div class="corr-card">
+        <div class="corr-row"><span class="corr-lab">Stage 4</span><span class="corr-val"><strong>Full model (IS-LM-PC-UIP)</strong> &nbsp;·&nbsp; open economy &nbsp;·&nbsp; <span class="eq-inline">r = i − πᵉ</span> &nbsp;<span style="color:var(--sub-text);">(in-app label: "Full Model")</span></span></div>
+        <div class="corr-row"><span class="corr-lab">Unlocks</span><span class="corr-val">Nothing new — both gates are now on simultaneously for the first time.</span></div>
+        <div class="corr-row"><span class="corr-lab">Engine</span><span class="corr-val">Open/closed gate flips back <em>on</em> while the inflation gate stays latched. Every block is live at once: trade terms in the IS equation, UIP active, r = i − πᵉ, and the Phillips curve running.</span></div>
+      </div>
+      <p>The complete open-economy model with inflation. The exchange rate returns — but now it interacts with the
+        Phillips curve, so a policy change moves the real rate, the exchange rate, net exports, output, and inflation
+        together. This is the synthesis Blanchard never presents in a single chapter: it combines the open-economy IS
+        and UIP of Chapters 18–19 with the Phillips curve of Chapter 9. It is documented here as an explicit synthesis
+        rather than transcribed from one place in the text, which is exactly why the block-by-block correspondence in
+        the rest of this document matters — each piece is anchored to its own source even though the assembled model
+        has no single textbook home.</p>
+
+      <p>The block-by-block correspondence follows. §2 covers the closed-economy IS block (derivation, coefficients,
+        and the §4 numeric check-case); §5 the LM/MP block; §6 the Phillips curve; §7 the open-economy exchange-rate
+        and foreign-output channel.</p>
       <h2 id="is-equilibrium"><span class="num">2</span> The Closed-Economy IS Equation (reduced form)</h2>
       <p class="eq" style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">Y = [1
         / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ r]</p>
-      <h3 id="is-derivation">2.1 Derivation from Blanchard's building blocks</h3>
-      <h3 id="consumption">2.2 Consumption — Chapter 3</h3>
+      <p id="is-derivation" style="margin-top:20px; font-weight:600; color:var(--text);">Derivation from Blanchard's building blocks</p>
+      <p style="margin-top:-4px;">Each term of the reduced form above is one of Blanchard's standard building blocks. The subsections below take them in turn — consumption, investment, the real interest rate, and the equilibrium condition — then §2.5 collects the resulting coefficients.</p>
+      <h3 id="consumption">2.1 Consumption — Chapter 3</h3>
       <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
           style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − <span
             style="color:var(--accent); font-weight:bold;">c₁</span> − d₁)] · [<span
             style="color:var(--accent); font-weight:bold;">c₀</span> + d₀ + G − <span
             style="color:var(--accent); font-weight:bold;">c₁ T</span> − d₂ r]</span></h4>
-      <div class="corr-card">
-        <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">C = c₀ + c₁(Y − T)</span>
-        </div>
-        <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">C = c₀ + c₁(Y − T)
-            &nbsp;(eq. 3.3)</span></div>
-        <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-              class="badge badge-exact">EXACT</span></span></div>
-      </div>
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">C = c₀ + c₁(Y − T)</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">C = c₀ + c₁(Y − T) &nbsp;(eq. 3.3)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-exact">EXACT</span></span></div>
+              </div>
       <p>Blanchard's consumption function is the linear relation</p>
       <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
         <div style="flex: 1;"></div>
@@ -622,24 +632,18 @@
       <p>c₁ is the propensity to consume, restricted to 0 < c₁ < 1 (eq. 3.2 discussion). Blanchard's empirical estimate
           for the United States is around 0.6, with the Appendix 3 regressions yielding 0.5 and 0.8 (Ch. 3, “The size of
           the multiplier”).</p>
-          <h3 id="investment">2.3 Investment — Chapters 3, 5, 9</h3>
+          <h3 id="investment">2.2 Investment — Chapters 3, 5, 9</h3>
           <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
               style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − c₁ − <span
                 style="color:var(--accent); font-weight:bold;">d₁</span>)] · [c₀ + <span
                 style="color:var(--accent); font-weight:bold;">d₀</span> + G − c₁ T − <span
                 style="color:var(--accent); font-weight:bold;">d₂ r</span>]</span></h4>
-          <div class="corr-card">
-            <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">I = d₀ + d₁Y − d₂r</span>
-            </div>
-            <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">I = I(Y, i) (eq. 5.1);
-                I(Y, r + x) in eq. 9.1 — functional form only, no coefficients</span></div>
-            <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                  class="badge badge-lin">LINEARISED</span></span></div>
-            <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Linear coefficients follow
-                Blanchard’s own Ch. 18 Problem 7 practice (I = d₀ + d₁Y). d₂ is the tool’s linear rate-sensitivity —
-                Blanchard describes the channel but never assigns it a coefficient. Risk premium x = 0 at
-                baseline.</span></div>
-          </div>
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">I = d₀ + d₁Y − d₂r</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">I = I(Y, i) (eq. 5.1); I(Y, r + x) in eq. 9.1 — functional form only, no coefficients</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-lin">LINEARISED</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Linear coefficients follow Blanchard’s own Ch. 18 Problem 7 practice (I = d₀ + d₁Y). d₂ is the tool’s linear rate-sensitivity — Blanchard describes the channel but never assigns it a coefficient. The risk premium is not part of the model, so x = 0 throughout.</span></div>
+              </div>
           <p>Chapter 3 takes investment as exogenous (I = Ī, eq. 3.4) purely as a simplification, explicitly flagged as
             temporary: Blanchard notes a firm facing higher sales “might well decide they need more machines” and
             promises a richer treatment in Chapter 5. From Chapter 5 onward investment depends on both output and the
@@ -659,20 +663,16 @@
             dropped only in Chapter 3, before the interest rate exists. We linearise as I = d₀ + d₁ Y − d₂ · r, where d₁
             is the output (accelerator) sensitivity and d₂ the real-rate sensitivity. The linear form I = d₀ + d₁ Y is
             exactly Blanchard's own in Ch. 18, Problem 7.</p>
-          <h3>2.4 The real interest rate — Chapter 6</h3>
+          <h3>2.3 The real interest rate — Chapter 6</h3>
           <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
               style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = [1 / (1 − c₁ − d₁)] · [c₀ +
               d₀ + G − c₁ T − d₂ <span style="color:var(--accent); font-weight:bold;">r</span>]</span></h4>
-          <div class="corr-card">
-            <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">r = i − πᵉ</span></div>
-            <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">r ≈ i − πᵉ &nbsp;(eq.
-                6.4)</span></div>
-            <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                  class="badge badge-exact">EXACT</span></span></div>
-            <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Pre-PC stages run r = i,
-                exactly Blanchard’s fixed-price short run; the Fisher wedge switches on with the PC block (see
-                §4.1).</span></div>
-          </div>
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">r = i − πᵉ</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">r ≈ i − πᵉ &nbsp;(eq. 6.4)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-exact">EXACT</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Pre-PC stages run r = i, exactly Blanchard’s fixed-price short run; the Fisher wedge switches on with the PC block (see §4.1).</span></div>
+              </div>
           <p>The rate entering spending decisions is the real rate, related to the nominal rate by the Fisher
             approximation</p>
           <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
@@ -681,18 +681,16 @@
             <div style="flex: 1; text-align: right; color: #888;">(eq. 6.4)</div>
           </div>
           <p>The tool's Fisher step r = i − πᵉ matches eq. (6.4) exactly.</p>
-          <h3>2.5 Equilibrium condition — Chapter 3 / Chapter 9</h3>
+          <h3>2.4 Equilibrium condition — Chapter 3 / Chapter 9</h3>
           <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
               style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;"><span
                 style="color:var(--accent); font-weight:bold;">Y =</span> [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂
               r]</span></h4>
-          <div class="corr-card">
-            <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">Y = C + I + G</span></div>
-            <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">Y = C + I + G &nbsp;(eq.
-                3.1 / 9.1)</span></div>
-            <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                  class="badge badge-exact">EXACT</span></span></div>
-          </div>
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">Y = C + I + G</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">Y = C + I + G &nbsp;(eq. 3.1 / 9.1)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-exact">EXACT</span></span></div>
+              </div>
           <p>Goods-market equilibrium requires production equal demand:</p>
           <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
             <div style="flex: 1;"></div>
@@ -707,8 +705,7 @@
             <div style="flex: 1; text-align: right; color: #888;">(eq. 9.1)</div>
           </div>
 
-          <p>Substitute the linear forms into the equilibrium condition Y = Z (eq. 3.6), setting the risk premium x = 0
-            for the baseline tool:</p>
+          <p>Substitute the linear forms into the equilibrium condition Y = Z (eq. 3.6). The risk premium is not part of the model, so x = 0 throughout:</p>
           <p>Y = c₀ + c₁(Y − T) + d₀ + d₁ Y − d₂ r + G</p>
           <p>Collect the terms in Y on the left (this is Blanchard's own “move c₁Y to the left, reorganise the right”
             step from the Ch. 3 derivation of eq. 3.8):</p>
@@ -723,7 +720,7 @@
           <p>This is the accelerator-augmented version of Blanchard's eq. (3.8). The multiplier 1/(1 − c₁ − d₁)
             generalises his 1/(1 − c₁): the induced-spending propensity is now the sum c₁ + d₁, because both consumption
             and investment respond to output.</p>
-          <h3 id="is-coefficients">2.6 Coefficient table (symbolic)</h3>
+          <h3 id="is-coefficients">2.5 Coefficient table (symbolic)</h3>
           <div style="overflow-x:auto;">
             <table
               style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
@@ -760,7 +757,7 @@
               </tr>
             </table>
           </div>
-          <h3>2.7 Why the tax multiplier is asymmetric</h3>
+          <h3>2.6 Why the tax multiplier is asymmetric</h3>
           <p>The tax multiplier −c₁/(1 − c₁ − d₁) carries d₁ in the denominator but only c₁ in the numerator. This is
             not an inconsistency. A tax change acts on disposable income, and in this model only consumption responds to
             disposable income; investment responds to output (Y), not to (Y − T). So the direct first-round impact of a
@@ -768,7 +765,7 @@
             both consumption and the investment accelerator as output falls (shared denominator 1 − c₁ − d₁).</p>
           <p>By contrast a spending change hits demand directly and fully (numerator 1), which is why |∂Y/∂T| < ∂Y/∂G
               and the balanced-budget multiplier is non-zero.</p>
-              <h3>2.8 The c₁ slider</h3>
+              <h3>2.7 The c₁ slider</h3>
               <p>Because every IS coefficient is a function of c₁, the tool exposes c₁ as a live slider (a behavioural
                 primitive). Moving c₁ with d₁ held fixed recomputes the multiplier, the G coefficient, the T
                 coefficient, and the r coefficient simultaneously.</p>
@@ -777,12 +774,15 @@
                   estimate of 0.6).</li>
               </ul>
               <ul>
-                <li>As c₁ + d₁ → 1 the multiplier diverges; the slider is capped short of this and flags instability.
-                  This connects to Blanchard's Ch. 3 “trick question” about c₁ > 1.</li>
+                <li>As c₁ + d₁ → 1 the multiplier 1/(1 − c₁ − d₁) diverges. The slider is capped at c₁ = 0.8 (with
+                  d₁ = 0.1, keeping c₁ + d₁ = 0.9 short of 1), so the divergent region is simply unreachable — the cap
+                  is the safeguard, there is no separate instability warning. This connects to Blanchard's Ch. 3
+                  “trick question” about c₁ &gt; 1.</li>
               </ul>
               <ul>
-                <li>Live readouts display the implied multiplier and each reduced-form coefficient so the algebra is
-                  visible while dragging.</li>
+                <li>The “Show the equations behind this chart” panel beneath the IS-MP diagram displays the consumption,
+                  investment, and government terms with their live values, and the summed output line, so the reduced-form
+                  algebra is visible while dragging.</li>
               </ul>
               <h2 id="numeric-check-case-baseline-calibration"><span class="num">4</span> Numeric check-case (baseline
                 calibration)</h2>
@@ -832,16 +832,11 @@
               <p>The closed economy is not a separate engine: it is the open-economy IS with the open-only terms
                 switched off when the UIP block is locked — the import leakage m is forced to 0 and the trade terms
                 (x₁·Y* − n₁·(ε − ε_base)) are dropped. With m=0 the denominator returns the closed multiplier k = 1/(1 −
-                c₁ − d₁) = 2.5 (c₁=0.5, d₁=0.1). The gate lives inside those two functions, so solve(), the plotted IS
-                curve, its label, and its drag handle all adopt the closed form together.</p>
-              <p><strong>The Role of Inflation on Output:</strong> In the pre-PC stage (the short run), prices are fixed
-                and there is no inflation. Because there is no inflation, the real interest rate is equal to the full
-                nominal rate (r = i = 3%). This higher real rate makes borrowing more expensive, which lowers investment
-                and keeps output below potential (at Y = 90).</p>
-              <p>Once the Phillips Curve unlocks (the medium run), the economy experiences a positive inflation rate of
-                2%. This positive inflation mathematically keeps the real interest rate lower than the nominal rate (r =
-                3% − 2% = 1%). This lower real rate directly spurs higher investment, which in turn boosts the overall
-                output of the economy back up to its potential (Yₙ = 100).</p>
+                c₁ − d₁) = 2.5 (c₁=0.5, d₁=0.1). The open/closed gate of §1.1 is applied in one place — the IS
+                calculation itself — so the computed equilibrium, the plotted IS curve, its label, and its drag handle
+                all switch to the closed form together; nothing has to be toggled block by block.</p>
+              <p><strong>The Role of Inflation on Output:</strong> In the pre-PC stage (the short run), prices are fixed and there is no inflation. Because there is no inflation, the real interest rate is equal to the full nominal rate (r = i = 3%). This higher real rate makes borrowing more expensive, which lowers investment and keeps output below potential (at Y = 90).</p>
+              <p>Once the Phillips Curve unlocks (the medium run), the economy experiences a positive inflation rate of 2%. This positive inflation mathematically keeps the real interest rate lower than the nominal rate (r = 3% − 2% = 1%). This lower real rate directly spurs higher investment, which in turn boosts the overall output of the economy back up to its potential (Yₙ = 100).</p>
               <h2 id="the-lm-mp-block-money-market-and-the-policy-rate"><span class="num">5</span> The LM / MP block
                 (money market and the policy rate)</h2>
               <p
@@ -854,12 +849,9 @@
                 Taylor Rule</p>
               <p class="eq"
                 style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">i =
-                ρ·i_prev + (1−ρ)·(ī + φ(π − π̄) + ψ(Y − Yₙ)/Yₙ)</p>
-              <p>Block 2. Blanchard modernises the LM curve across Chapters 5 and 9: the central bank sets the interest
-                rate directly and the money stock adjusts endogenously, replacing the traditional upward-sloping LM. The
-                tool follows this modern treatment by removing money supply and money demand entirely, taking the
-                central bank's chosen interest rate as the sole input for the LM curve.</p>
-              <h3>5.1 The flat LM line (the rate-setting mechanism) — Chapters 5 and 9</h3>
+                ρ·i_prev + (1−ρ)·(ī + φ(π − <span class="barred">π</span>) + ψ(Y − Yₙ)/Yₙ)</p>
+              <p>Block 2. Blanchard modernises the LM curve across Chapters 5 and 9: the central bank sets the interest rate directly and the money stock adjusts endogenously, replacing the traditional upward-sloping LM. The tool follows this modern treatment by removing money supply and money demand entirely, taking the central bank's chosen interest rate as the sole input for the LM curve.</p>
+              <h3>5.1 The flat MP line (the rate-setting mechanism) — Chapters 5 and 9</h3>
               <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
                   style="display:inline-block; margin:8px 0; padding:6px 12px; color:var(--accent); font-weight:bold;">i
                   = ī</span></h4>
@@ -871,24 +863,18 @@
                 MP line, and the money stock is endogenous.</p>
               <h3 id="neutral-nominal-rate">5.2 The neutral nominal rate</h3>
               <div class="corr-card">
-                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">ī = rₙ + π̄</span>
-                </div>
-                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">Ch. 23 — the target
-                    nominal rate when output is at potential and inflation on target</span></div>
-                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                      class="badge badge-exact">EXACT</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">ī = rₙ + <span class="barred">π</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">Ch. 23 — the target nominal rate when output is at potential and inflation on target</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-exact">EXACT</span></span></div>
               </div>
               <p>The neutral nominal rate (the rate that holds output at potential when inflation is on target) follows
                 Blanchard's Ch. 23 definition of the target nominal rate:</p>
               <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
                 <div style="flex: 1;"></div>
-                <div style="flex: 2; text-align: center;">ī = rₙ + π̄</div>
+                <div style="flex: 2; text-align: center;">ī = rₙ + <span class="barred">π</span></div>
                 <div style="flex: 1; text-align: right; color: #888;">(neutral nominal rate, Ch. 23)</div>
               </div>
-              <p>The neutral nominal rate is the baseline rate the Central Bank sets when the economy is perfectly
-                balanced (output is at potential and inflation is at target). When the Taylor rule is active, the
-                Central Bank sets its actual target interest rate by adjusting up or down from this <em>neutral
-                  baseline</em> based on the current inflation and output gaps.</p>
+              <p>The neutral nominal rate is the baseline rate the Central Bank sets when the economy is perfectly balanced (output is at potential and inflation is at target). When the Taylor rule is active, the Central Bank sets its actual target interest rate by adjusting up or down from this <em>neutral baseline</em> based on the current inflation and output gaps.</p>
               <h3>5.3 The unemployment–output-gap conversion (shared with the PC block)</h3>
               <p>Blanchard's policy rule and his Phillips curve are written in unemployment, but the tool works in
                 output. The conversion is a single identity derived in Chapter 9 (the steps that take eq. 9.2 to eq.
@@ -906,10 +892,8 @@
                   <div style="flex: 2; text-align: center;">Y = N = L(1 − u)</div>
                   <div style="flex: 1; text-align: right; color: #888;">(eq. 7.1)</div>
                 </div>
-                <p>
-
-                <div style="margin-top: 6px; text-align: left;">and at the natural rate:</div>
-              </div style="margin-top: 6px; text-align: center;"> Yₙ = L(1 − uₙ)
+                <div style="margin-top: 6px;">and at the natural rate Yₙ = L(1 − uₙ)</div>
+              </div>
               <p>Subtracting gives the deviation of output from potential:</p>
               <p>Y − Yₙ = L[(1 − u) − (1 − uₙ)] = − L (u − uₙ)</p>
               <p>Equivalently, the conversion identity used throughout the tool:</p>
@@ -925,23 +909,18 @@
               <h3 id="taylor-rule">5.4 The Taylor rule (when active) — Chapter 23</h3>
               <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
                   style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">i = ρ·i_prev + (1−ρ)·(<span
-                    style="color:var(--accent); font-weight:bold;">ī + φ(π − π̄) + ψ(Y − Yₙ)/Yₙ</span>)</span></h4>
+                    style="color:var(--accent); font-weight:bold;">ī + φ(π − <span class="barred">π</span>) + ψ(Y − Yₙ)/Yₙ</span>)</span></h4>
               <div class="corr-card">
-                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">i = ρ·i₋₁ + (1−ρ)·(ī +
-                    φ(π − π̄) + ψ(Y − Yₙ)/Yₙ)</span></div>
-                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">iₜ = ī + a(πₜ − π̄)
-                    − b(uₜ − uₙ) &nbsp;(Ch. 23, p. 494)</span></div>
-                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                      class="badge badge-add">TOOL ADDITION</span></span></div>
-                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Unemployment gap
-                    replaced by the output gap via the §5.3 identity (the sign flips); a, b renamed φ, ψ; smoothing ρ
-                    added (§5.5) — Blanchard’s rule has none.</span></div>
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">i = ρ·i₋₁ + (1−ρ)·(ī + φ(π − <span class="barred">π</span>) + ψ(Y − Yₙ)/Yₙ)</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">iₜ = ī + a(πₜ − <span class="barred">π</span>) − b(uₜ − uₙ) &nbsp;(Ch. 23, p. 494)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-add">TOOL ADDITION</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Unemployment gap replaced by the output gap via the §5.3 identity (the sign flips); a, b renamed φ, ψ; smoothing ρ added (§5.5) — Blanchard’s rule has none.</span></div>
               </div>
               <p>Blanchard's interest-rate rule sets the policy rate around its target in response to inflation and
                 unemployment gaps:</p>
               <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
                 <div style="flex: 1;"></div>
-                <div style="flex: 2; text-align: center;">i = ī + a(π − π̄) − b(u − uₙ)</div>
+                <div style="flex: 2; text-align: center;">i = ī + a(π − <span class="barred">π</span>) − b(u − uₙ)</div>
                 <div style="flex: 1; text-align: right; color: #888;">(Taylor rule, Ch. 23)</div>
               </div>
               <p>with a, b > 0, and crucially a > 1 — the Taylor principle: because spending depends on the real rate,
@@ -953,11 +932,11 @@
                 <div style="margin-bottom: 6px;">⇒</div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div style="flex: 1;"></div>
-                  <div style="flex: 2; text-align: center;">i = ī + a(π − π̄) + (b/L)(Y − Yₙ)</div>
+                  <div style="flex: 2; text-align: center;">i = ī + a(π − <span class="barred">π</span>) + (b/L)(Y − Yₙ)</div>
                   <div style="flex: 1; text-align: right; color: #888;">(tool rule with smoothing)</div>
                 </div>
               </div>
-              <p>The tool's rule i = I_NEUTRAL + φ(π − π*) + ψ·(Y − Yₙ)/Yₙ maps onto this term by term:</p>
+              <p>The tool's rule i = I_NEUTRAL + φ(π − <span class="barred">π</span>) + ψ·(Y − Yₙ)/Yₙ maps onto this term by term:</p>
               <div style="overflow-x:auto;">
                 <table
                   style="border-collapse: collapse; margin: 16px 0; width: 100%; text-align: left; border: 1px solid var(--rule);">
@@ -967,15 +946,15 @@
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">Correspondence</td>
                   </tr>
                   <tr>
-                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">ī = rₙ + π̄</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">ī = rₙ + <span class="barred">π</span></td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">shock-aware neutral rate (Option B); =
                       3% at baseline</td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">exact (rₙ recomputed from IS at Y=Yₙ)
                     </td>
                   </tr>
                   <tr>
-                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">a (π − π̄), a > 1</td>
-                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">φ (π − π*), φ > 1</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">a (π − <span class="barred">π</span>), a > 1</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">φ (π − <span class="barred">π</span>), φ > 1</td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">a ≡ φ (Taylor principle)</td>
                   </tr>
                   <tr>
@@ -991,16 +970,12 @@
               <h3>5.5 Interest smoothing (a tested departure from the textbook rule)</h3>
               <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
                   style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">i = <span
-                    style="color:var(--accent); font-weight:bold;">ρ·i_prev + (1−ρ)</span>·(ī + φ(π − π̄) + ψ(Y −
+                    style="color:var(--accent); font-weight:bold;">ρ·i_prev + (1−ρ)</span>·(ī + φ(π − <span class="barred">π</span>) + ψ(Y −
                   Yₙ)/Yₙ)</span></h4>
               <p>The tool includes interest-rate smoothing (RHO_TAYLOR = 0.75 in the unified tool; the retired
                 closed-economy build used 0.8), i.e. the policy rate partially adjusts toward its rule-implied target
                 each period: iₜ = ρ·iₜ₋₁ + (1−ρ)·i. This is a standard real-world extension but is not part of
-                Blanchard's stated Ch. 23 rule, which has no lagged-rate term. It is retained deliberately to ensure
-                model stability: without this gradual adjustment, a central bank reacting instantly to current inflation
-                and output gaps can trigger severe period-to-period interest rate oscillations that would destabilise
-                the interactive tool. This smoothing acts as a vital anchor for the engine's dynamics, making it a
-                necessary and intentional departure from the textbook rule.</p>
+                Blanchard's stated Ch. 23 rule, which has no lagged-rate term. It is retained deliberately to ensure model stability: without this gradual adjustment, a central bank reacting instantly to current inflation and output gaps can trigger severe period-to-period interest rate oscillations that would destabilise the interactive tool. This smoothing acts as a vital anchor for the engine's dynamics, making it a necessary and intentional departure from the textbook rule.</p>
               <h3>5.6 LM/MP block summary</h3>
               <div style="overflow-x:auto;">
                 <table
@@ -1010,14 +985,14 @@
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">Blanchard source</td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">Status</td>
                   </tr>
-
+                  
                   <tr>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">Flat MP line (CB sets i)</td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 5 / Ch. 9</td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">Exact conceptual match</td>
                   </tr>
                   <tr>
-                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Neutral rate ī = rₙ + π̄ (shock-aware,
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Neutral rate ī = rₙ + <span class="barred">π</span> (shock-aware,
                       Option B)</td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">Ch. 23</td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">Recomputed from IS at Y=Yₙ; = 3% at
@@ -1086,14 +1061,10 @@
                     style="color:var(--accent); font-weight:bold;">Yₙ</span>)(Y − <span
                     style="color:var(--accent); font-weight:bold;">Yₙ</span>) + shock</span></h4>
               <div class="corr-card">
-                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">uₙ = (m +
-                    z_struct)/α_WS ; &nbsp; Yₙ = L(1 − uₙ)</span></div>
-                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">uₙ = (m + z)/α
-                    &nbsp;(eq. 8.4)</span></div>
-                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                      class="badge badge-exact">EXACT</span></span></div>
-                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">α_WS is Blanchard’s α,
-                    fixed at 3.0 so the PC-slope slider can never move the natural rate (§6.5).</span></div>
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">uₙ = (m + z_struct)/α_WS ; &nbsp; Yₙ = L(1 − uₙ)</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">uₙ = (m + z)/α &nbsp;(eq. 8.4)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-exact">EXACT</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Note</span><span class="corr-val">α_WS and z_struct are the engine's code names for Blanchard's α and z in this formula. α_WS is a fixed structural constant (3.0), not the adjustable Phillips-curve slope — the two are kept separate; see §6.5. z_struct is the structural wage-push term, distinct from the transitory <span class="eq-inline">shock</span> added to the Phillips curve (§6.7).</span></div>
               </div>
               <p>The natural rate of unemployment is the rate at which actual inflation equals expected inflation.
                 Setting πₜ = πᵉₜ in eq. (8.3) and solving:</p>
@@ -1119,15 +1090,10 @@
                     style="color:var(--accent); font-weight:bold;">α</span> / Yₙ)<span
                     style="color:var(--accent); font-weight:bold;">(Y − Yₙ)</span> + shock</span></h4>
               <div class="corr-card">
-                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">π = πᵉ + (α/Yₙ)(Y −
-                    Yₙ) + shock</span></div>
-                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">π − πᵉ = (α/L)(Y −
-                    Yₙ) &nbsp;(eq. 9.3)</span></div>
-                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                      class="badge badge-dev">DEVIATION</span></span></div>
-                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Gap normalised by Yₙ
-                    instead of L (cosmetic, factor 1 − uₙ); slope α deliberately decoupled from α_WS — a factor of ten,
-                    see §6.5; shock term added (§6.7).</span></div>
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">π = πᵉ + (α/Yₙ)(Y − Yₙ) + shock</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">π − πᵉ = (α/L)(Y − Yₙ) &nbsp;(eq. 9.3)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-dev">DEVIATION</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Gap normalised by Yₙ instead of L (cosmetic, factor 1 − uₙ); slope α deliberately decoupled from α_WS — a factor of ten, see §6.5; shock term added (§6.7).</span></div>
               </div>
               <p>Applying the unemployment–output identity from §5.3, (u − uₙ) = −(Y − Yₙ)/L, to eq. (8.5):</p>
               <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
@@ -1144,37 +1110,23 @@
                 uses the fixed α_WS = 3.0, while the Phillips-curve slope is its own slider (default 0.3) — a factor of
                 ten apart, not 5%. Why the model cannot use one number for both is explained in §6.5; it is the single
                 deliberate deviation in this block.</p>
-              <h3>6.4 Distinguishing tool variables from textbook parameters</h3>
-              <p>The interactive nature of the tool requires slightly different notation from the textbook to
-                distinguish structural parameters (which determine the natural rate) from transitory shocks (which hit
-                the economy at a given natural rate). The tool uses:</p>
+                            <h3>6.4 Distinguishing tool variables from textbook parameters</h3>
+              <p>The interactive nature of the tool requires slightly different notation from the textbook to distinguish structural parameters (which determine the natural rate) from transitory shocks (which hit the economy at a given natural rate). The tool uses:</p>
               <ul>
-                <li><strong>α_WS</strong>: Blanchard's α — the structural sensitivity of wages to unemployment in the WS
-                  relation. Fixed in the engine at 3.0 so that uₙ = (m + z_struct)/α_WS gives a plausible natural rate
-                  (5% at baseline). This is the only α that enters uₙ and Yₙ.</li>
-                <li><strong>α</strong>: The Phillips-curve slope slider (default 0.3, range 0.05–0.5). It enters only
-                  the PC equation. Moving it never changes uₙ or Yₙ — that separation from α_WS is deliberate; see §6.5.
-                </li>
-                <li><strong>z_struct (or z)</strong>: The structural wage-push factor (e.g. employment protection,
-                  minimum wage, unemployment benefits) that sits permanently in the WS relation. A change in z_struct
-                  permanently shifts the natural rate of unemployment uₙ and therefore potential output Yₙ.</li>
-                <li><strong>shock</strong>: A transitory, independent cost-push shock (e.g. a sudden oil price spike or
-                  supply chain disruption) that shifts the Phillips curve directly without altering the underlying
-                  structural labour-market balance (the WS-PS crossing). It fades over time and does not change uₙ or
-                  Yₙ.</li>
+                <li><strong>α_WS</strong>: Blanchard's α — the structural sensitivity of wages to unemployment in the WS relation. Fixed in the engine at 3.0 so that uₙ = (m + z_struct)/α_WS gives a plausible natural rate (5% at baseline). This is the only α that enters uₙ and Yₙ.</li>
+                <li><strong>α</strong>: The Phillips-curve slope slider (default 0.3, range 0.05–0.5). It enters only the PC equation. Moving it never changes uₙ or Yₙ — that separation from α_WS is deliberate; see §6.5.</li>
+                <li><strong>z_struct (or z)</strong>: The structural wage-push factor (e.g. employment protection, minimum wage, unemployment benefits) that sits permanently in the WS relation. A change in z_struct permanently shifts the natural rate of unemployment uₙ and therefore potential output Yₙ.</li>
+                <li><strong>shock</strong>: A transitory, independent cost-push shock (e.g. a sudden oil price spike or supply chain disruption) that shifts the Phillips curve directly without altering the underlying structural labour-market balance (the WS-PS crossing). It fades over time and does not change uₙ or Yₙ.</li>
               </ul>
-              <p>Separating these two types of <em>z</em> allows the user to simulate both permanent structural shifts
-                (which move Yₙ) and temporary inflation shocks (which move π at a fixed Yₙ).</p>
-              <h3>6.5 The α slider, and why steepness is carried by credibility</h3>
-              <p>α is exposed as a slider with default 0.3 (range 0.05–0.5). This is the empirically supported range for
-                the
+              <p>Both z_struct and <span class="eq-inline">shock</span> push prices up, but through different mechanisms with different persistence, so the tool separates them. z_struct is a permanent wage-setting pressure (higher bargaining power, benefits, or minimum wages) that raises the natural rate and moves Yₙ; <span class="eq-inline">shock</span> is a transitory cost-push disturbance (an oil spike, a supply-chain disruption) that lifts inflation at a fixed Yₙ and then fades. Keeping them apart lets the user simulate a lasting structural shift and a passing supply shock independently.</p>
+              <h3>6.5 The α slider, and the two meanings of a “steep” Phillips curve</h3>
+              <p>α is exposed as a slider with default 0.3 (range 0.05–0.5). This is the empirically supported range for the
                 <em>Phillips-curve slope</em> — not for the wage-setting α, which is a different and much larger number.
                 Careful cross-sectional estimates put the slope around 0.3 (Hazell, Herreño, Nakamura &amp; Steinsson,
                 QJE 2022, find a 1-point rise in unemployment lowers inflation by about 0.34 points, and that the slope
                 was small even in the early 1980s); recent US price-Phillips-curve estimates sit around 0.18–0.26 in
                 normal labour markets. A slope near 1.0 is not empirically supported, which is why the slider is capped
-                at 0.5.
-              </p>
+                at 0.5.</p>
               <p><strong>Why two alphas at all?</strong> Blanchard's single-α model cannot fit both facts it is asked to
                 fit. The natural-rate formula uₙ = (m + z)/α needs α ≈ 3 to deliver a plausible natural rate: with the
                 tool's baseline m + z = 0.15, an α of 0.3 would imply uₙ = 0.15/0.3 = 50% unemployment. But the
@@ -1185,71 +1137,73 @@
                 Blanchard's α in the natural-rate formula (as the fixed α_WS = 3.0) and gives the Phillips-curve slope
                 its own slider. This is a deliberate deviation from the textbook, where they are one number.</p>
               <p>Crucially, this matches Blanchard's own treatment: across the historical mutations of the Phillips
-                curve he holds α fixed and varies θ (the expectations/de-anchoring parameter), not α. Eqs.
-                (8.5)→(8.8)→(8.9) walk through this with the same α throughout: at θ = 0 the original level trade-off
-                (eq. 8.6); at 0 < θ < 1 inflation depends on both the gap and last year's inflation (eq. 8.8); at θ=1
-                  the accelerationist form πₜ − πₜ₋₁=−α(uₜ − uₙ) (eq. 8.9), where the gap drives the change in
-                  inflation. Blanchard's Figure 8-4 plots estimated θ over time: it rose from the mid-1960s, stayed near
-                  1 until the late 1990s, then fell back toward zero by 2020. The apparent steepening and flattening of
-                  the curve over decades is therefore a θ story, not an α story.</p>
-                  <p>Design consequence: a steep, spiralling, “slope-looks-like-1” curve is reproduced in the tool by
-                    lowering credibility (lowering θ_eff toward 0), not by raising α. The credibility slider carries the
-                    steepness; α stays at its modest structural value. This is faithful to Blanchard and to the
-                    empirical evidence, both of which attribute the 1970s steepness to de-anchored expectations rather
-                    than a larger structural slope.</p>
-                  <p>The α slider changes only the Phillips-curve slope. The natural rate uses the fixed α_WS, so
-                    experimenting
-                    with flat vs steep Phillips curves never accidentally relocates potential output — that separation
-                    is the point of the decoupling.</p>
+                curve he holds α fixed and varies θ, the expectations parameter, not α. Eqs. (8.5)→(8.8)→(8.9) walk through this
+                with the same α throughout: at θ = 0 the original level trade-off (eq. 8.6); at 0 &lt; θ &lt; 1
+                inflation depends on both the gap and last year's inflation (eq. 8.8); at θ = 1 the accelerationist
+                form πₜ − πₜ₋₁ = −α(uₜ − uₙ) (eq. 8.9), where the gap drives the <em>change</em> in inflation.
+                Blanchard's Figure 8-4 plots estimated θ over time: it rose from the mid-1960s, stayed near 1 until the
+                late 1990s, then fell back toward zero by 2020. The apparent steepening and flattening of the curve
+                over decades is therefore a θ story, not an α story.</p>
+                  <p>A clarification the tool makes deliberately, because two different things get called
+                    “steepness,” and neither of them is what the θ slider (shown as Max credibility) controls. The <em>slope of the
+                    plotted Phillips curve</em> — its tilt in (π, Y) space — is α/Yₙ, and only the α slider changes it.
+                    The curve's height is set by expected inflation πᵉ, so a given πᵉ fixes where the line sits at that
+                    moment.</p>
+                  <p>θ does not move the plotted line on its own. Within a single frame it does nothing: the curve is
+                    drawn from whatever πᵉ currently is. θ only takes effect when you <em>step the model forward one
+                    period</em>, where it sets how πᵉ updates:</p>
+                  <div style="display: flex; justify-content: center; margin: 12px 0;">
+                    <div class="eq">πᵉ′ = πᵉ + speed · [ A·(<span class="barred">π</span> − πᵉ) + (1 − A)·(π − πᵉ) ],&nbsp; A = (1 − θ)·credibility</div>
+                  </div>
+                  <p>At A ≈ 1 (θ ≈ 0, anchored, full credibility) πᵉ is pulled back toward the 2% target each period; at A ≈ 0
+                    (de-anchored) it is pulled toward last period's <em>actual</em> inflation, which is the spiral. So θ
+                    governs the <em>speed and direction of the curve's vertical drift over successive periods</em> — not
+                    its slope, and not an instantaneous jump. You only see its effect by stepping.</p>
+                  <p>This is exactly why the “steepness” of Blanchard's Figure 8-4 is a different object again: it is the
+                    apparent slope of the inflation–unemployment <em>scatter observed over many years</em>. When
+                    expectations de-anchor, each period's inflation feeds more of itself into the next (the equation
+                    above with A → 0 — high θ or low credibility), and the cloud of points traces out a steeper — ultimately vertical —
+                    relationship over time. That is an emergent property of the multi-period drift, not the slope of the
+                    line on screen at any one moment.</p>
+                  <p>So the 1970s “slope-looks-like-1” steepness is reproduced in the tool by de-anchoring expectations
+                    (raising θ, or letting credibility erode, so A → 0) and <em>running the model forward</em>, not by raising α and not by any single-frame
+                    change — faithful to Blanchard and the empirical evidence, which attribute that steepness to
+                    de-anchored expectations rather than a larger structural slope. Blanchard's own analytic Phillips
+                    curve keeps α as the slope at every θ; the accelerationist “vertical” curve is a statement about the
+                    long-run dynamic relationship, which is why the tool does not (and should not) rotate the plotted
+                    line when θ moves. And because the slope is α while the natural rate uses the separate fixed α_WS,
+                    experimenting with flat versus steep curves here never accidentally relocates potential output —
+                    that protection is the point of keeping the two apart.</p>
                   <h3>6.6 Inflation expectations and anchoring — eq. 8.7</h3>
                   <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
-                      style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = <span
-                        style="color:var(--accent); font-weight:bold;">πᵉ</span> + (α / Yₙ)(Y − Yₙ) +
-                      shock</span></h4>
-                  <div class="corr-card">
-                    <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">πᵉ′ = πᵉ +
-                        speed·[θ_eff(π̄ − πᵉ) + (1 − θ_eff)(π − πᵉ)], &nbsp; θ_eff = θ × credibility</span></div>
-                    <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">πᵉ = (1 − θ)π̄ +
-                        θπ₋₁ &nbsp;(eq. 8.7)</span></div>
-                    <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                          class="badge badge-dev">DEVIATION</span></span></div>
-                    <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Same
-                        weighted-average family, but the tool’s θ runs the OPPOSITE direction: tool θ_eff is anchoring
-                        capacity, corresponding to Blanchard’s (1 − θ). Updating is partial per click via speed.</span>
-                    </div>
-                  </div>
-                  <p>Expected inflation is a weighted average of an anchor (the target) and last period's inflation:</p>
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
-                    <div style="flex: 1;"></div>
-                    <div style="flex: 2; text-align: center;">πᵉₜ = (1 − θ) π̄ + θ πₜ₋₁</div>
-                    <div style="flex: 1; text-align: right; color: #888;">(eq. 8.7)</div>
-                  </div>
-                  <p>θ is the de-anchoring parameter: θ = 0 gives fully anchored expectations (πᵉ = target, the original
-                    Phillips curve of eq. 8.6), θ = 1 gives fully adaptive expectations (πᵉ = last year's inflation).
-                    The tool's anchoring slider (θ, 'max anchoring ceiling') and Blanchard's θ in eq. (8.7) use the same
-                    symbol for inverse concepts: Blanchard's θ is the weight on last period's <em>actual</em> inflation
-                    (high θ = more adaptive = less anchored); the tool's θ is anchoring <em>capacity</em> (high θ = more
-                    anchored = more credible). The tool's effective anchoring θ_eff = θ × credibility corresponds to
-                    Blanchard's (1 − θ_Blanchard), not to θ_Blanchard directly. This is a deliberate UI choice — 'higher
-                    slider = more central-bank credibility' is the more intuitive direction for a policy-facing control
-                    — but the tool's θ is not literally identical to Blanchard's θ, and this document should not
-                    describe it as such.</p>
+                      style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;"><span
+                        style="color:var(--accent); font-weight:bold;">πᵉ</span> = (1 − θ)<span class="barred">π</span> + θπ₋₁</span></h4>
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val">Blanchard's rule (left), with two tool modifiers: credibility scales the anchoring weight, and the move is made gradually each step (<span class="eq-inline">speed</span>).<div class="eq" style="margin-top:8px;">πᵉ′ = πᵉ + speed·[ A(<span class="barred">π</span> − πᵉ) + (1 − A)(π − πᵉ) ]<br><span style="color:var(--sub-text); font-size:0.9em;">where A = (1 − θ)·credibility &nbsp;—&nbsp; at credibility = 1, A = 1 − θ and this reduces to eq. 8.7 exactly</span></div></span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">πᵉ = (1 − θ)<span class="barred">π</span> + θπ₋₁ &nbsp;(eq. 8.7)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-exact">EXACT</span> <span style="font-size:0.85em; color:var(--sub-text);">(θ per eq. 8.7)</span> &nbsp; <span class="badge badge-add">TOOL ADDITION</span> <span style="font-size:0.85em; color:var(--sub-text);">(credibility stock)</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">θ itself is exact. The only addition is the credibility stock: when it sits below 1, anchoring erodes further and inflation drifts more adaptively than θ alone would give.</span></div>
+              </div>
+                  <p>θ is Blanchard's de-anchoring parameter, and the tool stores it with exactly that meaning:
+                    θ = 0 gives fully anchored expectations (πᵉ = target, the original Phillips curve of eq. 8.6),
+                    θ = 1 gives fully adaptive expectations (πᵉ = last year's inflation). There is no inversion in the
+                    engine — the stored <code>θ</code> is Blanchard's θ. The only presentational twist is on the
+                    control surface: the slider is <em>displayed</em> as its complement, labelled
+                    <strong>Max credibility (1 − θ)</strong>, so that dragging right = more credible = more anchored,
+                    the intuitive direction for a policy control, and so that it runs the same way as the separate
+                    Current-credibility slider. This is a display choice only; the value entering every equation is
+                    Blanchard's θ.</p>
                   <h3>6.7 Supply shocks: two distinct channels — Section 8-3</h3>
                   <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
                       style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (α / Yₙ)(Y
                       − Yₙ) + <span style="color:var(--accent); font-weight:bold;">shock</span></span></h4>
-                  <div class="corr-card">
-                    <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">π = πᵉ + (α/Yₙ)(Y
-                        − Yₙ) + shock</span></div>
-                    <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">eq. 9.3 carries
-                        no shock term; Section 8-3 supplies the narrative (Covid, 1970s)</span></div>
-                    <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                          class="badge badge-add">TOOL ADDITION</span></span></div>
-                    <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">A decaying
-                        transitory pulse, so supply shocks shift the PC without moving uₙ or Yₙ.</span></div>
-                  </div>
-                  <p>Blanchard's own eq. 9.3 carries no shock term; the additive shock is the tool's addition, and the
-                    symbol z is reserved throughout for the structural wage-setting term of eq. 8.4.</p>
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">π = πᵉ + (α/Yₙ)(Y − Yₙ) + shock</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">eq. 9.3 carries no shock term; Section 8-3 supplies the narrative (Covid, 1970s)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-add">TOOL ADDITION</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">A decaying transitory pulse, so supply shocks shift the PC without moving uₙ or Yₙ.</span></div>
+              </div>
+                  <p>Blanchard's own eq. 9.3 carries no shock term; the additive shock is the tool's addition, and the symbol z is reserved throughout for the structural wage-setting term of eq. 8.4.</p>
                   <p>Blanchard's Section 8-3 (the Covid and 1970s episodes) establishes that supply shocks come in two
                     forms, and the tool models both:</p>
                   <ul>
@@ -1272,7 +1226,7 @@
                     Covid shock did not de-anchor (credibility held) and so faded. With the tool's credibility slider,
                     the same cost-push pulse can be run both ways: credibility high → fades (Covid-like); credibility
                     low / de-anchoring on → spirals (1970s-like). The spiral is the accelerationist regime of eq. (8.9):
-                    when θ_eff → 0 the gap drives the change in inflation, so inflation rises period-on-period rather
+                    when A → 0 (θ → 1) the gap drives the change in inflation, so inflation rises period-on-period rather
                     than settling at a higher level. This is a behaviour to verify when the dynamics are tested.</p>
                   <h3>6.8 Phillips-curve block summary</h3>
                   <div style="overflow-x:auto;">
@@ -1301,8 +1255,7 @@
                       <tr>
                         <td style="border: 1px solid var(--rule); padding: 8px 12px;">Output-space slope α/Yₙ</td>
                         <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (9.3) carries α/L</td>
-                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Yₙ-normalisation is cosmetic;
-                          slope <em>value</em> decoupled from α_WS (deviation, §6.5)</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Yₙ-normalisation is cosmetic; slope <em>value</em> decoupled from α_WS (deviation, §6.5)</td>
                       </tr>
                       <tr>
                         <td style="border: 1px solid var(--rule); padding: 8px 12px;">α slider (def. 0.3, cap 0.5)</td>
@@ -1311,10 +1264,10 @@
                         </td>
                       </tr>
                       <tr>
-                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Expectations πᵉ=(1−θ)π̄+θπ₋₁</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Expectations πᵉ=(1−θ)<span class="barred">π</span>+θπ₋₁</td>
                         <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (8.7)</td>
-                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">Inverted mapping: tool's
-                          credibility runs opposite to Blanchard's θ</td>
+                        <td style="border: 1px solid var(--rule); padding: 8px 12px;">θ exact (eq. 8.7); tool adds an
+                          endogenous credibility stock, A = (1 − θ)·cred</td>
                       </tr>
                       <tr>
                         <td style="border: 1px solid var(--rule); padding: 8px 12px;">Transitory cost-push pulse</td>
@@ -1342,14 +1295,11 @@
                       style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ −
                       d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(<span
                         style="color:var(--accent); font-weight:bold;">ε</span>−1) + x₁(Y*−Y₀) ]</span></h4>
-                  <div class="corr-card">
-                    <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">E = Eᵉ(1 + i)/(1 +
-                        i*)</span></div>
-                    <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">E = Eᵉ(1 + i)/(1
-                        + i*) &nbsp;(eq. 19.5)</span></div>
-                    <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                          class="badge badge-exact">EXACT</span></span></div>
-                  </div>
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">E = Eᵉ(1 + i)/(1 + i*)</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">E = Eᵉ(1 + i)/(1 + i*) &nbsp;(eq. 19.5)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-exact">EXACT</span></span></div>
+              </div>
                   <p>Investors arbitrage between domestic and foreign bonds, equalising expected returns. This is the
                     uncovered interest parity (UIP) condition:</p>
                   <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
@@ -1367,23 +1317,32 @@
                     model, no discrepancy. A higher domestic rate appreciates the currency (E rises); a higher foreign
                     rate depreciates it. The approximate form (eq. 17.4), i ≈ i − (Eᵉ − E)/E, is the same relation: the
                     domestic rate equals the foreign rate minus the expected appreciation.</p>
+                  <p>UIP fixes the <em>nominal</em> exchange rate E, but the goods market responds to the <em>real</em>
+                    exchange rate ε — the relative price of foreign goods in common units. The two are linked by the
+                    domestic and foreign price levels:</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 2; text-align: center;">ε = E · P / P*</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(Ch. 17)</div>
+                  </div>
+                  <p>This is the step that closes the loop into the IS curve: UIP sets E from the interest-rate
+                    differential, the price-level ratio P/P* converts it to the real rate ε, and ε then enters net
+                    exports through the n₁(ε − 1) term in §7.2. In Blanchard's short-run simplification (eq. 19.2,
+                    P = P* = 1) the two coincide, ε = E; the tool keeps them distinct and lets both price levels evolve,
+                    which is what makes inflation differentials move the real exchange rate — the full dynamics of that
+                    conversion are set out in §7.8.</p>
                   <h3 id="open-is">7.2 The open-economy IS with net exports — eq. 19.1 / 19.2</h3>
                   <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
                       style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ −
                       d₁ + <span style="color:var(--accent); font-weight:bold;">m₁</span>)] · [ (G−G₀) − c₁(T−T₀) −
-                      d₂(r−r₀) − n₁(ε−1) + <span style="color:var(--accent); font-weight:bold;">x₁</span>(Y*−Y₀)
+                      d₂(r−r₀) <span style="color:var(--accent); font-weight:bold;">− n₁(ε−1)</span> <span style="color:var(--accent); font-weight:bold;">+ x₁(Y*−Y₀)</span>
                       ]</span></h4>
-                  <div class="corr-card">
-                    <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">Y = C + I + G +
-                        NX</span></div>
-                    <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">Y = C(Y − T) +
-                        I(Y, r) + G + NX(Y, Y*, ε) &nbsp;(eq. 19.1)</span></div>
-                    <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                          class="badge badge-exact">EXACT</span></span></div>
-                    <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Blanchard’s eq.
-                        19.2 simplification (P = P* = 1, r = i) applies only in his short run; the tool relaxes it — see
-                        §7.8.</span></div>
-                  </div>
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">Y = C + I + G + NX</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">Y = C(Y − T) + I(Y, r) + G + NX(Y, Y*, ε) &nbsp;(eq. 19.1)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-exact">EXACT</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Blanchard’s eq. 19.2 simplification (P = P* = 1, r = i) applies only in his short run; the tool relaxes it — see §7.8.</span></div>
+              </div>
                   <p>Net exports are exports minus the value of imports, decreasing in the real exchange rate:</p>
                   <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
                     <div style="flex: 1;"></div>
@@ -1404,46 +1363,58 @@
                       style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ −
                       d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − <span
                         style="color:var(--accent); font-weight:bold;">n₁(ε−1)</span> + x₁(Y*−Y₀) ]</span></h4>
-                  <div class="corr-card">
-                    <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">NX = x₁Y* − m₁Y −
-                        n₁(ε − 1)</span></div>
-                    <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">NX(Y, Y*, ε) =
-                        X(Y*, ε) − IM(Y, ε)/ε &nbsp;(eq. 19.1)</span></div>
-                    <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                          class="badge badge-lin">LINEARISED</span></span></div>
-                    <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Linear propensities
-                        per Ch. 18 Problem 7; Marshall–Lerner assumed to hold, so the whole ε-effect collapses to one
-                        coefficient n₁ &gt; 0.</span></div>
-                  </div>
-                  <h4 style="margin-top:0;">Subtitle: <span class="eq"
-                      style="display:inline-block; margin:8px 0; padding:6px 12px;"><span
-                        style="color:var(--accent);">NX</span> = x₁Y* − m₁Y − n₁(ε−1)</span></h4>
-                  <p>Following Blanchard's own linear trade system (Ch. 18, Problem 7/8), linearise the components of
-                    net exports:</p>
+              <div class="corr-card">
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">NX = x₁Y* − m₁Y − n₁(ε − 1)</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">NX(Y, Y*, ε) = X(Y*, ε) − IM(Y, ε)/ε &nbsp;(eq. 19.1)</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-lin">LINEARISED</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Linear propensities per Ch. 18 Problem 7; Marshall–Lerner (§18-4 p. 384; derived in the Ch. 18 Appendix, p. 393) assumed to hold, so the whole ε-effect collapses to one coefficient n₁ &gt; 0.</span></div>
+              </div>
+                  <p>Start from Blanchard's exact definition, in which the value of imports is deflated by the real
+                    exchange rate — imports are measured in foreign goods, so dividing by ε converts them to
+                    domestic-good units:</p>
                   <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
                     <div style="flex: 1;"></div>
-                    <div style="flex: 2; text-align: center;">X = x₁ Y*</div>
-                    <div style="flex: 1; text-align: right; color: #888;">(exports rise with foreign output)</div>
+                    <div style="flex: 2; text-align: center;">NX(Y, Y*, ε) = X(Y*, ε) − IM(Y, ε) / ε</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(eq. 19.1)</div>
                   </div>
+                  <p>The tool linearises this around the baseline ε = 1 (and X, IM around their baseline volumes). The key
+                    move is a first-order Taylor expansion in ε of the whole NX function, evaluated at ε = 1. Collect the
+                    three channels through which ε moves net exports:</p>
+                  <ul>
+                    <li><strong>Export volume:</strong> a real appreciation (ε up) makes home goods dearer abroad, so
+                      X falls: ∂X/∂ε &lt; 0.</li>
+                    <li><strong>Import volume:</strong> a real appreciation makes foreign goods cheaper at home, so the
+                      quantity imported IM rises: ∂IM/∂ε &gt; 0. This <em>raises</em> the import bill.</li>
+                    <li><strong>Valuation (the ÷ε term):</strong> the same appreciation cheapens each imported good in
+                      domestic-good units — the 1/ε factor falls as ε rises — which <em>lowers</em> the import bill.
+                      Differentiating IM/ε gives ∂(IM/ε)/∂ε = (∂IM/∂ε)/ε − IM/ε², so at ε = 1 this term is
+                      ∂IM/∂ε − IM: the volume effect minus the valuation effect.</li>
+                  </ul>
+                  <p>Adding the export and import derivatives, the total derivative of NX with respect to ε at ε = 1 is</p>
                   <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
                     <div style="flex: 1;"></div>
-                    <div style="flex: 2; text-align: center;">IM = m₁ Y</div>
-                    <div style="flex: 1; text-align: right; color: #888;">(imports rise with domestic output; ε=1 ⇒ IM/ε
-                      = IM)</div>
+                    <div style="flex: 2; text-align: center;">dNX/dε |<sub>ε=1</sub> = ∂X/∂ε − ( ∂IM/∂ε − IM ) ≡ −n₁</div>
+                    <div style="flex: 1; text-align: right; color: #888;">(definition of n₁)</div>
                   </div>
+                  <p>So the <code>/ε</code> has not disappeared — it is <em>inside</em> n₁. The single coefficient n₁
+                    bundles all three channels: the fall in exports, the rise in import volume, and the offsetting
+                    valuation gain from the ÷ε term. These are precisely the three channels Blanchard identifies in
+                    §18-4 (p. 384), and Marshall–Lerner is his condition that they sum to a net improvement: in the
+                    formal derivation (Ch. 18 Appendix, “Derivation of the Marshall–Lerner Condition”, p. 393) he states
+                    it as the requirement that <em>the sum of the three terms be positive</em>. Equivalently here: the
+                    two volume effects together outweigh the valuation effect, so the bracket is positive and n₁ &gt; 0
+                    (a real appreciation worsens NX; a real depreciation improves it). Blanchard notes the condition is
+                    satisfied empirically and assumes it throughout, as does the tool. A first-order expansion then
+                    writes the ε-dependence as a straight line through the baseline:</p>
                   <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
                     <div style="flex: 1;"></div>
-                    <div style="flex: 2; text-align: center;">NX = x₁ Y* − m₁ Y − n₁ (ε − 1)</div>
+                    <div style="flex: 2; text-align: center;">NX ≈ NX|<sub>ε=1</sub> + (dNX/dε)(ε − 1) = (x₁ Y* − m₁ Y) − n₁ (ε − 1)</div>
                     <div style="flex: 1; text-align: right; color: #888;">(tool reduced form)</div>
                   </div>
-                  <p>Here n₁ > 0 is the sensitivity of net exports to the real exchange rate. The condition n₁ > 0 is
-                    precisely the Marshall–Lerner condition, which Blanchard assumes holds throughout Chapter 19.
-                    Economically, a real appreciation has two opposing effects on net exports: it reduces export volumes
-                    and increases import volumes (quantity effect, both pushing NX down) but it cheapens each imported
-                    good in domestic-currency terms (valuation effect, pushing NX up). Marshall–Lerner is the condition
-                    that the volume effects dominate the valuation effect, so that on net a real appreciation worsens
-                    net exports — i.e. n₁ > 0.. Marshall–Lerner is the condition that the volume effects dominate, so
-                    that on net a real appreciation worsens net exports — i.e. n₁ > 0.</p>
+                  <p>where the baseline balance is X − IM = x₁ Y* − m₁ Y (at ε = 1 the ÷ε factor is exactly 1, so the
+                    import bill equals the import volume), and the entire ε-response is carried by the −n₁(ε − 1) term.
+                    This is why the tool's NX shows no explicit division by ε: the linearisation has already folded the
+                    valuation effect of ÷ε into the constant n₁.</p>
                   <p>In this linearisation n₁ is a constant: the response of net exports to ε does not vary with the
                     level of ε. The J-curve (net exports worsening before improving after a depreciation, because
                     volumes adjust more slowly than prices) and any elasticity-dependence of the response are dynamic
@@ -1464,12 +1435,9 @@
                   <p>Because m₁ > 0, k_open is smaller than the closed multiplier 1/(1−c₁−d₁): imports leak out of the
                     multiplier, the algebraic counterpart of Blanchard's “AA is flatter than DD” (Ch. 18). Every demand
                     term — G, T, r, ε, and Y* — passes through this same k_open. The full open IS is:</p>
-                  <p>Y = Yₙ + k_open·(G−G₀) − c₁·k_open·(T−T₀)</p>
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
-                    <div style="flex: 1;"></div>
-                    <div style="flex: 2; text-align: center;">*</div>
-                    <div style="flex: 1; text-align: right; color: #888;">− d₂·k_open·(r−r₀) − n₁·k_open·(ε−1) +
-                      x₁·k_open·(Y−Y₀)*</div>
+                  <div style="margin: 12px 0; text-align: center;">
+                    <span class="eq" style="display:inline-block; padding:6px 12px;">Y = Yₙ + k_open·(G−G₀) −
+                      c₁·k_open·(T−T₀) − d₂·k_open·(r−r₀) − n₁·k_open·(ε−1) + x₁·k_open·(Y*−Y₀)</span>
                   </div>
                   <p>The reduced-form exchange-rate coefficient is therefore ∂Y/∂ε = −n₁·k_open, exactly parallel to the
                     real-rate coefficient ∂Y/∂r = −d₂·k_open. Like d₂, the value of n₁ is calibration: Blanchard gives
@@ -1540,7 +1508,7 @@
                       style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">Y = Yₙ + [1 / (1 − c₁ −
                       d₁ + m₁)] · [ (G−G₀) − c₁(T−T₀) − d₂(r−r₀) − n₁(ε−1) + <span
                         style="color:var(--accent); font-weight:bold;">x₁(Y*−Y₀)</span> ]</span></h4>
-                  <p>The term +x₁·k_open·(Y − Y₀) gives the spillover from foreign output. A fall in foreign output Y (a
+                  <p>The term +x₁·k_open·(Y* − Y₀) gives the spillover from foreign output. A fall in foreign output Y* (a
                     foreign recession) reduces domestic exports, cutting demand, amplified through the open multiplier.
                     At x₁ = 0.3 and k_open = 1.43, a unit drop in Y lowers domestic output by 0.43. Y* is exposed as a
                     control so a student can run a foreign-recession spillover directly.</p>
@@ -1597,23 +1565,15 @@
                   </div>
                   <h3 id="real-exchange-rate">7.8 The Real Exchange Rate and Price Evolution</h3>
                   <div class="corr-card">
-                    <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">ε = E·P/P* ;
-                        &nbsp; P′ = P(1 + π·speed) ; &nbsp; P*′ = P*(1 + π̄·speed)</span></div>
-                    <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">ε = EP/P* (Ch.
-                        17); Ch. 19 then sets P = P* = 1 so that ε = E</span></div>
-                    <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                          class="badge badge-add">TOOL ADDITION</span></span></div>
-                    <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Both price levels
-                        evolve over time, so ε and E diverge; foreign inflation is held at the 2% target
-                        throughout.</span></div>
-                  </div>
-                  <p>The real exchange rate is defined as ε = E·P/P* (Blanchard Ch. 17, appreciation = ε up). The tool
-                    goes
-                    beyond the Ch. 19 simplification of fixing both price levels at 1: each step, the domestic price
-                    level
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">ε = E·P/P* ; &nbsp; P′ = P(1 + π·speed) ; &nbsp; P*′ = P*(1 + <span class="barred">π</span>·speed)</span></div>
+                <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">ε = EP/P* (Ch. 17); Ch. 19 then sets P = P* = 1 so that ε = E</span></div>
+                <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span class="badge badge-add">TOOL ADDITION</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Both price levels evolve over time, so ε and E diverge; foreign inflation is held at the 2% target throughout.</span></div>
+              </div>
+                  <p>The real exchange rate is defined as ε = E·P/P* (Blanchard Ch. 17, appreciation = ε up). The tool goes
+                    beyond the Ch. 19 simplification of fixing both price levels at 1: each step, the domestic price level
                     grows at actual domestic inflation, P′ = P(1 + π·speed), while the foreign price level grows at a
-                    constant 2%, P*′ = P*(1 + π̄·speed) — the foreign central bank is treated as permanently on target.
-                  </p>
+                    constant 2%, P*′ = P*(1 + <span class="barred">π</span>·speed) — the foreign central bank is treated as permanently on target.</p>
                   <p>Real appreciation and depreciation are therefore driven by the inflation <em>differential</em>
                     (π − 2%). When domestic inflation runs above 2%, P outpaces P*, ε rises (real appreciation) and net
                     exports fall through the n₁ channel of §7.3 — the mechanism behind the fiscal-expansion presets and

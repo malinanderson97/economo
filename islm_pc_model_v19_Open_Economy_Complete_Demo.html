@@ -90,6 +90,9 @@
     font-family: 'Hanken Grotesk', system-ui, sans-serif; font-weight: 700;
   }
   .chart-box .sub { font-size: 10.5px; color: var(--ink-3); margin-bottom: 4px; line-height: 1.4; }
+  .chart-box .chart-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+  .chart-box .chart-header h3 { margin: 0; }
+  .chart-box .chart-header .sub { margin: 0; }
   .chart-wrap { position: relative; }
   .chart-chips {
     position: absolute; top: 6%; right: 5%; display: flex; gap: 5px; z-index: 5;
@@ -284,6 +287,7 @@
   .eq-body { display: none; padding: 2px 9px 8px; border-top: 1px solid var(--rule); }
   .eq-box.open .eq-body { display: block; }
   .eq-box .eq-line { display: flex; align-items: baseline; white-space: nowrap; overflow-x: auto; }
+  .eq-line.eq-inactive { opacity: 0.4; }
   .eq-box .eq-anchor { color: var(--ink-2); font-weight: 500;
     padding-bottom: 4px; border-bottom: 1px solid var(--rule); margin-bottom: 4px; }
   .eq-box .eq-total { margin-top: 3px; padding-top: 3px; border-top: 1px solid var(--rule); }
@@ -495,8 +499,10 @@
       <svg id="connector-overlay" aria-hidden="true"></svg>
 
       <div class="chart-box" id="chart-box-ismp">
-        <h3>ISLM (goods market &amp; policy rate)</h3>
-        <div class="sub">Solid blue = nominal LM. Dashed blue = real r = i − πᵉ. Drag IS for fiscal, LM for monetary.</div>
+        <div class="chart-header">
+          <h3>ISLM (goods market &amp; policy rate)</h3>
+          <div class="sub">Solid blue = nominal LM. Dashed blue = real r = i − πᵉ.</div>
+        </div>
         <div class="chart-wrap">
           <svg id="ismp" viewBox="0 0 360 220"></svg>
           <div class="chart-chips" id="ismp-chips"></div>
@@ -512,8 +518,10 @@
       </div>
 
       <div class="chart-box" id="chart-box-uip">
-        <h3>UIP (interest rate &amp; exchange rate)</h3>
-        <div class="sub">Solid green = UIP (nominal E). Gold dashed = real ε = E·P/P*. They diverge as home prices move relative to foreign.</div>
+        <div class="chart-header">
+          <h3>UIP (interest rate &amp; exchange rate)</h3>
+          <div class="sub">Solid green = UIP (nominal E). Gold dashed = real ε = E·P/P*.</div>
+        </div>
         <svg id="uip" viewBox="0 0 360 220"></svg>
         <div class="legend-row">
           <span><span class="legend-swatch" style="background:#0f6e56"></span>UIP: E = Eᵉ(1+i)/(1+i*)</span>
@@ -525,8 +533,10 @@
       </div>
 
       <div class="chart-box" id="chart-box-pc">
-        <h3>Phillips curve</h3>
-        <div class="sub">Drag PC vertically to change πᵉ. Cost-push shock lifts the whole curve.</div>
+        <div class="chart-header">
+          <h3>Phillips curve</h3>
+          <div class="sub">Drag PC vertically to change πᵉ. Cost-push shock lifts the whole curve.</div>
+        </div>
         <div class="chart-wrap">
           <svg id="pc" viewBox="0 0 360 220"></svg>
           <div class="chart-chips" id="pc-chips"></div>
@@ -559,8 +569,10 @@
       </div>
 
       <div class="chart-box">
-        <h3>Dynamics over time</h3>
-        <div class="sub">Y, i, π, P, ε across periods.</div>
+        <div class="chart-header">
+          <h3>Dynamics over time</h3>
+          <div class="sub">Y, i, π, P, ε across periods.</div>
+        </div>
         <svg id="ts" viewBox="0 0 360 220"></svg>
         <div class="legend-row">
           <span><span class="legend-swatch" style="background:#1a1a1a"></span>Y</span>
@@ -876,7 +888,8 @@ const SYMBOL_DEFS = {
   'P*': { meaning: 'foreign price level', ref: 'Ch. 19', role: 'foreign price level' },
   'P′': { meaning: 'next-period price level: P(1+π·speed)', ref: 'Ch. 16 p.336 (primes = future values)', role: 'price transition rule' },
   'P*′': { meaning: 'next-period foreign price level', ref: 'Ch. 16 p.336', role: 'foreign price transition rule' },
-  'Eᵉ′': { meaning: 'next-period expected exchange rate: adaptive update of Eᵉ toward current E', ref: 'Ch. 16 p.336; cf. eq. 19.5', role: 'expectation transition rule' }
+  'Eᵉ′': { meaning: 'next-period expected exchange rate: adaptive update of Eᵉ toward current E', ref: 'Ch. 16 p.336; cf. eq. 19.5', role: 'expectation transition rule' },
+  'Taylor i': { meaning: 'What the central bank will change the interest rate to next period to fulfill the Taylor rule', ref: 'smoothed, see 5.4 in Model Textbook Correspondence', role: 'Taylor rule' }
 };
 
 const EQ_REF = {
@@ -1815,7 +1828,7 @@ function drawTimeSeries() {
   const o = {
     W, H, P,
     xMin: 0, xMax: maxPeriod, yMin: 50, yMax: 150,
-    xLabel: 'period', yLabel: 'Y',
+    xLabel: 'period', yLabel: 'Output Y',
     xTicks: Array.from({ length: 6 }, (_, i) => Math.round(i * maxPeriod / 5)),
     yTicks: [50, 75, 100, 125, 150],
     xFmt: v => v.toFixed(0), yFmt: v => v.toFixed(0)
@@ -1823,7 +1836,13 @@ function drawTimeSeries() {
   drawAxes(svg, o);
 
   const rateMin = -0.05, rateMax = 0.20;
-  { const _t = el('text', { x: W - P.r + 4, y: P.t + 10, class: 'axis-label', 'text-anchor': 'start' }, svg); _t.textContent = 'i, π'; svgTitle(_t, 'i, π'); }
+  {
+    const cx = W - 12;
+    const cy = (P.t + H - P.b) / 2;
+    const _t = el('text', { x: cx, y: cy, class: 'axis-label', 'text-anchor': 'middle', transform: `rotate(-90 ${cx} ${cy})` }, svg);
+    _t.textContent = 'interest rate i, inflation π';
+    svgTitle(_t, 'interest rate i, inflation π');
+  }
   [-0.05, 0, 0.05, 0.10, 0.15, 0.20].forEach(v => {
     const y = H - P.b - (v - rateMin) / (rateMax - rateMin) * (H - P.t - P.b);
     el('text', { x: W - P.r + 4, y: y + 3, class: 'axis-label' }, svg).textContent = (v * 100).toFixed(0) + '%';
@@ -2201,7 +2220,7 @@ function drawEquations(eq) {
     const E_e_next = (1 - 0.4*s.speed)*s.E_e + 0.4*s.speed*eq.E;
     let html = '';
     if (isUnl('fisher')) {
-      html += `<span ${lne('fisher')}><span class="eq-lbl">Fisher</span>`
+      html += `<span ${lne('fisher')}><span class="eq-lbl" style="margin-right:8px;">Fisher</span>`
         + `<span class="eq-sym">r = i − πᵉ</span> = `
         + `<span class="eq-num">${fpc(eq.i,2)} − ${fpc(s.pi_e,1)}</span> `
         + `= <span class="eq-res">${fpc(r,2)}</span></span>`;
@@ -2220,9 +2239,28 @@ function drawEquations(eq) {
     }
     if (isUnl('Ee_prime') && openOn()) {
       html += `<span ${lne('Ee_prime')}><span class="eq-lbl">Eᵉ′</span>`
-        + `<span class="eq-sym">(1−0.4·sp)Eᵉ + 0.4·sp·E</span> = `
-        + `<span class="eq-num">(1−0.4·${f(s.speed,2)})(${f(s.E_e,3)}) + 0.4·${f(s.speed,2)}(${f(eq.E,3)})</span> `
+        + `<span class="eq-sym">(1−0.4·sp)Eᵉ + 0.4·sp·E</span></span>`
+        + `<span ${lne('Ee_prime')}><span class="eq-lbl"></span>`
+        + `= <span class="eq-num">(1−0.4·${f(s.speed,2)})(${f(s.E_e,3)}) + 0.4·${f(s.speed,2)}(${f(eq.E,3)})</span></span>`
+        + `<span ${lne('Ee_prime')}><span class="eq-lbl"></span>`
         + `= <span class="eq-res">${f(E_e_next,3)}</span> (adaptive)</span>`;
+    }
+    if (tutorialState.unlocked.has('PC')) {
+      const gap        = (eq.Y - eq.Y_n) / eq.Y_n;
+      const neutral_r  = isRateForOutput(eq.Y_n, s.G, s.T, eq.eps, PI_TARGET, s.c1, s.m1, s.Ystar) - PI_TARGET;
+      const neutral_i  = neutral_r + PI_TARGET;
+      const taylor_tgt = neutral_i + s.phi * (eq.pi - PI_TARGET) + PSI * gap;
+      const taylor_i   = clamp(RHO_TAYLOR * s.i + (1 - RHO_TAYLOR) * taylor_tgt, -0.05, 0.30);
+      
+      const offClass = s.taylor_on ? '' : ' eq-inactive';
+      const offTag   = s.taylor_on ? '' : ' (rule off — not applied)';
+      
+      html += `<span class="eq-line${offClass}" style="color:${c('MP')}" data-term="MP"><span class="eq-lbl" style="margin-right:8px;">Taylor i</span>`
+        + `<span class="eq-sym">i_N + φ(π−π*) + ψ·gap</span></span>`
+        + `<span class="eq-line${offClass}" style="color:${c('MP')}" data-term="MP"><span class="eq-lbl"></span>`
+        + `= <span class="eq-num">${fpc(neutral_i,1)} + ${f(s.phi,1)}(${fpc(eq.pi-PI_TARGET,1)}) + 0.25(${fpc(gap,1)})</span></span>`
+        + `<span class="eq-line${offClass}" style="color:${c('MP')}" data-term="MP"><span class="eq-lbl"></span>`
+        + `= <span class="eq-res">${fpc(taylor_i,2)}</span>${offTag}</span>`;
     }
     tsEl.innerHTML = wrapSymbols(html);
   }

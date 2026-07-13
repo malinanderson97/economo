@@ -497,6 +497,7 @@ function testReconciliation(stateOverrides, desc) {
     while ((match = numRegex.exec(html)) !== null) {
       const numStr = match[1];
       const resStr = match[2];
+      if (numStr.includes('<span')) continue; // Skip cross-line accidental matches
 
       let s = numStr.replace(/<[^>]+>/g, '').replace(/−/g, '-').replace(/·/g, '*');
       // To prevent matching the subtraction operator as a negative sign, we rewrite % terms explicitly
@@ -1026,7 +1027,7 @@ allTextsOn.forEach(t => {
         s3Pass = false;
       }
     }
-    if (lbl === 'i, π' && tooltip && tooltip.includes(testRender.SYMBOL_DEFS['i'].meaning) && tooltip.includes(testRender.SYMBOL_DEFS['π'].meaning)) {
+    if (lbl === 'interest rate i, inflation π' && tooltip && tooltip.includes(testRender.SYMBOL_DEFS['i'].meaning) && tooltip.includes(testRender.SYMBOL_DEFS['π'].meaning)) {
       iPiFound = true;
     }
   } else {
@@ -1064,7 +1065,7 @@ badSvgTitleApiS3.state.block = 'PC';
 badSvgTitleApiS3.window.lastSolveResult = badSvgTitleApiS3.solve(badSvgTitleApiS3.state);
 badSvgTitleApiS3.drawTimeSeries();
 let badTextsS3 = getSvgTexts(specialEls['ts']);
-let badIPi = badTextsS3.find(t => t.textContent === 'i, π');
+let badIPi = badTextsS3.find(t => t.textContent === 'interest rate i, inflation π');
 check('BAD-fixture: Dropped second token in compound label caught', badIPi && badIPi.getAttribute('data-tooltip') && !badIPi.getAttribute('data-tooltip').includes('|'));
 
 let zlbText = allTextsOn.find(t => t.textContent === '−0.5% ZLB');
