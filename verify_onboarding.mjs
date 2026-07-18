@@ -1313,6 +1313,50 @@ const badPostReset = badResetApi.getState();
 const caughtBadReset = (badPostReset.theta !== preset.state.theta);
 check('BAD-fixture: context-aware reset fallback to initialState caught', caughtBadReset);
 
+// Check preset purity
+const DEAD_STATE_KEYS = ['Y_n'];
+const REQUIRED_YN_KEYS = ['m_struct', 'z_struct'];
+
+function presetsPure(list) {
+  let ok = true;
+  let offenders = [];
+  for (const scenario of list) {
+    for (const key of DEAD_STATE_KEYS) {
+      if (key in scenario.state) {
+        ok = false;
+        offenders.push(`${scenario.id} has dead key ${key}`);
+      }
+    }
+    for (const key of REQUIRED_YN_KEYS) {
+      if (!(key in scenario.state) || typeof scenario.state[key] !== 'number') {
+        ok = false;
+        offenders.push(`${scenario.id} missing required struct key ${key}`);
+      }
+    }
+  }
+  return { ok, offenders };
+}
+
+const purityCheck = presetsPure(testResetApi.SCENARIOS);
+if (!purityCheck.ok) {
+  console.log("Preset purity failures:", purityCheck.offenders);
+}
+check('INV-PRESET-PURITY: no preset carries dead engine fields; all supply m_struct & z_struct', purityCheck.ok);
+
+// BAD-fixtures for Preset Purity
+const baseScenario = testResetApi.SCENARIOS.find(s => s.id === 'taylorPrinciple');
+
+const badA = testResetApi.clone(baseScenario);
+badA.state.Y_n = 100;
+const caughtDeadField = !presetsPure([badA]).ok;
+check('BAD-fixture: dead Y_n in preset caught', caughtDeadField);
+
+const badB = testResetApi.clone(baseScenario);
+delete badB.state.m_struct;
+const caughtMissingStruct = !presetsPure([badB]).ok;
+check('BAD-fixture: missing m_struct in preset caught', caughtMissingStruct);
+
+
 // Regression lock for shock rename
 const shockCount = (html.match(/π = πᵉ \+ α\(Y−Yₙ\)\/Yₙ \+ shock/g) || []).length;
 const drillShock = html.includes('π = πᵉ + (α/Yₙ)(Y−Yₙ) + shock');
