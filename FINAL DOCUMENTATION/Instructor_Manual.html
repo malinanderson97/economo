@@ -123,15 +123,17 @@
   <p>A dropdown in the top bar (with a <strong>Next</strong> button beside it) moves between stages. Each stage unlocks one more block of the model. The order follows the <strong>University of Sussex</strong> course syllabus, not Blanchard's chapter order — the open economy is introduced before the Phillips curve.</p>
   <table>
     <tr><th>Stage</th><th>Model</th><th>Economy</th><th>What unlocks</th><th>Rate regime</th></tr>
-    <tr><td class="stage-n">0</td><td><strong>IS-LM</strong></td><td>Closed</td><td>Goods market, IS-LM chart, policy rate</td><td><span class="mono">r = i</span> — prices fixed, no inflation</td></tr>
-    <tr><td class="stage-n">1</td><td><strong>IS-LM-UIP</strong></td><td>Open</td><td>+ Imports/exports, UIP, exchange rate</td><td>still <span class="mono">r = i</span></td></tr>
-    <tr><td class="stage-n">2</td><td><strong>IS-LM-PC</strong></td><td>Closed</td><td>+ Phillips curve, expectations, Y<sub>n</sub>, Okun</td><td><span class="mono">r = i − πᵉ</span> switches on</td></tr>
-    <tr><td class="stage-n">3</td><td><strong>Full Model</strong></td><td>Open</td><td>Everything combined</td><td><span class="mono">r = i − πᵉ</span></td></tr>
+    <tr><td class="stage-n">1</td><td><strong>IS-LM</strong></td><td>Closed</td><td>Goods market, IS-LM chart, policy rate</td><td><span class="mono">r = i</span> — prices fixed, no inflation</td></tr>
+    <tr><td class="stage-n">2</td><td><strong>IS-LM-UIP</strong></td><td>Open</td><td>+ Imports/exports, UIP, exchange rate</td><td>still <span class="mono">r = i</span></td></tr>
+    <tr><td class="stage-n">3</td><td><strong>IS-LM-PC</strong></td><td>Closed</td><td>+ Phillips curve, expectations, Y<sub>n</sub>, Okun</td><td><span class="mono">r = i − πᵉ</span> switches on</td></tr>
+    <tr><td class="stage-n">4</td><td><strong>Full Model</strong></td><td>Open</td><td>Everything combined</td><td><span class="mono">r = i − πᵉ</span></td></tr>
   </table>
   <div class="note">
     <div class="eyebrow">The key pedagogical move</div>
-    The nominal-versus-real distinction does <strong>not exist</strong> until the Phillips curve is unlocked. In stages 0 and 1 the economy is Blanchard's core short run: prices are constant, so the real rate equals the nominal rate (<span class="mono">r = i</span>), and there is no expected-inflation control. The Fisher line, the real-rate line, and the πᵉ slider all appear together the moment the PC block unlocks at stage 2. This keeps the early stages honest — students are not asked to reason about real rates before they have met inflation.
+    The nominal-versus-real distinction does <strong>not exist</strong> until the Phillips curve is unlocked. In stages 1 and 2 the economy is Blanchard's core short run: prices are constant, so the real rate equals the nominal rate (<span class="mono">r = i</span>), and there is no expected-inflation control. The Fisher line, the real-rate line, and the πᵉ slider all appear together the moment the PC block unlocks at stage 3. This keeps the early stages honest — students are not asked to reason about real rates before they have met inflation.
   </div>
+
+  <p><strong>The two gates behind the four stages.</strong> These are not four models. They are the four combinations of two switches inside one engine. The <strong>open/closed gate</strong> adds or removes the trade terms <span class="mono">x₁Y* − n₁(ε−1)</span> and the UIP panel; it <em>oscillates</em> across the stages (off, on, off, on), which is why the exchange rate appears, disappears, and returns. The <strong>inflation gate</strong> decides whether the engine computes <span class="mono">r = i</span> or <span class="mono">r = i − πᵉ</span>; it <em>latches</em> on at stage 3 and stays on. Every stage transition is one of these two switches moving.</p>
 
   <h2 id="interface"><span class="num">3</span>The interface at a glance</h2>
   <h3>The top bar</h3>
@@ -149,7 +151,7 @@
     <li><strong>Preset scenarios</strong> — a dropdown, a Load button, and a description box.</li>
     <li><strong>IS-LM</strong> — the main goods-market and monetary policy levers (G, T, policy rate i, Taylor response φ, MPC c₁).</li>
     <li><strong>UIP curve (FX)</strong> — open-economy variables (foreign rate i*, expected exchange rate Eᵉ, import propensity m₁, foreign output Y*).</li>
-    <li><strong>Phillips curve & supply side</strong> — expectations anchoring (θ and credibility), expected inflation πᵉ, Phillips curve slope α, structural markup m and wage-push z, and transitory cost-push shock z.</li>
+    <li><strong>Phillips curve & supply side</strong> — expectations anchoring (<span class="mono">Max credibility (1 − θ)</span> and <span class="mono">Current credibility</span>), expected inflation πᵉ, Phillips curve slope α, structural markup m and wage-push z, and the transitory cost-push <span class="mono">shock</span>.</li>
   </ul>
   <p>Every slider has an editable value beside it: drag it, or click the number and type a value directly. Sliders for locked blocks are greyed until their stage unlocks.</p>
 
@@ -163,7 +165,7 @@
   <p>Solid green is the UIP relation in nominal terms, <span class="mono">E = Eᵉ(1+i)/(1+i*)</span>. The gold dashed line is the real exchange rate <span class="mono">ε = E·P/P*</span>. The two diverge as home prices move relative to foreign.</p>
 
   <h3><span class="dot" style="background:var(--curve-pc)"></span>Phillips curve</h3>
-  <p>Drag the curve vertically to change expected inflation πᵉ. A cost-push shock z lifts the whole curve. The derivation drill-down expands the labour market (WS-PS), the Okun bridge from unemployment to output, and the Phillips relation itself.</p>
+  <p>Drag the curve vertically to change expected inflation πᵉ. A transitory cost-push <span class="mono">shock</span> lifts the whole curve without moving Y<sub>n</sub>. The slope of the plotted line is α/Y<sub>n</sub> and only the α slider changes it — the credibility slider never tilts it, it only drives the curve's vertical drift when you step forward. The derivation drill-down expands the labour market (WS-PS), the Okun bridge from unemployment to output, and the Phillips relation itself.</p>
 
   <h2 id="controls"><span class="num">5</span>Controls and what they mean</h2>
   <ul>
@@ -173,10 +175,10 @@
     <li><strong>MPC c₁</strong> (0.30–0.80). The marginal propensity to consume. Raising it steepens the multiplier; the live readout shows the updated multiplier and response coefficients.</li>
     <li><strong>Foreign rate i*</strong> (0–10%), <strong>Expected exchange rate Eᵉ</strong> (0.7–1.3), <strong>Import propensity m₁</strong> (0.05–0.60), and <strong>Foreign output Y*</strong> (80–120). Open-economy variables.</li>
     <li><strong>Expected inflation πᵉ</strong> (−2% to 15%). Shifts the Phillips curve and drives the real rate <span class="mono">r = i − πᵉ</span>.</li>
-    <li><strong>PC slope α</strong> (0.05–0.50, default 0.30). How strongly the output gap feeds into inflation. Calibrated against Hazell et al. (QJE 2022).</li>
+    <li><strong>PC slope α</strong> (0.05–0.50, default 0.30). How strongly the output gap feeds into inflation. Calibrated against Hazell et al. (QJE 2022), who find a 1-point rise in unemployment lowers inflation by roughly 0.34 points; the slider is capped at 0.5 because a slope near 1.0 is not empirically supported. <strong>This is not the same α that sets the natural rate.</strong> The natural rate uses a separate, fixed wage-setting sensitivity <span class="mono">α_WS = 3.0</span>. Moving the PC slope never relocates Y<sub>n</sub> — see the two-alpha note in §6.</li>
     <li><strong>Markup m</strong> and <strong>Wage push z</strong> (structural). These shift natural output Y<sub>n</sub> through the wage-setting relation, <em>not</em> the Phillips curve directly. Distinct from the transitory cost-push shock.</li>
-    <li><strong>Max anchoring (ceiling) θ</strong> (0–1) and <strong>Current credibility</strong>. How firmly expectations stay anchored to target. High θ damps the inflation response to shocks.</li>
-    <li><strong>Cost-push (PC shift) z</strong> and the <strong>oil-shock button</strong>. A transitory supply disturbance that lifts the Phillips curve and decays over time.</li>
+    <li><strong>Max credibility (1 − θ)</strong> and <strong>Current credibility</strong>. How firmly expectations stay anchored to the 2% target. The engine stores Blanchard's θ (eq. 8.7) with exactly his meaning: <span class="mono">θ = 0</span> is <em>fully anchored</em> (πᵉ = target) and <span class="mono">θ = 1</span> is <em>fully adaptive</em> (πᵉ = last period's inflation — the accelerationist spiral). The slider is <em>displayed</em> as its complement <span class="mono">1 − θ</span>, so dragging right = more credible = more anchored, and so that it runs the same direction as the Current-credibility slider. That is a display choice only; the value entering every equation is Blanchard's θ. <strong>Higher credibility (lower θ) damps the inflation response to shocks.</strong> Note that θ does nothing within a single frame — it never tilts the plotted Phillips curve. It sets the speed and direction of the curve's <em>vertical drift</em> as you step forward, via πᵉ′ = πᵉ + speed·[ A(π̄ − πᵉ) + (1 − A)(π − πᵉ) ], with A = (1 − θ)·credibility.</li>
+    <li><strong>Cost-push <span class="mono">shock</span> (PC shift)</strong> and the <strong>oil-shock button</strong>. A transitory supply disturbance that lifts the Phillips curve and decays over time. It is labelled <span class="mono">shock</span>, not <span class="mono">z</span>: the symbol <span class="mono">z</span> is reserved throughout for Blanchard's <em>structural</em> wage-push term in eq. (8.4), which moves the natural rate. The transitory shock does not.</li>
   </ul>
 
   <h2 id="equations"><span class="num">6</span>Equations and calibration</h2>
@@ -199,15 +201,21 @@
   </div>
   <p>The import leakage m₁ sits inside the denominator, so the open multiplier is <em>smaller</em> and the open IS curve is <em>steeper</em> than the closed one. Baseline reduced-form responses (closed): ΔY = +2.5 ΔG, −1.25 ΔT, −500 Δr.</p>
 
-  <h3>LM (monetary policy)</h3>
-  <div class="eq">r = i &nbsp;(stages 0–1, prices fixed) &nbsp;→&nbsp; r = i − πᵉ &nbsp;(stage 2 onward)</div>
-  <p>The central bank sets the nominal rate i directly.</p>
+  <h3>LM / MP (monetary policy)</h3>
+  <div class="eq">r = i &nbsp;(stages 1–2, prices fixed) &nbsp;→&nbsp; r = i − πᵉ &nbsp;(stage 3 onward)<a class="ref" href="Model_Textbook_Correspondence.html#lm-block">→ Correspondence</a></div>
+  <p>Following Blanchard's modern treatment (Ch. 5 and Ch. 9), money supply and money demand are removed entirely: the central bank sets the nominal rate <em>i</em> directly, so the LM curve is a horizontal MP line and the money stock is endogenous.</p>
+  <div class="eq">
+    Neutral nominal rate: &nbsp; ī = rₙ + π̄ &nbsp;(= 3% at baseline)<a class="ref" href="Model_Textbook_Correspondence.html#lm-block">→ Correspondence</a><br>
+    Taylor rule (when on): &nbsp; i = ρ·i₋₁ + (1 − ρ)·( ī + φ(π − π̄) + ψ(Y − Yₙ)/Yₙ ), &nbsp; ρ = 0.75, ψ = 0.25<a class="ref" href="Model_Textbook_Correspondence.html#taylor-rule">→ Correspondence</a>
+  </div>
+  <p>Blanchard's Ch. 23 rule is written in the unemployment gap, <span class="mono">i = ī + a(π − π̄) − b(u − uₙ)</span>. The tool rewrites it in the output gap using the identity <span class="mono">(u − uₙ) = −(Y − Yₙ)/L</span>, which flips the sign: the tool's positive coefficient ψ is Blanchard's negative −b after that conversion, not a disagreement. Two further points are <strong>deliberate departures</strong> from the textbook rule and are documented as such: <em>a</em> and <em>b</em> are renamed φ and ψ, and the tool adds <strong>interest smoothing</strong> (ρ = 0.75) — the rate adjusts partially toward its rule-implied target each period. Blanchard's stated rule has no lagged-rate term; smoothing is retained here because without it a bank reacting instantly to current gaps can trigger severe period-to-period oscillations that would destabilise the simulation. φ above 1 is the Taylor principle.</p>
 
   <h3>UIP (exchange rate)</h3>
   <div class="eq">
-    E = Eᵉ(1+i)/(1+i*)<a class="ref" href="Model_Textbook_Correspondence.html#uip">→ Correspondence</a>
+    E = Eᵉ(1+i)/(1+i*)<a class="ref" href="Model_Textbook_Correspondence.html#uip">→ Correspondence</a><br>
+    ε = E·P/P* &nbsp;;&nbsp; P′ = P(1 + π·speed) &nbsp;;&nbsp; P*′ = P*(1 + π̄·speed)<a class="ref" href="Model_Textbook_Correspondence.html#real-exchange-rate">→ Correspondence</a>
   </div>
-  <p>The nominal exchange rate is determined by the interest parity condition.</p>
+  <p>UIP fixes the <em>nominal</em> exchange rate E and is a verbatim match to Blanchard's eq. (19.5) — the cleanest correspondence in the model. But the goods market responds to the <em>real</em> exchange rate ε, and here the tool goes <strong>beyond</strong> Blanchard's Ch. 19 simplification of fixing P = P* = 1 (so that ε = E). Both price levels evolve: the domestic level grows at actual inflation π, the foreign level at a constant 2% (the foreign central bank is treated as permanently on target). Real appreciation and depreciation are therefore driven by the inflation <em>differential</em> (π − 2%), which is why the ε and E lines diverge on the UIP chart.</p>
 
   <h3>PC (Phillips curve) — gap form</h3>
   <div class="eq">
@@ -216,23 +224,38 @@
   </div>
   <div class="note">
     <div class="eyebrow">Why structural shocks show nothing in the PC line</div>
-    The Phillips curve is written in <strong>gap form</strong>. The structural markup m and structural wage-push z<sub>struct</sub> live inside natural output Y<sub>n</sub> via the wage-setting relation, so moving those sliders shifts Y<sub>n</sub> rather than appearing as a term in the PC equation. The "+ z" in the PC line is a separate <strong>transitory cost-push shock</strong> that sits at zero at rest and decays after a pulse. The two are deliberately kept apart.
+    The Phillips curve is written in <strong>gap form</strong>. The structural markup m and structural wage-push z<sub>struct</sub> live inside natural output Y<sub>n</sub> via the wage-setting relation, so moving those sliders shifts Y<sub>n</sub> rather than appearing as a term in the PC equation. The "+ <span class="mono">shock</span>" in the PC line is a separate <strong>transitory cost-push disturbance</strong> that sits at zero at rest and decays after a pulse. It is called <span class="mono">shock</span> and not <span class="mono">z</span> precisely so that <span class="mono">z</span> can stay reserved for Blanchard's structural term. The two are deliberately kept apart: z<sub>struct</sub> is a permanent wage-setting pressure that moves Y<sub>n</sub>; <span class="mono">shock</span> lifts inflation at a fixed Y<sub>n</sub> and then fades.
+  </div>
+
+  <div class="note">
+    <div class="eyebrow">The two alphas — a deliberate deviation from the textbook</div>
+    In Blanchard, the α in the Phillips curve and the α in the natural-rate formula u<sub>n</sub> = (m + z)/α are <strong>the same number</strong>. In the tool they deliberately are not, and this is the one genuine <strong>DEVIATION</strong> in the PC block. The reason is that a single α cannot fit both facts it is asked to fit. The natural-rate formula needs α ≈ 3 to give a plausible u<sub>n</sub>: at the baseline m + z = 0.15, an α of 0.3 would imply 50% unemployment. But the empirically estimated Phillips-curve slope is around 0.3 — ten times smaller. The engine therefore keeps Blanchard's α in the natural-rate formula as a fixed structural constant <span class="mono">α_WS = 3.0</span>, and gives the Phillips-curve slope its own slider <span class="mono">α</span> (default 0.3). Price stickiness and real rigidities flatten the observed inflation–output relation far below the underlying wage-setting sensitivity, so the two are genuinely different objects. A practical benefit: experimenting with flat versus steep Phillips curves can never accidentally relocate potential output.
+  </div>
+
+  <div class="note">
+    <div class="eyebrow">Expectations: what θ does and does not do</div>
+    <span class="mono">πᵉ′ = πᵉ + speed·[ A(π̄ − πᵉ) + (1 − A)(π − πᵉ) ], &nbsp; A = (1 − θ)·credibility</span><br>
+    At credibility = 1 this reduces to Blanchard's eq. (8.7), <span class="mono">πᵉ = (1 − θ)π̄ + θπ₋₁</span>, exactly; the endogenous credibility stock is the tool's one addition. Blanchard holds α fixed and varies θ across the historical mutations of the Phillips curve (eqs. 8.5 → 8.8 → 8.9), and the tool follows him. So the apparent steepening of the 1970s Phillips curve is a <strong>θ story, not an α story</strong>: it is reproduced by de-anchoring expectations and <em>running the model forward</em>, not by raising α and not by any single-frame change. θ never rotates the plotted line — it governs the line's vertical drift over successive periods.
   </div>
 
   <h2 id="scenarios"><span class="num">7</span>Preset scenarios</h2>
   <p>Six preset scenarios load a parameter set and a teaching narrative. Use them as lecture set-pieces or seminar prompts.</p>
+  <div class="note">
+    <div class="eyebrow">A note on how credibility is quoted below</div>
+    Each scenario is described using the value on the <strong>slider you actually see</strong>, <span class="mono">Max credibility (1 − θ)</span>. Higher = more anchored. Where the underlying Blanchard parameter θ matters for the economics, it is given alongside. Recall the engine convention: <span class="mono">θ = 0</span> is fully anchored, <span class="mono">θ = 1</span> is fully adaptive.
+  </div>
   <ol>
-    <li><strong>1. The Taylor Principle</strong> — Taylor rule ON with φ = 1.5 and partially-anchored expectations (θ=0.25), so expectations can actually move. Apply the oil shock and step: with φ = 1.5 the bank responds more than one-for-one and inflation comes smoothly back to the 2% target within the medium run. Then—without resetting—lower φ to 0.5 and shock again. Now the bank is too passive: the rate is cut to the ZLB floor and pinned there for several periods, expectations de-anchor (watch the warning chip), and the return to target takes far longer and oscillates. The contrast between the two φ settings is the Taylor principle.</li>
-    <li><strong>2a. De-Anchored Expectations (1970s)</strong> — Twin experiment, part 1 — identical to preset 2b in every field except θ. θ = 0.15: expectations are mostly adaptive. A transitory supply shock (z_pulse = +5%) hits: inflation spikes to 7% and πᵉ chases it upward. The central bank now fights a moving target: rates go higher for longer, inflation stays elevated for roughly twice as long as in 2b, and the cumulative output loss is about 1.5× larger.</li>
-    <li><strong>2b. Anchored Expectations (1990s)</strong> — Twin experiment, part 2 — identical to preset 2a in every field except θ. θ = 1: credibility is absolute and πᵉ stays nailed to 2% no matter what inflation does. The same +5% transitory supply shock produces a sharper but brief slump: one decisive hike, inflation is back near target within a couple of periods, and the episode is over by around t = 12. Central-bank credibility is itself a policy tool.</li>
-    <li><strong>3. Exchange-Rate Disinflation</strong> — Taylor OFF, expectations mostly anchored (θ=0.7). Cut the policy rate to 1%. UIP triggers a nominal depreciation; net exports surge and Y rises above Yₙ. Over time prices climb relative to foreign, the real exchange rate appreciates, and Y drifts back.</li>
-    <li><strong>4. Twin Deficits &amp; Real Appreciation</strong> — Taylor OFF, expectations mostly anchored (θ=0.7). A modest fiscal expansion (G raised from 20 to 22) with no monetary offset drives up domestic prices. The real exchange rate appreciates, crowding out net exports until Y returns to Yₙ and inflation returns to 2% — leaving ε permanently higher.</li>
+    <li><strong>1. The Taylor Principle</strong> — Taylor rule ON with φ = 1.5 and only partially anchored expectations (Max credibility ≈ 0.25, i.e. θ ≈ 0.75), so expectations can actually move. Apply the oil shock and step: with φ = 1.5 the bank responds more than one-for-one and inflation comes smoothly back to the 2% target within the medium run. Then—without resetting—lower φ to 0.5 and shock again. Now the bank is too passive: the rate is cut to the ZLB floor and pinned there for several periods, expectations de-anchor (watch the warning chip), and the return to target takes far longer and oscillates. The contrast between the two φ settings is the Taylor principle.</li>
+    <li><strong>2a. De-Anchored Expectations (1970s)</strong> — Twin experiment, part 1 — identical to preset 2b in every field except the credibility setting. Max credibility ≈ 0.15 (θ ≈ 0.85): expectations are mostly <em>adaptive</em>, so πᵉ chases whatever inflation actually does. A transitory cost-push <span class="mono">shock</span> of +5% hits: inflation spikes to 7% and πᵉ follows it upward. The central bank now fights a moving target: rates go higher for longer, inflation stays elevated for roughly twice as long as in 2b, and the cumulative output loss is about 1.5× larger.</li>
+    <li><strong>2b. Anchored Expectations (1990s)</strong> — Twin experiment, part 2 — identical to preset 2a in every field except the credibility setting. Max credibility = 1 (θ = 0): credibility is absolute and πᵉ stays nailed to the 2% target no matter what inflation does. The same +5% transitory cost-push <span class="mono">shock</span> produces a sharper but brief slump: one decisive hike, inflation is back near target within a couple of periods, and the episode is over by around t = 12. Central-bank credibility is itself a policy tool.</li>
+    <li><strong>3. Exchange-Rate Disinflation</strong> — Taylor OFF, expectations mostly anchored (Max credibility ≈ 0.7, i.e. θ ≈ 0.3). Cut the policy rate to 1%. UIP triggers a nominal depreciation; net exports surge and Y rises above Yₙ. Over time prices climb relative to foreign, the real exchange rate appreciates, and Y drifts back.</li>
+    <li><strong>4. Twin Deficits &amp; Real Appreciation</strong> — Taylor OFF, expectations mostly anchored (Max credibility ≈ 0.7, i.e. θ ≈ 0.3). A modest fiscal expansion (G raised from 20 to 22) with no monetary offset drives up domestic prices. The real exchange rate appreciates, crowding out net exports until Y returns to Yₙ and inflation returns to 2% — leaving ε permanently higher.</li>
     <li><strong>5. Global Rate Hike Spillover</strong> — Foreign rates jump to 6%. UIP wants a weaker domestic currency unless the CB matches the hike. With Taylor ON, the domestic rule sees the inflationary depreciation and hikes i. Because the rule anchors to the structurally computed neutral rate, the economy converges cleanly: i settles at the new world rate (6%).</li>
   </ol>
 
   <h2 id="teaching"><span class="num">8</span>Teaching with Economo</h2>
   <ul>
-    <li><strong>Start locked.</strong> Open at stage 0 so students see the full model greyed out — the destination is visible from the first lecture, which motivates each unlock.</li>
+    <li><strong>Start locked.</strong> Open at stage 1 so students see the full model greyed out — the destination is visible from the first lecture, which motivates each unlock.</li>
     <li><strong>Drag before you derive.</strong> Let students predict the direction of a shift, then drag the curve to test it. The live equation panel under each chart confirms the algebra.</li>
     <li><strong>Step through dynamics.</strong> Equilibrium comparison is one lesson; watching prices adjust period by period back to potential is another. Use Step / Reverse to slow it down.</li>
     <li><strong>Pair the scenarios.</strong> Scenarios 2a and 2b are designed as a contrast — same shock, different credibility. The side-by-side is the lesson.</li>
@@ -240,7 +263,7 @@
 
   <h2 id="faq"><span class="num">9</span>FAQ &amp; troubleshooting</h2>
   <h3>Why does closed-economy output settle at Y = 90, not 100?</h3>
-  <p>In stages 0–1 the engine runs r = i with no inflation (the fixed-price short run). At the baseline policy rate of 3%, the goods market clears at Y = 90, below potential Y<sub>n</sub> = 100. This is a real-rate result, not a sign the closed economy is "smaller." Output returns to 100 once the PC block unlocks and the real rate falls.</p>
+  <p>In stages 1–2 the engine runs r = i with no inflation (Blanchard's fixed-price short run). At the baseline policy rate of 3%, the real rate is the full 3%, borrowing is expensive, investment is low, and the goods market clears at Y = 90 — below potential Y<sub>n</sub> = 100. This is a <strong>real-rate result, not a multiplier artefact</strong>, and not a sign the closed economy is "smaller." Once the PC block unlocks at stage 3, inflation of 2% opens the Fisher wedge (r = 3% − 2% = 1%), the lower real rate spurs investment, and output returns to potential.</p>
 
   <h3>A permanent open-economy supply shock never settles.</h3>
   <p>The open economy uses backward-looking exchange-rate expectations, so permanent supply shocks have no stationary equilibrium under UIP. Use transitory shocks for open-economy work; forward-looking FX dynamics are out of scope for this version.</p>

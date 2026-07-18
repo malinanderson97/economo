@@ -18,9 +18,9 @@ these get their own checks *and* your eyes.
 ## Gates
 
 1. **Verifier-green is the gate** — and on this side that includes `verify_onboarding.mjs`
-   (96/0) alongside `verify_v16.mjs` (32/0) and `verify_v19.mjs` (52/0). Not self-report,
-   not a screenshot, not two AIs agreeing. (Counts current as of Item D; they grow as
-   invariants are added — the point is 0 failures, not a fixed number.)
+   (116/0) alongside `verify_v19.mjs` (58/0). (`verify_v16.mjs` retired with v16.) Not
+   self-report, not a screenshot, not two AIs agreeing. Counts grow as invariants are
+   added — the point is 0 failures, not a fixed number.
 2. **Never weaken a check to go green** (mirrors `CLAUDE.md` rule 2). When a spec changes
    a fact (e.g. an element moves), *flip* the assertion so it stays true — never delete it.
 3. **Scope narrowly** — the named change, not "fix the layout."
@@ -98,3 +98,23 @@ these get their own checks *and* your eyes.
     into a commit. (Violated twice in the Item C session: `diff_v16.patch` / `diff_v19.patch`
     and a `test_repl.mjs` scratch file.) Any genuinely needed temp file goes outside the
     repo, never under the repo root.
+
+## Reports are not evidence — the file is
+
+17. **A pasted diff, pass-count, or test-run output is never proof that the file changed.**
+    The report describes what the agent *intended* or *believes* it did; only the on-disk
+    file proves what happened. These can diverge — through a revert (see rule 15), a stale
+    or wrong-copy edit, or a run reported against an in-memory state that was never written.
+    So: (a) a report that pastes a `git diff` while the working file does not contain that
+    diff is a **failure**, regardless of how well-formed the diff is; (b) every task ends by
+    printing, as its *only* accepted completion evidence, the raw output of `git status
+    --short`, `git diff --stat`, and a `grep -n` (or `Select-String -Pattern`) for any new
+    check identifier / function / string the task added. Prose describing the change does not
+    substitute for these. The human verifies completion by grepping the actual file and
+    re-running the suite locally — never by reading the narrative. If the agent ran any
+    working-tree command during the task (it should not — rule 15), it must disclose it
+    explicitly rather than report the pre-command state. (Surfaced repeatedly this session:
+    an assertion reported as added but absent from the file; then a full diff + "115 passed,
+    1 failed" demonstration pasted for a check the uploaded file did not contain. The edit
+    turned out real but reached the human only after re-grepping the actual bytes — the
+    report alone was indistinguishable from confabulation.)
