@@ -1,8 +1,5 @@
 # Working rules for this repo — implementation / UI side
 
-**Model scope boundary: Blanchard mechanics frozen; scenarios/content may grow.
-Engine changes → future models. See Decision_Log_Model_Scope.md.**
-
 Read on opening the repo, by the agent doing the building. **Engine rules live in
 `CLAUDE.md` and the `macro-model-verification` skill** — read those before any
 `solve()`/`step()`/coefficient change. This file covers everything else: layout, the
@@ -18,9 +15,8 @@ these get their own checks *and* your eyes.
 ## Gates
 
 1. **Verifier-green is the gate** — and on this side that includes `verify_onboarding.mjs`
-   (116/0) alongside `verify_v19.mjs` (58/0). (`verify_v16.mjs` retired with v16.) Not
-   self-report, not a screenshot, not two AIs agreeing. Counts grow as invariants are
-   added — the point is 0 failures, not a fixed number.
+   alongside `verify_v16.mjs` (22/0) and `verify_v19.mjs` (30/0). Not self-report, not a
+   screenshot, not two AIs agreeing.
 2. **Never weaken a check to go green** (mirrors `CLAUDE.md` rule 2). When a spec changes
    a fact (e.g. an element moves), *flip* the assertion so it stays true — never delete it.
 3. **Scope narrowly** — the named change, not "fix the layout."
@@ -82,39 +78,38 @@ these get their own checks *and* your eyes.
     good. An agent committing or restoring its own changes bypasses the gate. If you think a
     commit is warranted, suggest the message; do not run it. This SUPERSEDES any older
     instruction (including the previous wording of rule 13) to commit, add, or restore.
-    **This ban is not about danger, it is about authority** — it includes commands that look
-    harmless or "recovery" (`git restore`, `git checkout -- <file>`, `git stash`) just as
-    much as destructive ones. If the working tree is broken, dirty, or in an unexpected
-    state, do NOT try to fix it with git — STOP and report what you see; restoring or
-    resetting state is the human's decision, made after reading `git status`. "I was just
-    cleaning up / getting back to a known state" is exactly the action that is forbidden.
-    (Violated in the Item C session: the agent ran `git restore .` unprompted.)
 
-16. **No scratch, patch, debug, or temp files in the repo — and never redirect command
-    output to a file.** Do not create `diff_*.patch`, `test_*.mjs`, scratch `.md` notes, or
-    any helper file the task did not explicitly ask for; do not run `git diff > file`,
-    `... > out.txt`, or any redirect that writes into the working tree — print to stdout and
-    paste it in your report instead. Stray files pollute `git status` and risk being swept
-    into a commit. (Violated twice in the Item C session: `diff_v16.patch` / `diff_v19.patch`
-    and a `test_repl.mjs` scratch file.) Any genuinely needed temp file goes outside the
-    repo, never under the repo root.
+Report/file divergence. A pasted diff or pass-count can reflect an intended state that the on-disk file doesn't match — whether from a revert, a stale copy, or confabulation. Countermeasure: completion is verified only by (a) grep -n for the check label on the actual file, and (b) re-running the suite locally. Additionally, every agent task ends by printing git status --short, git diff --stat, and the raw grep for any new check identifier — as the only accepted evidence of completion.
 
-## Reports are not evidence — the file is
+### Anti-pattern: corrupt-then-"repair" with banned tooling, reported as safe
 
-17. **A pasted diff, pass-count, or test-run output is never proof that the file changed.**
-    The report describes what the agent *intended* or *believes* it did; only the on-disk
-    file proves what happened. These can diverge — through a revert (see rule 15), a stale
-    or wrong-copy edit, or a run reported against an in-memory state that was never written.
-    So: (a) a report that pastes a `git diff` while the working file does not contain that
-    diff is a **failure**, regardless of how well-formed the diff is; (b) every task ends by
-    printing, as its *only* accepted completion evidence, the raw output of `git status
-    --short`, `git diff --stat`, and a `grep -n` (or `Select-String -Pattern`) for any new
-    check identifier / function / string the task added. Prose describing the change does not
-    substitute for these. The human verifies completion by grepping the actual file and
-    re-running the suite locally — never by reading the narrative. If the agent ran any
-    working-tree command during the task (it should not — rule 15), it must disclose it
-    explicitly rather than report the pre-command state. (Surfaced repeatedly this session:
-    an assertion reported as added but absent from the file; then a full diff + "115 passed,
-    1 failed" demonstration pasted for a check the uploaded file did not contain. The edit
-    turned out real but reached the human only after re-grepping the actual bytes — the
-    report alone was indistinguishable from confabulation.)
+Named failure mode observed in the drill-diagram fix. The sequence:
+
+1. An in-scope edit corrupts the HTML model file (e.g. mangles structure or Unicode).
+2. The agent "repairs" the corruption using BANNED operations — writing a scratch
+   file (`fixed_block.js`), splicing it into the HTML by line-number ranges, and
+   writing the result back with `Set-Content`.
+3. The agent reports the banned repair as a "safe fix" and asserts the Unicode is
+   "perfectly intact" WITHOUT proof, hand-waving visible `?` characters as mere
+   "PowerShell console display."
+
+Why it's dangerous: `Set-Content` destroys Unicode in HTML files (subscripts πᵉ, ₙ,
+minus sign −) and is banned on the model file for exactly this reason. It happened
+to preserve the glyphs on one run — that is luck, not method, and must never be
+relied on. The scratch-file-splice-by-line-range approach also risks silently
+dropping or duplicating lines.
+
+Hard rules this violates (all three at once):
+- NEVER use `Set-Content` on the HTML model file. Surgical exact-string edits only.
+- NEVER create scratch files or splice content by line-number ranges.
+- Self-reports ("Unicode is intact", "visually checked") are NOT the gate. Claims of
+  correctness must be backed by grep/byte-level proof or an independent verifier run,
+  never by assertion.
+
+Required behaviour instead: if an edit corrupts the file, STOP and report the
+corruption plainly. Do not attempt a repair with any banned tool. Let Malin restore
+from git and re-apply the edit surgically. A corrupted file honestly reported is
+recoverable; a corrupted file silently "repaired" with banned tooling is a landmine.
+
+Also: leaving an untracked scratch file (`fixed_block.js`) in the repo after the task
+is itself a violation — no stray files.
