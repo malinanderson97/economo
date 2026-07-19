@@ -853,7 +853,7 @@ const SYMBOL_DEFS = {
   'θ': { meaning: 'shown as Max credibility = 1 − θ; adaptiveness of expectations (Blanchard θ)', ref: 'eq. 8.7', role: 'weight on last period\'s inflation; θ=1 fully adaptive, θ=0 fully anchored' },
   'Yₙ': { meaning: 'natural or potential output', ref: 'eq. 8.4', role: 'level of output where π = πᵉ' },
   'c₁': { meaning: 'marginal propensity to consume', ref: 'eq. 3.3', role: 'multiplier effect on output' },
-  'd₁ᵣ': { meaning: 'interest sensitivity of investment', ref: 'eq. 5.1', role: 'slope of the IS curve' },
+  'd₂': { meaning: 'interest sensitivity of investment', ref: 'eq. 5.1', role: 'slope of the IS curve' },
   'm₁': { meaning: 'marginal propensity to import', ref: 'eq. 19.1', role: 'open-economy leakage' },
   'k_open': { meaning: 'open economy multiplier', ref: 'eq. 19.2', role: 'magnifies autonomous spending' },
   'm': { meaning: 'price-setting markup', ref: 'eq. 8.4 (price-setting 7.3)', role: 'firms\' markup of price over wage; raises the natural rate uₙ, lowering Yₙ' },
@@ -2184,7 +2184,7 @@ function drawEquations(eq) {
       + `<span class="eq-num">${c0} + ${f(s.c1,2)}(${f(eq.Y,1)}−${f(s.T,0)})</span> `
       + `= <span class="eq-res">${Cd}</span>${endLine('C')}</span>` : '')
       + (isUnl('I') ? `<span ${lne('I')}><span class="eq-lbl">I</span>`
-      + `<span class="eq-sym">d₀ + d₁·Y − d₁ᵣ·${rateSym}</span> = `
+      + `<span class="eq-sym">d₀ + d₁·Y − d₂·${rateSym}</span> = `
       + `<span class="eq-num">${d0} + ${f(d1,2)}(${f(eq.Y,1)}) − ${d2}(${f(r,4)})</span> `
       + `= <span class="eq-res">${Id}</span>${endLine('I')}</span>` : '')
       + (isUnl('G') ? `<span ${lne('G')}><span class="eq-lbl">G</span>`
