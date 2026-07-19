@@ -1765,8 +1765,8 @@ function drawDrillPCChain() {
     };
     drawAxes(svgA, oA);
     const psY = 1 / (1 + state.m_struct);
-    el('line', { x1: P.l, x2: W - P.r, y1: yScale(psY, oA), y2: yScale(psY, oA), class: 'curve curve-ps', stroke: EQ_COL.PC, 'stroke-width': '1.4' }, svgA);
-    { const _t = el('text', { x: W - P.r - 2, y: yScale(psY, oA) - 4, class: 'curve-label', 'text-anchor': 'end', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgA); _t.textContent = 'PS'; svgTitle(_t, 'PS'); }
+    el('line', { x1: P.l, x2: W - P.r, y1: yScale(psY, oA), y2: yScale(psY, oA), class: 'curve curve-ps', stroke: EQ_COL.PC, 'stroke-width': '1.4', 'clip-path': `url(#${oA.clipId})` }, svgA);
+    { const _t = el('text', { x: W - P.r - 2, y: Math.min(Math.max(yScale(psY, oA) - 4, P.t + 8), H - P.b - 2), class: 'curve-label', 'text-anchor': 'end', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgA); _t.textContent = 'PS'; svgTitle(_t, 'PS'); }
     
     const wsPts = [];
     for (let u = oA.xMin; u <= oA.xMax; u += 0.01) {
@@ -1774,11 +1774,19 @@ function drawDrillPCChain() {
     }
     const d = wsPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oA).toFixed(2) + ',' + yScale(p[1], oA).toFixed(2)).join(' ');
     el('path', { d, class: 'curve', stroke: EQ_COL.PC, 'stroke-width': '1.4', 'clip-path': `url(#${oA.clipId})` }, svgA);
-    { const endX = xScale(0.10, oA); const endY = yScale(psY - (0.10 - un) * ALPHA_WS, oA); const _t = el('text', { x: endX + 2, y: endY, class: 'curve-label', 'text-anchor': 'start', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgA); _t.textContent = 'WS'; svgTitle(_t, 'WS'); }
+    {
+      const wsTargetPy = P.t + 0.35 * (H - P.t - P.b);
+      const wsVal = oA.yMin + ((H - P.b) - wsTargetPy) / (H - P.t - P.b) * (oA.yMax - oA.yMin);
+      const wsU = un + (psY - wsVal) / ALPHA_WS;
+      const wsUvis = Math.max(oA.xMin, Math.min(oA.xMax, wsU));
+      const wsLblX = Math.min(Math.max(xScale(wsUvis, oA) + 4, P.l + 2), (W - P.r) - 16);
+      const wsLblY = Math.min(Math.max(wsTargetPy - 8, P.t + 8), (H - P.b) - 4);
+      const _t = el('text', { x: wsLblX, y: wsLblY, class: 'curve-label', 'text-anchor': 'start', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgA); _t.textContent = 'WS'; svgTitle(_t, 'WS');
+    }
 
     const un_x = xScale(un, oA);
-    el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgA);
-    { const _t = el('text', { x: un_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgA); _t.textContent = 'uₙ'; svgTitle(_t, 'uₙ'); }
+    el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural', 'clip-path': `url(#${oA.clipId})` }, svgA);
+    { const _t = el('text', { x: Math.min(Math.max(un_x + 3, P.l + 2), (W - P.r) - 16), y: P.t + 9, class: 'axis-label', fill: '#666' }, svgA); _t.textContent = 'uₙ'; svgTitle(_t, 'uₙ'); }
   }
 
   const svgB = document.getElementById('svg-drill-pc-b');
@@ -1798,15 +1806,15 @@ function drawDrillPCChain() {
     }
     const d = okunPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oB).toFixed(2) + ',' + yScale(p[1], oB).toFixed(2)).join(' ');
     el('path', { d, class: 'curve', stroke: EQ_COL.PC, 'stroke-width': '1.4', 'clip-path': `url(#${oB.clipId})` }, svgB);
-    { const lblU = 0.085; const lblX = xScale(lblU, oB); const lblY = yScale(L_LABOR * (1 - lblU), oB) - 5; const _t = el('text', { x: lblX, y: lblY, class: 'curve-label', 'text-anchor': 'middle', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgB); _t.textContent = 'Y(u)'; svgTitle(_t, 'Y = L(1−u)'); }
+    { const lblU = 0.085; const lblX = xScale(lblU, oB); const lblY = Math.min(Math.max(yScale(L_LABOR * (1 - lblU), oB) - 5, P.t + 8), H - P.b - 2); const _t = el('text', { x: lblX, y: lblY, class: 'curve-label', 'text-anchor': 'middle', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgB); _t.textContent = 'Y(u)'; svgTitle(_t, 'Y = L(1−u)'); }
 
     const un_x = xScale(un, oB);
-    el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgB);
-    el('circle', { cx: xScale(un, oB), cy: yScale(Y_n, oB), r: 3, class: 'eq-point' }, svgB);
+    el('line', { x1: un_x, x2: un_x, y1: P.t, y2: H - P.b, class: 'curve-natural', 'clip-path': `url(#${oB.clipId})` }, svgB);
+    el('circle', { cx: xScale(un, oB), cy: yScale(Y_n, oB), r: 3, class: 'eq-point', 'clip-path': `url(#${oB.clipId})` }, svgB);
     
     const yn_y = yScale(Y_n, oB);
-    el('line', { x1: P.l, x2: W - P.r, y1: yn_y, y2: yn_y, class: 'curve-natural' }, svgB);
-    { const _t = el('text', { x: P.l + 4, y: yn_y - 4, class: 'axis-label', fill: '#666' }, svgB); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
+    el('line', { x1: P.l, x2: W - P.r, y1: yn_y, y2: yn_y, class: 'curve-natural', 'clip-path': `url(#${oB.clipId})` }, svgB);
+    { const _t = el('text', { x: P.l + 4, y: Math.min(Math.max(yn_y - 4, P.t + 8), H - P.b - 2), class: 'axis-label', fill: '#666' }, svgB); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
   }
 
   const svgC = document.getElementById('svg-drill-pc-c');
@@ -1828,12 +1836,12 @@ function drawDrillPCChain() {
     }
     const d = pcPts.map((p, i) => (i ? 'L' : 'M') + xScale(p[0], oC).toFixed(2) + ',' + yScale(p[1], oC).toFixed(2)).join(' ');
     el('path', { d, class: 'curve', stroke: EQ_COL.PC, 'stroke-width': '1.4', 'clip-path': `url(#${oC.clipId})` }, svgC);
-    { const endX = xScale(115, oC); const endY = yScale(state.pi_e + state.alpha * (115 - Y_n) / Y_n + z_eff, oC); const _t = el('text', { x: endX - 2, y: endY - 6, class: 'curve-label', 'text-anchor': 'end', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgC); _t.textContent = 'PC'; svgTitle(_t, 'PC'); }
+    { const endX = xScale(115, oC); const endY = yScale(state.pi_e + state.alpha * (115 - Y_n) / Y_n + z_eff, oC); const _t = el('text', { x: endX - 2, y: Math.min(Math.max(endY - 6, P.t + 8), H - P.b - 2), class: 'curve-label', 'text-anchor': 'end', fill: EQ_COL.PC, 'pointer-events': 'none' }, svgC); _t.textContent = 'PC'; svgTitle(_t, 'PC'); }
 
     const yn_x = xScale(Y_n, oC);
-    el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural' }, svgC);
-    { const _t = el('text', { x: yn_x + 3, y: P.t + 9, class: 'axis-label', fill: '#666' }, svgC); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
-    el('circle', { cx: xScale(eq.Y, oC), cy: yScale(eq.pi, oC), r: 3, class: 'eq-point' }, svgC);
+    el('line', { x1: yn_x, x2: yn_x, y1: P.t, y2: H - P.b, class: 'curve-natural', 'clip-path': `url(#${oC.clipId})` }, svgC);
+    { const _t = el('text', { x: Math.min(Math.max(yn_x + 3, P.l + 2), (W - P.r) - 16), y: P.t + 9, class: 'axis-label', fill: '#666' }, svgC); _t.textContent = 'Yₙ'; svgTitle(_t, 'Yₙ'); }
+    el('circle', { cx: xScale(eq.Y, oC), cy: yScale(eq.pi, oC), r: 3, class: 'eq-point', 'clip-path': `url(#${oC.clipId})` }, svgC);
   }
 
   const pcWSEq = document.getElementById('drill-eq-wsps');
