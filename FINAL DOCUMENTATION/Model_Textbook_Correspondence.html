@@ -128,6 +128,7 @@
       padding-top: 20px;
       border-top: 1px solid var(--rule);
       color: var(--ink);
+      scroll-margin-top: 24px;
     }
 
     h2:first-of-type {
@@ -146,6 +147,7 @@
       font-weight: 600;
       margin: 24px 0 4px;
       color: var(--ink);
+      scroll-margin-top: 24px;
     }
 
     p {
@@ -325,7 +327,7 @@
     .toc ol {
       list-style: none;
       margin: 0;
-      counter-reset: toc;
+      counter-reset: toc -1;
     }
 
     .toc li {
@@ -1033,10 +1035,14 @@
                 Central Bank sets its actual target interest rate by adjusting up or down from this <em>neutral
                   baseline</em> based on the current inflation and output gaps.</p>
               <h3>5.3 The unemployment–output-gap conversion (shared with the PC block)</h3>
-              <p>Blanchard's policy rule and his Phillips curve are written in unemployment, but the tool works in
-                output. The conversion is a single identity derived in Chapter 9 (the steps that take eq. 9.2 to eq.
-                9.3); it is recorded once here and referenced by both the Taylor rule below and the Phillips-curve
-                block.</p>
+              <p>Several of Blanchard's medium-run relations are first written in unemployment but end up in the output
+                gap. The bridge between the two is a single identity that Blanchard himself derives in Chapter 9 (the
+                steps taking eq. 9.2 to eq. 9.3). Because more than one block needs it, the identity is recorded once
+                here and referenced where required. The Phillips curve is the clearest case: Blanchard introduces it in
+                unemployment in Chapter 8, then rewrites it in the output gap in Chapter 9 — so the tool's output-gap
+                Phillips curve follows Blanchard's own Chapter 9 form rather than departing from him. The Taylor rule
+                (§5.4) reuses the same identity to convert its unemployment-gap term to an output-gap term; that
+                conversion is carried out in full in §5.4.</p>
               <p>By definition the unemployment rate is unemployment over the labour force:</p>
               <div style="text-align: center; margin: 12px 0;">
                 <div>u ≡ U/L = (L − N)/L = 1 − N/L</div>
@@ -1397,37 +1403,74 @@
                 experimenting with flat versus steep curves here never accidentally relocates potential output —
                 that protection is the point of keeping the two apart.</p>
               <h3>6.6 Inflation expectations and anchoring — eq. 8.7</h3>
-              <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
-                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;"><span
+
+              <p>This block governs how people form the expected inflation πᵉ that feeds the Phillips
+                curve. Blanchard's rule is a weighted average of two anchors — the central bank's target
+                <span class="barred">π</span> and last period's actual inflation π₋₁:</p>
+              <h4 style="margin-top:4px; font-weight:normal;"><span class="eq"
+                  style="display:inline-block; margin:4px 0; padding:6px 12px; color:#888;"><span
                     style="color:var(--accent); font-weight:bold;">πᵉ</span> = (1 − θ)<span class="barred">π</span> +
-                  θπ₋₁</span></h4>
+                  θ π₋₁ &nbsp;<span style="font-size:0.85em;">(eq. 8.7)</span></span></h4>
+              <p>The single parameter θ (Blanchard's de-anchoring parameter) sets where expectations sit
+                between the two anchors:</p>
+              <ul>
+                <li><strong>θ = 0 — fully anchored.</strong> πᵉ = <span class="barred">π</span>, the target.
+                  Expectations ignore recent inflation entirely; this recovers the original Phillips curve
+                  of eq. 8.6.</li>
+                <li><strong>θ = 1 — fully adaptive (accelerationist).</strong> πᵉ = π₋₁. Expectations simply
+                  copy last period's inflation, with no pull back toward target.</li>
+                <li><strong>0 &lt; θ &lt; 1 — partially anchored.</strong> A blend of the two.</li>
+              </ul>
+              <p>The tool stores θ with exactly this meaning — there is no hidden inversion; the value that
+                enters the equation is Blanchard's θ. The tool then layers two modifiers on top of the base
+                rule, explained below. With both modifiers at their neutral settings, the tool's rule is
+                identical to eq. 8.7.</p>
+
               <div class="corr-card">
-                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val">Blanchard's rule (left),
-                    with two tool modifiers: credibility scales the anchoring weight, and the move is made gradually
-                    each step (<span class="eq-inline">speed</span>).<div class="eq" style="margin-top:8px;">πᵉ′ = πᵉ +
-                      speed·[ A(<span class="barred">π</span> − πᵉ) + (1 − A)(π − πᵉ) ]<br><span
-                        style="color:var(--sub-text); font-size:0.9em;">where A = (1 − θ)·credibility &nbsp;—&nbsp; at
-                        credibility = 1, A = 1 − θ and this reduces to eq. 8.7 exactly</span></div></span></div>
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val">Blanchard's eq. 8.7,
+                    updated gradually each step rather than in one jump, with the anchoring weight scaled by a
+                    credibility stock:
+                    <div class="eq" style="margin-top:8px;">πᵉ′ = πᵉ + speed · [ A(<span class="barred">π</span> − πᵉ)
+                      + (1 − A)(π − πᵉ) ]<br><span style="color:#888; font-size:0.9em;">where A = (1 − θ) · credibility.
+                      At credibility = 1 and speed = 1, this collapses to eq. 8.7 exactly.</span></div></span></div>
                 <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">πᵉ = (1 − θ)<span
-                      class="barred">π</span> + θπ₋₁ &nbsp;(eq. 8.7)</span></div>
+                      class="barred">π</span> + θ π₋₁ &nbsp;(eq. 8.7)</span></div>
                 <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
-                      class="badge badge-exact">EXACT</span> <span style="font-size:0.85em; color:var(--sub-text);">(θ
-                      per eq. 8.7)</span> &nbsp; <span class="badge badge-add">TOOL ADDITION</span> <span
-                      style="font-size:0.85em; color:var(--sub-text);">(credibility stock)</span></span></div>
-                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">θ itself is exact. The
-                    only addition is the credibility stock: when it sits below 1, anchoring erodes further and inflation
-                    drifts more adaptively than θ alone would give.</span></div>
+                      class="badge badge-exact">EXACT</span> <span style="font-size:0.85em; color:#888;">(θ per
+                      eq. 8.7)</span> &nbsp; <span class="badge badge-add">TOOL ADDITION</span> <span
+                      style="font-size:0.85em; color:#888;">(credibility stock, gradual update)</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">θ itself is exact.
+                    The additions are a credibility stock that can erode anchoring further, and a per-step update
+                    speed. Both are neutral by default, so the default behaviour is Blanchard's.</span></div>
               </div>
-              <p>θ is Blanchard's de-anchoring parameter, and the tool stores it with exactly that meaning:
-                θ = 0 gives fully anchored expectations (πᵉ = target, the original Phillips curve of eq. 8.6),
-                θ = 1 gives fully adaptive expectations (πᵉ = last year's inflation). There is no inversion in the
-                engine — the stored <code>θ</code> is Blanchard's θ. The only presentational twist is on the
-                control surface: the slider is <em>displayed</em> as its complement, labelled
-                <strong>Max credibility (1 − θ)</strong>, so that dragging right = more credible = more anchored,
-                the intuitive direction for a policy control, and so that it runs the same way as the separate
-                Current-credibility slider. This is a display choice only; the value entering every equation is
-                Blanchard's θ.
-              </p>
+
+              <p style="margin-top:14px;"><strong>How the tool's rule relates to eq. 8.7.</strong> The two
+                equations look different but describe the same thing. Blanchard's form
+                <em>replaces</em> πᵉ each period with the weighted average; the tool's form <em>moves</em> πᵉ
+                a fraction of the way toward that same average each step. Read the bracket in the tool's
+                equation as a target-minus-current gap: (1 − θ) of the pull is toward the target
+                <span class="barred">π</span> and θ of the pull is toward recent inflation π, exactly the eq. 8.7
+                split. Setting <span class="eq-inline">speed</span> = 1 makes the move instantaneous and
+                recovers Blanchard's one-step replacement.</p>
+
+              <p><strong>Modifier 1 — the credibility stock.</strong> Blanchard's θ is fixed; the tool lets the
+                <em>effective</em> anchoring weight fall when the central bank has lost credibility. The stock
+                enters through A = (1 − θ) · credibility: at credibility = 1 the anchoring weight is the full
+                (1 − θ) that eq. 8.7 specifies, but as credibility falls below 1, A shrinks, less weight sits on
+                the target, and expectations drift more adaptively than θ alone would give. This is what lets the
+                tool represent an anchoring regime that decays over time rather than staying fixed. It is a
+                <span class="badge badge-add">TOOL ADDITION</span>; at credibility = 1 it disappears.</p>
+
+              <p><strong>Modifier 2 — update speed.</strong> Blanchard's rule resets πᵉ in a single step each
+                period. The tool instead nudges πᵉ a fraction <span class="eq-inline">speed</span> of the way
+                toward its new value each step, so expectations adjust smoothly over the simulation rather than
+                jumping. At speed = 1 the nudge is a full step and the two coincide.</p>
+
+              <p><strong>The slider display.</strong> One presentational twist lives on the control surface only.
+                The θ control is <em>shown</em> as its complement, labelled <strong>Max credibility (1 − θ)</strong>,
+                so that dragging right means more credible, more anchored — the intuitive direction for a policy
+                control, and the same direction as the separate Current-credibility slider. This is a label
+                choice only; the value entering every equation is still Blanchard's θ.</p>
               <h3>6.7 Supply shocks: two distinct channels — Section 8-3</h3>
               <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
                   style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (α / Yₙ)(Y
