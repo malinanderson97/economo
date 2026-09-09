@@ -478,7 +478,7 @@ check('Chip gating: expectations chips and ZLB render when blocks unlocked',
 
 // NEW: Equation Reconciliation Checks
 function testReconciliation(stateOverrides, desc) {
-  const cleanState = { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.75, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 };
+  const cleanState = { G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.75, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 };
   Object.assign(testRender.state, cleanState, stateOverrides);
   const eq = testRender.solve(testRender.state);
   testRender.drawEquations(eq);
@@ -581,7 +581,7 @@ check('Eq Reconciliation: PC-locked nominal rate',
   testReconciliationPCLocked({ i: 0.04, pi_e: 0.10 }, 'PC-locked, big πᵉ'));
 
 // BAD-fixture: hardcoded coefficient
-testRender.state = Object.assign({ G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.75, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 }, { c1: 0.8 });
+testRender.state = Object.assign({ G: 20, T: 20, P: 1.0, P_star: 1.0, i_target: 0.03, i: 0.03, i_star: 0.03, E_e: 1.0, pi_e: 0.02, m_struct: 0.05, z_struct: 0.10, Y_n: 100, alpha: 0.5, z: 0, z_pulse: 0, theta: 0.75, cred: 1.0, deanchor_on: false, phi: 1.5, taylor_on: false, speed: 0.5, period: 0, c1: 0.5, m1: 0.3, Ystar: 100 }, { c1: 0.8 });
 const badEq = testRender.solve(testRender.state);
 testRender.specialEls['eq-ismp'].innerHTML = '<span class="eq-line"><span class="eq-lbl">C</span><span class="eq-sym">c₀ + c₁(Y−T)</span> = <span class="eq-num">20 + 0.5(100−20)</span> = <span class="eq-res">60</span></span>';
 
@@ -1357,11 +1357,16 @@ const caughtMissingStruct = !presetsPure([badB]).ok;
 check('BAD-fixture: missing m_struct in preset caught', caughtMissingStruct);
 
 
-// Regression lock for shock rename
-const shockCount = (html.match(/π = πᵉ \+ α\(Y−Yₙ\)\/Yₙ \+ shock/g) || []).length;
-const drillShock = html.includes('π = πᵉ + (α/Yₙ)(Y−Yₙ) + shock');
-check('INV-SHOCK-RENAME: all 3 PC displays use shock; Economo ref gone',
-  shockCount === 2 && drillShock && !html.includes('Economo Eq'));
+// Regression lock for shock rename + (1−uₙ) factor.
+// All 3 PC displays (legend, panel eq-sym, drill derivation) must show the exact
+// Blanchard-factored form π = πᵉ + α(1−uₙ)(Y−Yₙ)/Yₙ + shock, and no factor-less
+// variant may survive.
+const factorForm = 'π = πᵉ + α(1−uₙ)(Y−Yₙ)/Yₙ + shock';
+const shockCount = html.split(factorForm).length - 1;
+const noBareSlopeDisplay = !html.includes('π = πᵉ + (α/Yₙ)(Y−Yₙ) + shock')
+  && !html.includes('π = πᵉ + α(Y−Yₙ)/Yₙ + shock');
+check('INV-SHOCK-RENAME: all 3 PC displays use factored shock form; no bare-slope display; Economo ref gone',
+  shockCount === 3 && noBareSlopeDisplay && !html.includes('Economo Eq'));
 
 // -------------------------------------------------------------------------
 // INV-θ-BLANCHARD & INV-θ-NUMERIC (Blanchard's adaptive weight convention)
@@ -1371,9 +1376,12 @@ const preset2a = testResetApi.SCENARIOS.find(s => s.id === 'expectationsDeAnchor
 const preset2b = testResetApi.SCENARIOS.find(s => s.id === 'expectationsAnchored');
 check('INV-θ-BLANCHARD: Preset 2a (adaptive) θ > Preset 2b (anchored) θ', preset2a.state.theta > preset2b.state.theta);
 
-const expectedGoldenA = [0.02, 0.0197, 0.019244, 0.018690, 0.018060];
-const expectedGoldenB = [0.0125, 0.006688, 0.001920, -0.002281, -0.006273];
-const expectedGoldenC = [0.007250, -0.004608, -0.015781, -0.026512, -0.037072];
+// Re-baselined after the PC slope gained Blanchard's (1−uₙ) factor (eq. 9.3).
+// Trajectories verified: same shape/direction as before, uniformly ~5% shallower
+// (the 0.95 slope factor), no sign flips or anomalies — a confirmed-benign shift.
+const expectedGoldenA = [0.020000, 0.019758, 0.019390, 0.018946, 0.018443];
+const expectedGoldenB = [0.012875, 0.007380, 0.002914, -0.000971, -0.004605];
+const expectedGoldenC = [0.007888, -0.003368, -0.013955, -0.024092, -0.034024];
 
 const approx = (a, b, tol = 0.05) => Math.abs(a - b) <= tol;
 

@@ -311,7 +311,56 @@
     }
 
     /* TOC */
+    /* Fixed "Contents" jump button */
+    .toc-fab {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 999;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 16px;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--navy-900);
+      font: inherit;
+      font-size: 0.86rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      box-shadow: 0 3px 14px rgba(10, 37, 64, 0.16);
+      transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+    }
+
+    .toc-fab:hover {
+      background: var(--navy-900);
+      color: #fff;
+      border-color: var(--navy-900);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 18px rgba(10, 37, 64, 0.26);
+    }
+
+    .toc-fab:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .toc-fab svg {
+      width: 14px;
+      height: 14px;
+      flex: none;
+    }
+
+    @media print {
+      .toc-fab {
+        display: none;
+      }
+    }
+
     .toc {
+      scroll-margin-top: 20px;
       background: var(--surface);
       border: 1px solid var(--rule);
       border-radius: 14px;
@@ -444,7 +493,7 @@
     </header>
     <main>
 
-      <div class="toc">
+      <div class="toc" id="toc">
         <div class="eyebrow">Contents</div>
         <ol>
           <li><a href="#equation-index">Equation Index</a></li>
@@ -558,7 +607,7 @@
             <td rowspan="3"
               style="border: 1px solid var(--rule); padding: 8px 12px; font-weight:600; vertical-align: middle;">PC</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Phillips Curve Equation</td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">π = πᵉ + (α / Yₙ)(Y − Yₙ) +
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">π = πᵉ + α(1 − uₙ)(Y − Yₙ)/Yₙ +
               shock</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a
                 href="#the-phillips-curve-block-inflation">§6</a></td>
@@ -567,7 +616,7 @@
           </tr>
           <tr>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;">Phillips Curve Component</td>
-            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">π = πᵉ + (α / Yₙ)(Y − Yₙ) +
+            <td style="border: 1px solid var(--rule); padding: 8px 12px;" class="eq">π = πᵉ + α(1 − uₙ)(Y − Yₙ)/Yₙ +
               shock</td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><a href="#pc-conversion">§6.3</a></td>
             <td style="border: 1px solid var(--rule); padding: 8px 12px;"><span class="badge badge-dev">DEVIATION</span>
@@ -598,29 +647,25 @@
         is the same code; the stages simply switch parts of it on and off.</p>
 
       <h3 id="the-two-gates">1.1 The two gates that drive every stage</h3>
-      <p>The whole progression is governed by exactly two switches in the engine. Understanding them makes every stage
-        transition below predictable rather than arbitrary:</p>
+      <p>The whole progression is governed by exactly two switches in the engine:</p>
       <ul>
         <li><strong>The open/closed gate</strong> (<span class="eq-inline">openOn()</span>, true when the current
           stage's
           economy is <em>open</em>). When open, the exchange-rate channel is live: the net-export terms
           x₁Y* − n₁(ε−1) are added to the IS equation and the UIP panel is active. When closed, those trade terms are
-          dropped and the exchange-rate machinery is inert. This gate <strong>oscillates</strong> across the four
-          stages — off, on, off, on — which is why the exchange rate appears, disappears, and returns.</li>
+          dropped and the exchange-rate machinery is inert.</li>
         <li><strong>The inflation gate</strong> (<span class="eq-inline">effectivePiE()</span>, true once the
           Phillips-curve
           block is unlocked). It decides whether the model uses expected inflation at all. While locked, the engine
           computes the real rate as <span class="eq-inline">r = i</span> — Blanchard's fixed-price short run, where
           nominal and
           real rates coincide. Once unlocked, it computes <span class="eq-inline">r = i − πᵉ</span> and the Fisher wedge
-          opens.
-          Unlike the open/closed gate, this one <strong>latches</strong>: it turns on at stage 3 and stays on.</li>
+          opens.</li>
       </ul>
       <p>The four stages are just the four combinations of these two gates that the syllabus walks through. Note the
-        order follows the <em>teaching</em> sequence, not Blanchard's chapter order: the exchange rate (Ch. 17–19) is
-        introduced before inflation (Ch. 9) because the open-economy IS is a natural second step from the closed IS,
-        whereas the Phillips curve is a larger conceptual jump. This is deliberate and is <em>not</em> a fidelity
-        error.</p>
+        order follows the teaching sequence of Frank Brouwer's Macro Economics 1
+        Syllabus for Sussex University (2025). not Blanchard's chapter order: the exchange rate (Ch. 17–19) is
+        introduced before inflation (Ch. 9). </p>
 
       <h3 id="the-four-stages">1.2 The four stages</h3>
 
@@ -683,7 +728,7 @@
       </div>
       <p>The complete open-economy model with inflation. The exchange rate returns — but now it interacts with the
         Phillips curve, so a policy change moves the real rate, the exchange rate, net exports, output, and inflation
-        together. This assembles into one interactive engine what Blanchard develops across chapters: the open-economy
+        together. This assembles into one interactive engine that Blanchard develops across chapters: the open-economy
         IS and UIP of Chapters 18–19 with the Phillips curve of Chapters 8–9. Blanchard does bring an open-economy IS
         together with the Phillips curve in Chapter 20 (medium-run adjustment under fixed exchange rates, eq. 20.2), but
         under anchored expectations and without the unified IS-LM-PC policy-rate treatment used here — so the fully
@@ -735,8 +780,11 @@
       <p>c₁ is the propensity to consume, restricted to 0 < c₁ < 1 (eq. 3.2 discussion). Blanchard's empirical estimate
           for the United States is around 0.6, with the Appendix 3 regressions yielding 0.5 and 0.8 (Ch. 3, “The size of
           the multiplier”).</p>
-          <div style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
-            <span style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Final form</span>
+          <div
+            style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
+            <span
+              style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Final
+              form</span>
             <span class="eq" style="font-weight: 600; color: var(--text);">C = c₀ + c₁ (Y − T)</span>
           </div>
           <h3 id="investment">2.2 Investment — Chapters 3, 5, 9</h3>
@@ -748,8 +796,9 @@
           <div class="corr-card">
             <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">I = d₀ + d₁Y − d₂r</span>
             </div>
-            <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">I = I(Y, i) (eq. 5.1);
-                I(Y, r + x) in eq. 9.1 — functional form only, no coefficients</span></div>
+            <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">I = d₀ + d₁ Y (Ch. 18,
+                Problem 7 — Blanchard's own linear form); I = I(Y, i) (eq. 5.1) and I(Y, r + x) in eq. 9.1 — functional
+                form only, no coefficients</span></div>
             <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
                   class="badge badge-lin">LINEARISED</span></span></div>
             <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Linear coefficients follow
@@ -776,8 +825,11 @@
             dropped only in Chapter 3, before the interest rate exists. We linearise as I = d₀ + d₁ Y − d₂ · r, where d₁
             is the output (accelerator) sensitivity and d₂ the real-rate sensitivity. The linear form I = d₀ + d₁ Y is
             exactly Blanchard's own in Ch. 18, Problem 7.</p>
-          <div style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
-            <span style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Final linear form</span>
+          <div
+            style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
+            <span
+              style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Final
+              linear form</span>
             <span class="eq" style="font-weight: 600; color: var(--text);">I = d₀ + d₁ Y − d₂ · r</span>
           </div>
           <h3>2.3 The real interest rate — Chapter 6</h3>
@@ -802,9 +854,13 @@
             <div style="flex: 1; text-align: right; color: #888;">(eq. 6.4)</div>
           </div>
           <p>The tool's Fisher step r = i − πᵉ matches eq. (6.4) exactly.</p>
-          <div style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
-            <span style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Final form</span>
-            <span class="eq" style="font-weight: 600; color: var(--text);">r = i − πᵉ &nbsp;<span style="font-weight: 400; color: #888; font-size: 0.85em;">(pre-PC: r = i)</span></span>
+          <div
+            style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
+            <span
+              style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Final
+              form</span>
+            <span class="eq" style="font-weight: 600; color: var(--text);">r = i − πᵉ &nbsp;<span
+                style="font-weight: 400; color: #888; font-size: 0.85em;">(pre-PC: r = i)</span></span>
           </div>
           <h3>2.4 Equilibrium condition — Chapter 3 / Chapter 9</h3>
           <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
@@ -848,9 +904,13 @@
           <p>This is the accelerator-augmented version of Blanchard's eq. (3.8). The multiplier 1/(1 − c₁ − d₁)
             generalises his 1/(1 − c₁): the induced-spending propensity is now the sum c₁ + d₁, because both consumption
             and investment respond to output.</p>
-          <div style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
-            <span style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Final form</span>
-            <span class="eq" style="font-weight: 600; color: var(--text);">Y = [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T − d₂ r]</span>
+          <div
+            style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
+            <span
+              style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Final
+              form</span>
+            <span class="eq" style="font-weight: 600; color: var(--text);">Y = [1 / (1 − c₁ − d₁)] · [c₀ + d₀ + G − c₁ T
+              − d₂ r]</span>
           </div>
           <h2 id="is-coefficients-block"><span class="num">3</span> IS Coefficients and Multipliers</h2>
           <h3 id="is-coefficients">3.1 Coefficient table (symbolic)</h3>
@@ -892,9 +952,12 @@
           </div>
           <h3>3.2 Why the tax multiplier is asymmetric</h3>
           <p>The tax multiplier −c₁/(1 − c₁ − d₁) carries d₁ in the denominator but only c₁ in the numerator, and this
-            is not an inconsistency. The split follows from <em>where each variable enters the goods-market equation</em>,
-            not from any sequence of events — the equilibrium is solved simultaneously, so there are no literal "rounds".</p>
-          <p>The <strong>numerator</strong> measures how much the lever moves autonomous demand — the part of demand that
+            is not an inconsistency. The split follows from <em>where each variable enters the goods-market
+              equation</em>,
+            not from any sequence of events — the equilibrium is solved simultaneously, so there are no literal
+            "rounds".</p>
+          <p>The <strong>numerator</strong> measures how much the lever moves autonomous demand — the part of demand
+            that
             does not depend on output. Taxes enter this model only through consumption, as the term −c₁T; investment
             responds to output (Y), not to disposable income (Y − T), so it carries no tax term. A one-unit tax rise
             therefore moves autonomous demand by exactly −c₁, which is the numerator. A spending change, by contrast,
@@ -907,7 +970,12 @@
             part of the amplification, since amplification is precisely the response to output and investment responds
             to output.</p>
           <p>Hence |∂Y/∂T| < ∂Y/∂G — the tax lever enters through consumption alone while the spending lever enters
-            demand in full — and the balanced-budget multiplier is non-zero.</p>
+              demand in full — and the balanced-budget multiplier is non-zero.</p>
+          <p style="color:#888; font-size:0.9em;">Blanchard makes the same point in Chapter 3, immediately after
+              deriving the equilibrium output equation (eq. 3.8): a change in government spending and a change in taxes
+              of the same size do not have effects of the same magnitude, because taxes enter demand only through their
+              effect on consumption (the −c₁T term), whereas spending enters demand directly. This is the source of the
+              asymmetry and of the non-zero balanced-budget multiplier.</p>
               <h3>3.3 The c₁ slider</h3>
               <p>Because every IS coefficient is a function of c₁, the tool exposes c₁ as a live slider (a behavioural
                 primitive). Moving c₁ with d₁ held fixed recomputes the multiplier, the G coefficient, the T
@@ -1036,14 +1104,16 @@
                   baseline</em> based on the current inflation and output gaps.</p>
               <h3>5.3 The unemployment–output-gap conversion (shared with the PC block)</h3>
               <p>Several of Blanchard's medium-run relations are first written in unemployment but end up in the output
-                gap. The bridge between the two is a single identity that Blanchard himself derives in Chapter 9 (the
-                steps taking eq. 9.2 to eq. 9.3). Because more than one block needs it, the identity is recorded once
-                here and referenced where required. The Phillips curve is the clearest case: Blanchard introduces it in
-                unemployment in Chapter 8, then rewrites it in the output gap in Chapter 9 — so the tool's output-gap
-                Phillips curve follows Blanchard's own Chapter 9 form rather than departing from him. The Taylor rule
-                (§5.4) reuses the same identity to convert its unemployment-gap term to an output-gap term; that
-                conversion is carried out in full in §5.4.</p>
-              <p>By definition the unemployment rate is unemployment over the labour force:</p>
+                gap. The bridge is recorded once here, as two identities that stack: <strong>Identity A</strong> is
+                Blanchard's own u→Y conversion (the steps taking eq. 9.2 to eq. 9.3), which leaves the labour force L in
+                the denominator; <strong>Identity B</strong> is the tool's normalisation that swaps L for potential
+                output Yₙ, since the tool has no L control. Every later section that needs the conversion (the Phillips
+                curve in §6.3, the Taylor rule in §5.4) applies these two and does not re-derive them. The Phillips
+                curve is the clearest case: Blanchard introduces it in unemployment in Chapter 8, then rewrites it in the
+                output gap in Chapter 9 — so the tool's output-gap Phillips curve follows Blanchard's own Chapter 9 form
+                rather than departing from him.</p>
+              <p><strong>(a) Blanchard's u→Y identity.</strong> By definition the unemployment rate is unemployment over
+                the labour force:</p>
               <div style="text-align: center; margin: 12px 0;">
                 <div>u ≡ U/L = (L − N)/L = 1 − N/L</div>
                 <div style="margin-top: 6px;">→ N = L(1 − u)</div>
@@ -1059,16 +1129,55 @@
               </div>
               <p>Subtracting gives the deviation of output from potential:</p>
               <p>Y − Yₙ = L[(1 − u) − (1 − uₙ)] = − L (u − uₙ)</p>
-              <p>Equivalently, the conversion identity used throughout the tool:</p>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
-                <div style="flex: 1;"></div>
-                <div style="flex: 2; text-align: center;">(u − uₙ) = − (Y − Yₙ) / L</div>
-                <div style="flex: 1; text-align: right; color: #888;">(from eqs. 9.2–9.3)</div>
+              <p>Rearranging gives Blanchard's own conversion identity — the exact form he uses to pass from eq. (9.2)
+                to eq. (9.3), with the labour force L in the denominator:</p>
+              <div
+                style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
+                <span
+                  style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Identity
+                  A (Blanchard)</span>
+                <span class="eq" style="font-weight: 600; color: var(--text);">(u − uₙ) = − (Y − Yₙ) / L</span>
               </div>
               <p>Two consequences follow whenever a Blanchard relation in u is rewritten in Y: a sign flip (u and Y move
-                oppositely) and a division by L. In Blanchard's one-good setup Y ≈ N ≈ L, so dividing by L and
-                normalising by Yₙ nearly coincide; the tool normalises by Yₙ. This is the same reconciliation the
-                Phillips-curve block requires (eq. 9.3 carries the factor α/L).</p>
+                oppositely) and a division by the labour force L.</p>
+              <p><strong>(b) The L→Yₙ normalisation (the tool's choice).</strong> The tool has no labour-force control L.
+                Every block (IS, MP, PC) instead normalises its gap by potential output Yₙ = 100, so the denominators
+                match across the whole model. The two denominators are linked by the natural-output definition derived
+                just above, Yₙ = L(1 − uₙ), i.e.</p>
+              <div style="text-align: center; margin: 12px 0;">
+                <div>L = Yₙ / (1 − uₙ)</div>
+              </div>
+              <p>Substituting this into Identity A eliminates L in favour of Yₙ:</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 2; text-align: center;">(u − uₙ) = − (Y − Yₙ) / L = − (1 − uₙ) · (Y − Yₙ) / Yₙ</div>
+                <div style="flex: 1; text-align: right; color: #888;"></div>
+              </div>
+              <p>This is the full, exact identity — the (1 − uₙ) factor is real and stays in it. The tool keeps it. When
+                Blanchard's Phillips curve −α(u − uₙ) is converted to output space, the engine computes the exact
+                slope, factor included:</p>
+              <div
+                style="background: var(--accent-tint); border: 1px solid var(--accent-tint-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; margin: 16px 0; display: flex; align-items: baseline; gap: 12px;">
+                <span
+                  style="font-weight: 700; color: var(--accent); font-size: 0.8em; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap;">Identity
+                  B (tool)</span>
+                <span class="eq" style="font-weight: 600; color: var(--text);">π = πᵉ + α·(1 − uₙ)·(Y − Yₙ)/Yₙ +
+                  shock</span>
+              </div>
+              <p>Here α is exactly Blanchard's α — the same structural slope, not a relabelled composite. The tool's
+                only choice is the denominator: it normalises the output gap by potential output Yₙ rather than by the
+                labour force L (so every block shares Yₙ = 100). That choice is what brings the (1 − uₙ) in — it is the
+                honest cost of dividing by Yₙ instead of L, and the engine pays it explicitly rather than dropping it.
+                At baseline uₙ = 0.05 the factor is 0.95, but it is computed from state, not fixed: raising m or z raises
+                uₙ and lowers the factor, exactly as Blanchard's L-normalised form would through the change in L.</p>
+              <p>The same conversion applies to the Taylor rule's response term, giving ψ = b(1 − uₙ) (§5.4). In both
+                cases the tool carries the factor rather than absorbing or approximating it, so the displayed equations
+                are the exact Yₙ-normalised transcriptions of Blanchard's L-normalised originals.</p>
+              <p><strong>How the other sections use this.</strong> Any Blanchard relation written in the unemployment gap
+                is converted by applying Identity A (giving a coefficient over L) and then Identity B (removing L via the
+                (1 − uₙ) factor). Neither §5.4 nor §6.3 re-derives the conversion; both cite this one, and both keep the
+                (1 − uₙ) explicit so the tool's coefficients are exact matches to Blanchard's: ψ = b(1 − uₙ) in the
+                Taylor rule, and α(1 − uₙ)/Yₙ in the Phillips curve, with α equal to Blanchard's own slope.</p>
               <h3 id="taylor-rule">5.4 The Taylor rule (when active) — Chapter 23</h3>
               <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
                   style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">i = ρ·i_prev + (1−ρ)·(<span
@@ -1093,16 +1202,17 @@
                 <div style="flex: 1; text-align: right; color: #888;">(Taylor rule, Ch. 23)</div>
               </div>
               <p>with a, b > 0, and crucially a > 1 — the Taylor principle: because spending depends on the real rate,
-                the nominal rate must rise more than one-for-one with inflation so that the real rate rises. Applying
-                the conversion identity from Section 5.3 to the unemployment term rewrites the rule in output-gap form:
-              </p>
-              <p>− b(u − uₙ) = − b · [−(Y − Yₙ)/L] = + (b/L)(Y − Yₙ)</p>
+                the nominal rate must rise more than one-for-one with inflation so that the real rate rises. To rewrite
+                the rule in output-gap form, apply the conversion from §5.3 to the −b(u − uₙ) term — Identity A (which
+                flips the sign and brings in L), then Identity B (which folds the (1 − uₙ) factor in to remove L):</p>
+              <p>− b(u − uₙ) &nbsp;→<sub>A</sub>&nbsp; + (b/L)(Y − Yₙ) &nbsp;→<sub>B</sub>&nbsp; + b(1 − uₙ) · (Y −
+                Yₙ)/Yₙ</p>
               <div style="text-align: center; margin: 12px 0;">
                 <div style="margin-bottom: 6px;">⇒</div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div style="flex: 1;"></div>
-                  <div style="flex: 2; text-align: center;">i = ī + a(π − <span class="barred">π</span>) + (b/L)(Y − Yₙ)
-                  </div>
+                  <div style="flex: 2; text-align: center;">i = ī + a(π − <span class="barred">π</span>) + b(1 − uₙ) · (Y −
+                    Yₙ)/Yₙ</div>
                   <div style="flex: 1; text-align: right; color: #888;">(tool rule with smoothing)</div>
                 </div>
               </div>
@@ -1134,13 +1244,14 @@
                   <tr>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">− b(u − uₙ)</td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">+ ψ (Y − Yₙ)/Yₙ, ψ = 0.25</td>
-                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">ψ ≡ b·Yₙ/L via §5.3</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">ψ ≡ b(1 − uₙ) via §5.3 (L eliminated)</td>
                   </tr>
                 </table>
               </div>
               <p>So the tool's positive output-gap coefficient ψ = 0.25 is Blanchard's negative unemployment coefficient
-                −b, after the Okun-type conversion of Section 5.3. The sign difference is the conversion, not a
-                disagreement.</p>
+                −b, after the Okun-type conversion of §5.3: the sign flips (u and Y move oppositely) and the labour force
+                L is replaced by the (1 − uₙ) factor, leaving ψ = b(1 − uₙ) with no L to set. The sign difference is the
+                conversion, not a disagreement.</p>
               <h3>5.5 Interest smoothing (a tested departure from the textbook rule)</h3>
               <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
                   style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">i = <span
@@ -1213,11 +1324,18 @@
                 (inflation)</h2>
               <p class="eq"
                 style="margin-top:0; padding:6px 12px; font-weight:600; font-size:1.1em; color:var(--text);">π = πᵉ +
-                (α / Yₙ)(Y − Yₙ) + shock</p>
+                α(1 − uₙ)(Y − Yₙ)/Yₙ + shock</p>
               <p>Block 3. Blanchard derives the Phillips curve from the labour-market model (Chapter 7) in Chapter 8,
                 then converts it to output space in Chapter 9. The tool follows this chain. The conversion from
                 unemployment to output uses the identity already derived in §5.3.</p>
               <h3>6.1 From wage- and price-setting to inflation — Chapter 8</h3>
+              <p>This section shows where the tool's <span class="eq-inline">m</span> and <span
+                  class="eq-inline">z</span> controls come from: the wage/price-setting origin of both the natural rate
+                (§6.2) and the output-space Phillips curve (§6.3). The equation πₜ = πᵉₜ + (m + z) − α uₜ derived here is
+                Blanchard's intermediate step, <em>not</em> an engine equation — the model never evaluates it directly.
+                What the engine computes is eq. 8.4 (for uₙ and hence Yₙ) and eq. 9.3 (the Phillips curve), and both
+                follow from this step. It is included because it is the only place the two supply-side controls acquire
+                their meaning: setting π = πᵉ here is exactly what produces uₙ = (m + z)/α in §6.2.</p>
               <p>Wage setting (eq. 7.1) with Blanchard's specific functional form F(u, z) = 1 − αu + z:</p>
               <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
                 <div style="flex: 1;"></div>
@@ -1277,6 +1395,13 @@
                 markup shock can be offset by a fall in z — e.g. a reduction in union bargaining power restoring
                 potential output. This is a genuine medium-run rebalancing (Yₙ is restored), not a temporary
                 cancellation of an inflation blip.</p>
+              <p>This sign can seem backwards — surely higher wages mean more jobs? But uₙ here is a bargaining
+                equilibrium, not a labour-supply response. The real wage firms actually concede is fixed by the markup
+                (price setting), not by what workers demand, so stronger wage-push (higher z) or a wider markup (higher
+                m) can only be reconciled with that fixed feasible wage at a <em>higher</em> unemployment rate — because
+                higher unemployment is what weakens worker bargaining power (the −αu term) enough to bring wage demands
+                back into line. The higher wage-push does not create jobs; it raises the unemployment floor needed to
+                keep wage demands consistent with the markup. This is the standard structural-unemployment result.</p>
               <p>Substituting eq. (8.4) back into eq. (8.3) gives the Phillips curve in unemployment space:</p>
               <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
                 <div style="flex: 1;"></div>
@@ -1285,35 +1410,45 @@
               </div>
               <h3 id="pc-conversion">6.3 Conversion to output space — Chapter 9, eq. 9.3</h3>
               <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
-                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (<span
-                    style="color:var(--accent); font-weight:bold;">α</span> / Yₙ)<span
-                    style="color:var(--accent); font-weight:bold;">(Y − Yₙ)</span> + shock</span></h4>
+                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + <span
+                    style="color:var(--accent); font-weight:bold;">α</span>(1 − uₙ)<span
+                    style="color:var(--accent); font-weight:bold;">(Y − Yₙ)</span> / Yₙ + shock</span></h4>
               <div class="corr-card">
-                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">π = πᵉ + (α/Yₙ)(Y −
-                    Yₙ) + shock</span></div>
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">π = πᵉ + α(1 − uₙ)(Y −
+                    Yₙ)/Yₙ + shock</span></div>
                 <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">π − πᵉ = (α/L)(Y −
                     Yₙ) &nbsp;(eq. 9.3)</span></div>
                 <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
                       class="badge badge-dev">DEVIATION</span></span></div>
                 <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">Gap normalised by Yₙ
-                    instead of L (cosmetic, factor 1 − uₙ); slope α deliberately decoupled from α_WS — a factor of ten,
-                    see §6.5; shock term added (§6.7).</span></div>
+                    instead of L; the (1 − uₙ) factor this requires (§5.3 Identity B) is computed explicitly, so α equals
+                    Blanchard's own slope exactly. The α slider is still deliberately decoupled from α_WS — a factor of
+                    ten, see §6.5; shock term added (§6.7).</span></div>
               </div>
-              <p>Applying the unemployment–output identity from §5.3, (u − uₙ) = −(Y − Yₙ)/L, to eq. (8.5):</p>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0;">
-                <div style="flex: 1;"></div>
-                <div style="flex: 2; text-align: center;">πₜ − πᵉₜ = −α · [−(Y − Yₙ)/L] = (α/L)(Y − Yₙ)</div>
-                <div style="flex: 1; text-align: right; color: #888;">(eq. 9.3)</div>
+              <p>Blanchard's eq. 9.3 normalises the output gap by the labour force L. The tool normalises by potential
+                output Yₙ. Substituting Blanchard's own bridge L = Yₙ/(1 − uₙ) (§5.3, Identity B) converts one into the
+                other, step by step:</p>
+              <div style="margin: 14px 0; line-height: 2.1;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;"></div>
+                  <div style="flex: 3; text-align: center;">π − πᵉ = (α / L)(Y − Yₙ)</div>
+                  <div style="flex: 2; text-align: right; color: #888;">Blanchard, eq. 9.3</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;"></div>
+                  <div style="flex: 3; text-align: center;">= <span style="display:inline-block; min-width:2em;">α</span> ·
+                    (1 − uₙ)/Yₙ · (Y − Yₙ)</div>
+                  <div style="flex: 2; text-align: right; color: #888;">sub. L = Yₙ/(1 − uₙ)</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;"></div>
+                  <div style="flex: 3; text-align: center; font-weight: 600;">= α(1 − uₙ)(Y − Yₙ)/Yₙ</div>
+                  <div style="flex: 2; text-align: right; color: #888;">tool form</div>
+                </div>
               </div>
-              <p>Blanchard's output-space slope is therefore α/L. The tool normalises the output gap by potential output
-                Yₙ rather than the labour force L, writing the slope as α/Yₙ. Since Yₙ = L(1 − uₙ), the two
-                normalisations differ only by the factor (1 − uₙ) ≈ 0.95 — a unit conversion, chosen for consistency
-                with the IS and MP blocks (which all use Yₙ = 100), not a change of substance.</p>
-              <p>The <em>value</em> of the tool's α is a different matter. In Blanchard, the α in this equation is the
-                same α as in the natural-rate formula (eq. 8.4). In the tool it deliberately is not: the natural rate
-                uses the fixed α_WS = 3.0, while the Phillips-curve slope is its own slider (default 0.3) — a factor of
-                ten apart, not 5%. Why the model cannot use one number for both is explained in §6.5; it is the single
-                deliberate deviation in this block.</p>
+              <p>The α is unchanged through every line — it stays exactly Blanchard's slope. The only thing that changes
+                is the denominator (L → Yₙ), and the (1 − uₙ) factor is precisely the cost of that swap, kept in full so
+                nothing is approximated.</p>
               <h3>6.4 Distinguishing tool variables from textbook parameters</h3>
               <p>The interactive nature of the tool requires slightly different notation from the textbook to
                 distinguish structural parameters (which determine the natural rate) from transitory shocks (which hit
@@ -1321,7 +1456,10 @@
               <ul>
                 <li><strong>α_WS</strong>: Blanchard's α — the structural sensitivity of wages to unemployment in the WS
                   relation. Fixed in the engine at 3.0 so that uₙ = (m + z_struct)/α_WS gives a plausible natural rate
-                  (5% at baseline). This is the only α that enters uₙ and Yₙ.</li>
+                  (5% at baseline). This is the only α that enters uₙ and Yₙ. In Blanchard this is the <em>same</em>
+                  symbol α that also sets the Phillips-curve slope (§6.3); the tool deliberately splits that one textbook
+                  α into two distinct values — the fixed α_WS here and the adjustable PC slider below — for the
+                  calibration reason in §6.5.</li>
                 <li><strong>α</strong>: The Phillips-curve slope slider (default 0.3, range 0.05–0.5). It enters only
                   the PC equation. Moving it never changes uₙ or Yₙ — that separation from α_WS is deliberate; see §6.5.
                 </li>
@@ -1349,15 +1487,21 @@
                 normal labour markets. A slope near 1.0 is not empirically supported, which is why the slider is capped
                 at 0.5.
               </p>
-              <p><strong>Why two alphas at all?</strong> Blanchard's single-α model cannot fit both facts it is asked to
-                fit. The natural-rate formula uₙ = (m + z)/α needs α ≈ 3 to deliver a plausible natural rate: with the
-                tool's baseline m + z = 0.15, an α of 0.3 would imply uₙ = 0.15/0.3 = 50% unemployment. But the
-                estimated Phillips-curve slope is ≈ 0.3, ten times smaller. One symbol is being asked to do two
-                irreconcilable empirical jobs. The standard resolution — and the tool's — is that price stickiness and
-                real rigidities flatten the observed inflation–output relation far below the underlying wage-setting
-                sensitivity, so the two coefficients are genuinely different objects. The engine therefore keeps
-                Blanchard's α in the natural-rate formula (as the fixed α_WS = 3.0) and gives the Phillips-curve slope
-                its own slider. This is a deliberate deviation from the textbook, where they are one number.</p>
+              <p><strong>Why two alphas at all?</strong> Blanchard is not wrong to use a single α. In the textbook α is
+                a purely symbolic parameter — it is never assigned a number — so the same α setting both the natural rate
+                (eq. 8.4) and the Phillips-curve slope (eq. 9.3) is fully consistent: the Phillips curve is derived from
+                wage-setting, so one parameter governing both is exactly the right theoretical structure. The conflict
+                appears only when the tool, being quantitative, must make that one α hit two empirical targets at once.
+                The natural-rate formula uₙ = (m + z)/α needs α ≈ 3 to deliver a plausible natural rate: with the tool's
+                baseline m + z = 0.15, an α of 0.3 would imply uₙ = 0.15/0.3 = 50% unemployment. But the estimated
+                Phillips-curve slope is ≈ 0.3, ten times smaller. The single symbol is over-constrained by data in a way
+                the textbook's abstract treatment never is. The standard resolution — and the tool's — is that price
+                stickiness and real rigidities flatten the observed inflation–output relation far below the underlying
+                wage-setting sensitivity, so the two coefficients are genuinely different objects once calibrated. The
+                engine therefore keeps Blanchard's α in the natural-rate formula (as the fixed α_WS = 3.0) and gives the
+                Phillips-curve slope its own slider, with a range of 0.05–0.5. This is a deliberate calibration split, not
+                a correction of a textbook error — Blanchard never claims the two magnitudes are equal, because he never
+                numbers them at all.</p>
               <p>Crucially, this matches Blanchard's own treatment: across the historical mutations of the Phillips
                 curve he holds α fixed and varies θ, the expectations parameter, not α. Eqs. (8.5)→(8.8)→(8.9) walk
                 through this
@@ -1370,7 +1514,8 @@
               <p>A clarification the tool makes deliberately, because two different things get called
                 “steepness,” and neither of them is what the θ slider (shown as Max credibility) controls. The <em>slope
                   of the
-                  plotted Phillips curve</em> — its tilt in (π, Y) space — is α/Yₙ, and only the α slider changes it.
+                  plotted Phillips curve</em> — its tilt in (π, Y) space — is α(1 − uₙ)/Yₙ, and only the α slider changes
+                  it (uₙ is fixed unless m or z move).
                 The curve's height is set by expected inflation πᵉ, so a given πᵉ fixes where the line sits at that
                 moment.</p>
               <p>θ does not move the plotted line on its own. Within a single frame it does nothing: the curve is
@@ -1408,10 +1553,15 @@
                 <span class="barred">π</span> and recent inflation, with weight set by his de-anchoring
                 parameter θ (θ = 0 fully anchored, πᵉ = <span class="barred">π</span>; θ = 1 fully adaptive,
                 πᵉ = π₋₁). The tool uses this equation unchanged, and stores θ with exactly Blanchard's meaning.
-                The one addition is a credibility factor folded into a single combined weight <strong>A</strong>.</p>
+                The one addition is a credibility factor folded into a single combined weight <strong>A</strong> — a
+                convex-weight modification of the same kind Blanchard himself makes in his wage-indexation model
+                (eq. 8.10), shown below.
+              </p>
 
               <div class="corr-card">
-                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">πᵉ′ = πᵉ + speed · [ A(<span class="barred">π</span> − πᵉ) + (1 − A)(π − πᵉ) ] &nbsp;<span style="color:#888; font-size:0.9em;">A = (1 − θ) · credibility</span></span></div>
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">πᵉ′ = πᵉ + speed · [
+                    A(<span class="barred">π</span> − πᵉ) + (1 − A)(π − πᵉ) ] &nbsp;<span
+                      style="color:#888; font-size:0.9em;">A = (1 − θ) · credibility</span></span></div>
                 <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">πᵉ = (1 − θ)<span
                       class="barred">π</span> + θ π₋₁ &nbsp;(eq. 8.7)</span></div>
                 <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
@@ -1420,31 +1570,58 @@
                       style="font-size:0.85em; color:#888;">(credibility factor in A)</span></span></div>
                 <div class="corr-row"><span class="corr-lab">Change</span><span class="corr-val">A replaces
                     Blanchard's fixed weight (1 − θ). At credibility = 1, A = 1 − θ and the rule is exactly
-                    eq. 8.7.</span></div>
+                    eq. 8.7. The convex-weight form follows Blanchard's own eq. 8.10 (wage indexation), where a weight λ
+                    splits inflation between actual and expected — the same structural device.</span></div>
               </div>
 
-              <p style="margin-top:14px;"><strong>How A maps onto eq. 8.7.</strong> The tool's rule moves πᵉ toward
-                the average inside the bracket. Dropping πᵉ from each term, that average is
-                A<span class="barred">π</span> + (1 − A)π — a weighted average of target and recent inflation with
-                weight <strong>A</strong> on the target. Blanchard's eq. 8.7 is the same weighted average with
-                weight <strong>(1 − θ)</strong> on the target. So the single substitution
-                <strong>A = (1 − θ) · credibility</strong> is the entire mapping: at credibility = 1 the target
-                weight is A = 1 − θ, identical to Blanchard; as credibility falls below 1, A shrinks, less weight
-                sits on the target, and expectations drift more adaptively than θ alone would give. (The
-                <span class="eq-inline">speed</span> factor only sets how much of the move happens per step; at
-                speed = 1 it is Blanchard's one-step update. The tool's recent-inflation anchor is current π in the
-                step-update form, playing the role of Blanchard's π₋₁.)</p>
+              <p style="margin-top:14px;"><strong>Why a convex-weight addition is legitimate: Blanchard does the same
+                thing.</strong> Blanchard himself modifies a Phillips-curve relation by inserting a weight that splits
+                expectations between two anchors. In his wage-indexation model (eq. 8.10), a proportion λ of contracts
+                indexes to <em>actual</em> inflation and a proportion (1 − λ) to <em>expected</em> inflation:</p>
+              <div style="margin: 12px 0; line-height: 2.0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;"></div>
+                  <div style="flex: 3; text-align: center;">π = [λπ + (1 − λ)πᵉ] − α(u − uₙ)</div>
+                  <div style="flex: 2; text-align: right; color: #888;">Blanchard, eq. 8.10</div>
+                </div>
+              </div>
+              <p>The bracket is a convex weighting of two inflation anchors, and λ controls how much sits on the
+                de-anchoring (actual-inflation) side — Blanchard notes that as indexation λ rises, the same unemployment
+                gap produces ever-larger inflation swings. The tool's credibility factor is exactly this move, applied
+                to the expectations-updating equation instead of the Phillips curve: the combined weight A convexly
+                splits the πᵉ update between the target <span class="barred">π</span> and recent inflation π, with A the
+                counterpart of Blanchard's (1 − λ):</p>
+              <div style="margin: 12px 0; line-height: 2.0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;"></div>
+                  <div style="flex: 3; text-align: center;">πᵉ update toward &nbsp; A<span class="barred">π</span> +
+                    (1 − A)π,&nbsp; A = (1 − θ) · credibility</div>
+                  <div style="flex: 2; text-align: right; color: #888;">tool</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;"></div>
+                  <div style="flex: 3; text-align: center;">(1 − θ)<span class="barred">π</span> + θ π₋₁</div>
+                  <div style="flex: 2; text-align: right; color: #888;">Blanchard, eq. 8.7</div>
+                </div>
+              </div>
+              <p>Setting credibility = 1 gives A = 1 − θ, and the tool's weighting is exactly Blanchard's eq. 8.7. As
+                credibility falls below 1, A shrinks, less weight sits on the target, and expectations drift more
+                adaptively than θ alone would — the same amplifying logic as Blanchard's rising-λ case, expressed
+                through credibility. (The <span class="eq-inline">speed</span> factor only sets how much of the move
+                happens per step; at speed = 1 it is Blanchard's one-step update, with current π playing the role of his
+                π₋₁.)</p>
 
               <p><strong>Slider display note.</strong> The θ control is <em>shown</em> as its complement, labelled
                 <strong>Max credibility (1 − θ)</strong>, so dragging right = more anchored. This is a label choice
-                only; the value entering the equation is Blanchard's θ.</p>
+                only; the value entering the equation is Blanchard's θ.
+              </p>
               <h3>6.7 Supply shocks: two distinct channels — Section 8-3</h3>
               <h4 style="margin-top:0; font-weight:normal;"><span class="eq"
-                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + (α / Yₙ)(Y
-                  − Yₙ) + <span style="color:var(--accent); font-weight:bold;">shock</span></span></h4>
+                  style="display:inline-block; margin:8px 0; padding:6px 12px; color:#888;">π = πᵉ + α(1 − uₙ)(Y
+                  − Yₙ)/Yₙ + <span style="color:var(--accent); font-weight:bold;">shock</span></span></h4>
               <div class="corr-card">
-                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">π = πᵉ + (α/Yₙ)(Y −
-                    Yₙ) + shock</span></div>
+                <div class="corr-row"><span class="corr-lab">Tool</span><span class="corr-val eq">π = πᵉ + α(1 − uₙ)(Y −
+                    Yₙ)/Yₙ + shock</span></div>
                 <div class="corr-row"><span class="corr-lab">Blanchard</span><span class="corr-val">eq. 9.3 carries no
                     shock term; Section 8-3 supplies the narrative (Covid, 1970s)</span></div>
                 <div class="corr-row"><span class="corr-lab">Status</span><span class="corr-val"><span
@@ -1503,10 +1680,9 @@
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">Converted to output via §5.3</td>
                   </tr>
                   <tr>
-                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Output-space slope α/Yₙ</td>
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Output-space slope α(1 − uₙ)/Yₙ</td>
                     <td style="border: 1px solid var(--rule); padding: 8px 12px;">eq. (9.3) carries α/L</td>
-                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">Yₙ-normalisation is cosmetic; slope
-                      <em>value</em> decoupled from α_WS (deviation, §6.5)
+                    <td style="border: 1px solid var(--rule); padding: 8px 12px;">(1 − uₙ) computed explicitly so α = Blanchard's α (§5.3 Identity B); α <em>value</em> decoupled from α_WS (deviation, §6.5)
                     </td>
                   </tr>
                   <tr>
@@ -1861,6 +2037,25 @@
       <p>Malin Anderson · malinanderson97@gmail.com</p>
     </footer>
   </div>
+
+  <button class="toc-fab" id="toc-fab" type="button" aria-label="Jump to contents">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+      aria-hidden="true">
+      <path d="M2 3.5h2M2 8h2M2 12.5h2M6.5 3.5H14M6.5 8H14M6.5 12.5H14" />
+    </svg>
+    Contents
+  </button>
+
+  <script>
+    (function () {
+      var fab = document.getElementById('toc-fab');
+      var toc = document.getElementById('toc');
+      if (!fab || !toc) return;
+      fab.addEventListener('click', function () {
+        toc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    })();
+  </script>
 </body>
 
 </html>
